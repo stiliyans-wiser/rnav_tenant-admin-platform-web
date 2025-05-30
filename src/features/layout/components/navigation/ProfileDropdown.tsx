@@ -1,6 +1,6 @@
 import { Avatar, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { ThemeSwitcher } from '../../../theming/components/ThemeSwitcher.tsx';
+import { ThemeSwitcher } from '../../../../theming/components/ThemeSwitcher.tsx';
 
 export const ProfileDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);

@@ -1,15 +1,19 @@
-import { Box, Typography } from '@mui/material';
+import { PageContainer } from '../layout/components/page/PageContainer';
+import PageHeader from '../layout/components/page/PageHeader';
+import { ClientTableContainer } from '../layout/components/table/ClientTableContainer';
+import { TenantsTable } from './TenantsTable.tsx';
 
 export const Tenants = () => {
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Tenants
-      </Typography>
-      <Typography variant="body1">
-        Manage your tenants in the Tenant Admin Platform.
-      </Typography>
-    </Box>
+    <PageContainer>
+      <PageHeader titleKey="Tenants" />
+      {/*<PageHeader titleKey="Tenants" actionChildren={<RolesTableControls />} />*/}
+
+      <ClientTableContainer
+        filterChildren={null}
+        tableChildren={<TenantsTable  />}
+      />
+    </PageContainer>
   );
 };
 

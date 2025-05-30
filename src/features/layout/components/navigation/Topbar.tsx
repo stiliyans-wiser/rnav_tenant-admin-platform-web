@@ -1,6 +1,6 @@
 import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
 import { ProfileDropdown } from './ProfileDropdown.tsx';
-import logo from '../../../assets/logo.png';
+import logo from '../../../../assets/logo.png';
 
 export const Topbar = () => {
   return (

@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import { Topbar } from './components/Topbar';
-import { SideNavbar } from './components/SideNavbar.tsx';
+import { Topbar } from './components/navigation/Topbar';
+import { SideNavbar } from './components/navigation/SideNavbar.tsx';
 
 export const RootLayout = () => {
   return (
