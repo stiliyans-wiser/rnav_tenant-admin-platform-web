@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+dist
+build
+coverage
+
+# Cache and logs
+.cache
+*.log
+
+# Environment files
+.env*
+!.env.example
+
+# IDE specific files
+.idea
+.vscode
+*.swp
+*.swo
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.eslintignore
+.gitignore
+LICENSE
