@@ -16,6 +16,7 @@
     "@carbon/icons-react": "^11.60.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@fontsource/montserrat": "^5.2.5",
     "@mui/material": "^7.1.0",
     "@tanstack/react-query": "^5.79.0",
     "axios": "^1.9.0",
@@ -24,6 +25,7 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.4",
     "react-router": "^7.6.1",
+    "react-router-dom": "^7.6.1",
     "sass": "^1.89.0"
   },
   "devDependencies": {

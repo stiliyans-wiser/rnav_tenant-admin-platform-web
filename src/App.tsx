@@ -1,11 +1,8 @@
-import { Button, Container } from '@mui/material';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router.tsx';
 
 function App() {
-  return (
-    <Container>
-      <Button>Button</Button>
-    </Container>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
