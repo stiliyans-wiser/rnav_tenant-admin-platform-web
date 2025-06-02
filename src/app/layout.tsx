@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { Montserrat } from 'next/font/google';
 import '../index.scss';
 import { AppLayout } from '@/features/layout/components/AppLayout';
 import InitColorSchemeScript from '@mui/system/InitColorSchemeScript';
-
-const inter = Inter({ subsets: ['latin'] });
+import { AuthProvider } from '@/features/auth/context/AuthContext';
+import { AuthGuard } from '@/features/auth/components/AuthGuard';
 
 export const metadata: Metadata = {
   title: 'Tenant Admin Platform',
@@ -26,7 +25,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={font.variable}>
         <InitColorSchemeScript modeStorageKey="mui-mode" attribute="data-mui-color-scheme" />
-        <AppLayout>{children}</AppLayout>
+
+        <AuthProvider>
+          <AuthGuard>
+            <AppLayout>{children}</AppLayout>
+          </AuthGuard>
+        </AuthProvider>
       </body>
     </html>
   );

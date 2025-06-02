@@ -1,11 +1,13 @@
 'use client';
 
-import { Avatar, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { Avatar, Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { ThemeSwitcher } from '@/features/theming/components/ThemeSwitcher';
+import { useAuth } from '@/features/auth/context/AuthContext';
 
 export const ProfileDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const { logout } = useAuth();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
@@ -15,6 +17,11 @@ export const ProfileDropdown = () => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
+  };
+
   return (
     <>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', cursor: 'pointer' }}>
@@ -22,13 +29,12 @@ export const ProfileDropdown = () => {
           <Avatar sx={{ width: 28, height: 28, marginLeft: 2 }}>
             <Typography variant="body1">A</Typography>
           </Avatar>
-
           <Typography variant="body1" noWrap>Admin</Typography>
         </Stack>
 
-        {/*<Button variant="text" fullWidth sx={{ marginX: 1 }} onClick={async () => await logout()}>*/}
-        {/*  Logout*/}
-        {/*</Button>*/}
+        <Button variant="text" fullWidth sx={{ marginX: 1 }} onClick={handleLogout}>
+          Logout
+        </Button>
       </Stack>
 
       <Menu
@@ -45,18 +51,10 @@ export const ProfileDropdown = () => {
           horizontal: 'right',
         }}
       >
-        <ProfileDropdownBody />
+        <MenuItem>
+          <ThemeSwitcher />
+        </MenuItem>
       </Menu>
-    </>
-  );
-};
-
-const ProfileDropdownBody = () => {
-  return (
-    <>
-      <MenuItem>
-        <ThemeSwitcher />
-      </MenuItem>
     </>
   );
 }; 
