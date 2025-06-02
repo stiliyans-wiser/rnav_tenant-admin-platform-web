@@ -3,14 +3,15 @@
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAuth } from '@/features/auth/context/AuthContext';
-import { 
+import {
   Box,
   Button,
   IconButton,
   InputAdornment,
   Alert,
   Typography,
-  Paper
+  Card,
+  CardContent
 } from '@mui/material';
 import { View, ViewOff } from '@carbon/icons-react';
 import TextField from '@mui/material/TextField';
@@ -41,23 +42,9 @@ export default function LoginPage() {
   };
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'background.default'
-      }}
-    >
-      <Paper
-        sx={{
-          p: 4,
-          width: '100%',
-          maxWidth: 400
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Card variant="outlined" sx={{ alignSelf: 'center', width: '520px', padding: 3 }}>
+      <CardContent>
+        <Typography variant="h6" sx={{ marginY: 2, textAlign: 'center' }}>
           Login
         </Typography>
 
@@ -117,7 +104,7 @@ export default function LoginPage() {
             </Button>
           </Box>
         </FormProvider>
-      </Paper>
-    </Box>
+      </CardContent>
+    </Card>
   );
 } 

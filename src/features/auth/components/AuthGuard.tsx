@@ -1,8 +1,7 @@
 'use client';
 
 import { useAuth } from '../context/AuthContext';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -10,23 +9,14 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const { isAuthenticated } = useAuth();
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
 
-  useEffect(() => {
-    if (!isAuthenticated && pathname !== '/login') {
-      router.push('/login');
-    }
-  }, [isAuthenticated, pathname, router]);
-
-  // Don't block login page
-  if (pathname === '/login') {
-    return <>{children}</>;
+  if (!isAuthenticated && pathname !== '/login') {
+    redirect('/login');
   }
 
-  // Don't render protected content if not authenticated
-  if (!isAuthenticated) {
-    return null;
+  if (isAuthenticated && pathname === '/login') {
+    redirect('/');
   }
 
   return <>{children}</>;

@@ -10,25 +10,28 @@ import { usePathname } from 'next/navigation';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
-  // Don't apply layout to login page
-  if (pathname === '/login') {
-    return <>{children}</>;
-  }
+  const isLoginPage = pathname === '/login';
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={defaultTheme} {...({ forceThemeRerender: true } as any)} modeStorageKey="mui-mode">
       <CssBaseline />
+
       <Stack sx={{ width: '100%', minHeight: '100vh', backgroundColor: 'background.default' }}>
-        <Topbar />
-        <Stack direction="row" sx={{ flex: 1 }}>
-          <Box sx={{ width: 280 }}>
-            <SideNavbar />
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            {children}
-          </Box>
-        </Stack>
+        {isLoginPage ? (
+          children
+        ) : (
+          <>
+            <Topbar />
+            <Stack direction="row" sx={{ flex: 1 }}>
+              <Box sx={{ width: 280 }}>
+                <SideNavbar />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                {children}
+              </Box>
+            </Stack>
+          </>
+        )}
       </Stack>
     </ThemeProvider>
   );
