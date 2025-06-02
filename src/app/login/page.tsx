@@ -14,7 +14,7 @@ import {
   CardContent
 } from '@mui/material';
 import { View, ViewOff } from '@carbon/icons-react';
-import TextField from '@mui/material/TextField';
+import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
 interface LoginFormData {
   loginKey: string;
@@ -72,27 +72,23 @@ export default function LoginPage() {
               control={formMethods.control}
               rules={{ required: 'Login key is required' }}
               render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  fullWidth
+                <MuiTextField
                   label="Login Key"
+                  placeholder="Enter your login key"
                   type={isRevealKey ? 'text' : 'password'}
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle key visibility"
-                          onClick={() => setIsRevealKey(!isRevealKey)}
-                          edge="end"
-                        >
-                          {isRevealKey ? <View /> : <ViewOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  field={field}
+                  fieldState={fieldState}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton aria-label="toggle password visibility" onClick={() => setIsRevealKey(!isRevealKey)} edge="end">
+                            {isRevealKey ? <View size={20} /> : <ViewOff size={20} />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
-                  sx={{ mb: 2 }}
                 />
               )}
             />
