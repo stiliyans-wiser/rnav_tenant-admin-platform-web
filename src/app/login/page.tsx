@@ -31,13 +31,20 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = (data: LoginFormData) => {
     try {
-      if (data.loginKey.trim()) {
-        await login(data.loginKey.trim());
+      setError(null);
+
+      const loginKeyInput = data.loginKey.trim();
+      if (loginKeyInput) {
+        login(loginKeyInput);
       }
     } catch (err) {
-      setError('Invalid login key. Please try again.');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Invalid login key. Please try again.');
+      }
     }
   };
 
@@ -72,20 +79,18 @@ export default function LoginPage() {
                   type={isRevealKey ? 'text' : 'password'}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle key visibility"
-                            onClick={() => setIsRevealKey(!isRevealKey)}
-                            edge="end"
-                          >
-                            {isRevealKey ? <View /> : <ViewOff />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle key visibility"
+                          onClick={() => setIsRevealKey(!isRevealKey)}
+                          edge="end"
+                        >
+                          {isRevealKey ? <View /> : <ViewOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                   sx={{ mb: 2 }}
                 />
@@ -97,7 +102,7 @@ export default function LoginPage() {
               fullWidth
               variant="contained"
               size="large"
-              disabled={!formMethods.formState.isValid}
+              disabled={formMethods.formState.isSubmitting}
               sx={{ mt: 2 }}
             >
               Login

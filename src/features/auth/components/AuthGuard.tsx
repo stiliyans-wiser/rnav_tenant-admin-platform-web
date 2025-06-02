@@ -1,7 +1,8 @@
 'use client';
 
 import { useAuth } from '../context/AuthContext';
-import { redirect } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -9,15 +10,16 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const { isAuthenticated } = useAuth();
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const router = useRouter();
+  const pathname = usePathname();
 
-  if (!isAuthenticated && pathname !== '/login') {
-    redirect('/login');
-  }
-
-  if (isAuthenticated && pathname === '/login') {
-    redirect('/');
-  }
+  useEffect(() => {
+    if (!isAuthenticated && pathname !== '/login') {
+      router.replace('/login');
+    } else if (isAuthenticated && pathname === '/login') {
+      router.replace('/tenants');
+    }
+  }, [isAuthenticated, pathname, router]);
 
   return <>{children}</>;
 } 
