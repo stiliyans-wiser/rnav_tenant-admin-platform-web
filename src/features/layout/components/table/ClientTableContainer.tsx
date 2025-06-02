@@ -1,17 +1,33 @@
-import { Box } from '@mui/system';
-import React from 'react';
-import { Paper } from '@mui/material';
+'use client';
+
+import { Box, Paper } from '@mui/material';
+import { ReactNode } from 'react';
 
 interface ClientTableContainerProps {
-  filterChildren: React.ReactNode;
-  tableChildren: React.ReactNode;
+  filterChildren: ReactNode;
+  tableChildren: ReactNode;
 }
 
-export const ClientTableContainer = ({ filterChildren, tableChildren }: ClientTableContainerProps) => {
+export const ClientTableContainer = ({
+  filterChildren,
+  tableChildren,
+}: ClientTableContainerProps) => {
   return (
-    <Paper sx={{ p: 2 }}>
-      <Box sx={{ mb: 3 }}>{filterChildren}</Box>
-      <Box>{tableChildren}</Box>
-    </Paper>
+    <Box>
+      {filterChildren && (
+        <Box sx={{ mb: 3 }}>
+          {filterChildren}
+        </Box>
+      )}
+      <Paper
+        sx={{
+          width: '100%',
+          mb: 2,
+          overflow: 'hidden',
+        }}
+      >
+        {tableChildren}
+      </Paper>
+    </Box>
   );
-};
+}; 

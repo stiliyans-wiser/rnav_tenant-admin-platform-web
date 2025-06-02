@@ -1,6 +1,9 @@
+'use client';
+
 import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
-import { ProfileDropdown } from './ProfileDropdown.tsx';
-import logo from '../../../../assets/logo.png';
+import Image from 'next/image';
+import { ProfileDropdown } from './ProfileDropdown';
+import logo from '@/assets/logo.png';
 
 export const Topbar = () => {
   return (
@@ -11,9 +14,9 @@ export const Topbar = () => {
       data-testid="topbar"
     >
       <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Link data-testid="topbarLogo">
+        <Link data-testid="topbarLogo" component="div">
           <Typography variant="h2" sx={{ paddingX: 3 }}>
-            <img src={logo} alt="Logo" style={{ width: 104, height: 32 }} />
+            <Image src={logo} alt="Logo" width={104} height={32} />
           </Typography>
         </Link>
 
@@ -29,4 +32,4 @@ export const Topbar = () => {
       </Box>
     </Paper>
   );
-};
+}; 

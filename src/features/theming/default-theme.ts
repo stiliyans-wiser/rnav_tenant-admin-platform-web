@@ -1,15 +1,12 @@
 import { createTheme } from '@mui/material';
-import '@fontsource/montserrat/300.css';
-import '@fontsource/montserrat/400.css';
-import '@fontsource/montserrat/500.css';
-import '@fontsource/montserrat/700.css';
+import Link from 'next/link';
 
 export const defaultTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-mui-color-scheme',
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif',
+    fontFamily: 'var(--font-montserrat)',
   },
   colorSchemes: {
     light: {
@@ -144,12 +141,18 @@ export const defaultTheme = createTheme({
     },
   },
   components: {
+    MuiButton: {
+      defaultProps: {
+        LinkComponent: Link,
+      },
+    },
     MuiLink: {
       defaultProps: {
+        component: Link,
         variant: 'body1',
       },
     },
   },
 });
 
-export default defaultTheme;
+export default defaultTheme; 

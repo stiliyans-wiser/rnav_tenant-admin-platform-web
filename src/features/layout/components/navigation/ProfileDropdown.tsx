@@ -1,6 +1,8 @@
+'use client';
+
 import { Avatar, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { ThemeSwitcher } from '../../../../theming/components/ThemeSwitcher.tsx';
+import { ThemeSwitcher } from '@/features/theming/components/ThemeSwitcher';
 
 export const ProfileDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -21,7 +23,7 @@ export const ProfileDropdown = () => {
             <Typography variant="body1">A</Typography>
           </Avatar>
 
-          <Typography variant="body1" noWrap>Master Admin</Typography>
+          <Typography variant="body1" noWrap>Admin</Typography>
         </Stack>
 
         {/*<Button variant="text" fullWidth sx={{ marginX: 1 }} onClick={async () => await logout()}>*/}
@@ -57,4 +59,4 @@ const ProfileDropdownBody = () => {
       </MenuItem>
     </>
   );
-};
+}; 
