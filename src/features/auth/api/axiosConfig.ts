@@ -2,7 +2,7 @@ import axios from 'axios';
 import { authConstants } from '@/features/auth/constants/authConstants';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://ai-services.protal.biz/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 api.interceptors.request.use((config) => {

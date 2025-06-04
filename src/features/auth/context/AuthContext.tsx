@@ -29,13 +29,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (key: string) => {
     const masterKey = process.env.NEXT_PUBLIC_MASTER_KEY;
     
-    // if (!masterKey) {
-    //   throw new Error('Master key is not configured in environment variables');
-    // }
-    //
-    // if (key !== masterKey) {
-    //   throw new Error('Invalid login key');
-    // }
+    if (!masterKey) {
+      throw new Error('Master key is not configured in environment variables');
+    }
+
+    if (key !== masterKey) {
+      throw new Error('Invalid login key');
+    }
 
     localStorage.setItem(authConstants.localStorage.masterLoginKey, key);
     setLoginKey(key);
