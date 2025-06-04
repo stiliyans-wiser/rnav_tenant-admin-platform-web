@@ -41,7 +41,7 @@ package-dev:
     name: gcr.io/kaniko-project/executor:v1.23.2-debug
     entrypoint: ['']
   variables:
-    DOCKER_IMAGE: $PRIME_REGISTRY/ai-services-pov/back-office
+    DOCKER_IMAGE: $PRIME_REGISTRY/ai-services-pov/backoffice
   script:
     - |
       echo "Building and shipping image to $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s)".
