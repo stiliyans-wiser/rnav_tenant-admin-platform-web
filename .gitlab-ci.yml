@@ -1,0 +1,71 @@
+include:
+- template: Jobs/Dependency-Scanning.gitlab-ci.yml
+- template: Jobs/SAST.gitlab-ci.yml
+- template: Jobs/SAST-IaC.gitlab-ci.yml
+- template: Jobs/Secret-Detection.gitlab-ci.yml
+
+stages:
+- build
+- test
+- package-dev
+
+default:
+  tags:
+  - eni
+  image:
+    name: node:20.3.0-alpine
+
+build-app:
+  stage: build
+  script:
+  - cp ./deploy/.env.dev ./.env.local
+  - apk add --update --no-cache make g++ py3-pip jpeg-dev cairo-dev giflib-dev pango-dev libtool autoconf automake
+  - npm install
+  - npm run build
+
+  artifacts:
+    untracked: false
+    when: on_success
+    access: all
+    expire_in: '1 day'
+    paths:
+    - node_modules
+  only:
+  - dev
+  - main
+  - merge_requests
+
+package-dev:
+  stage: package-dev
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: ['']
+  variables:
+    DOCKER_IMAGE: $PRIME_REGISTRY/ai-services-pov/back-office
+  script:
+    - |
+      echo "Building and shipping image to $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s)".
+      cp ./deploy/.env.dev ./.env.production
+      mkdir -p /kaniko/.docker
+      echo "{\"auths\":{\"$PRIME_REGISTRY\":{\"auth\":\"$(echo -n $PRIME_REGISTRY_USER:$PRIME_REGISTRY_TOKEN | base64 -w0)\"}}}" > /kaniko/.docker/config.json
+      /kaniko/executor --compressed-caching=false --cache=true --cache-copy-layers=true --cache-ttl=48h --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s) --single-snapshot --snapshotMode=redo --use-new-run
+  only:
+  - dev
+
+owasp-zap:
+  image: zaproxy/zap-stable
+  stage: .post
+  allow_failure: true
+  script:
+    - echo "create a directory..."
+    - mkdir /zap/wrk
+    - echo "Execute the baseline scan..."
+    - /zap/zap-baseline.py -t https://padev.core42.protal.biz/ -g gen.conf -r testreport.html
+  after_script:
+    - echo "Copy report file to the artifact path..."
+    - cp /zap/wrk/testreport.html .
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - testreport.html
