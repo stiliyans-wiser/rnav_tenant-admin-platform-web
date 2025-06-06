@@ -2,15 +2,26 @@
 
 import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
+import { useColorScheme } from '@mui/material';
 import { ProfileDropdown } from './ProfileDropdown';
-import logo from '@/assets/logo.png';
+import { ThemeMode } from '@/features/theming/enums/theme-mode.enum';
+import lightThemeLogo from '@/assets/logo-light-theme.png';
+import darkThemeLogo from '@/assets/logo-dark-theme.png';
 
 export const Topbar = () => {
+  const { mode } = useColorScheme();
+  const logo = mode === ThemeMode.LIGHT ? lightThemeLogo : darkThemeLogo;
+
   return (
     <Paper
       variant="outlined"
       square
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: 64,
+      }}
       data-testid="topbar"
     >
       <Stack direction="row" sx={{ alignItems: 'center' }}>
@@ -32,4 +43,4 @@ export const Topbar = () => {
       </Box>
     </Paper>
   );
-}; 
+};

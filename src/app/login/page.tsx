@@ -11,7 +11,8 @@ import {
   Alert,
   Typography,
   Card,
-  CardContent
+  CardContent,
+  Stack,
 } from '@mui/material';
 import { View, ViewOff } from '@carbon/icons-react';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
@@ -49,63 +50,76 @@ export default function LoginPage() {
   };
 
   return (
-    <Card variant="outlined" sx={{ alignSelf: 'center', width: '520px', padding: 3 }}>
-      <CardContent>
-        <Typography variant="h6" sx={{ marginY: 2, textAlign: 'center' }}>
-          Login
-        </Typography>
+    <Stack sx={{ height: '100%', justifyContent: 'center' }}>
+      <Card
+        variant="outlined"
+        sx={{ alignSelf: 'center', width: '520px', padding: 3 }}
+      >
+        <CardContent>
+          <Typography variant="h6" sx={{ marginY: 2, textAlign: 'center' }}>
+            Login
+          </Typography>
 
-        <FormProvider {...formMethods}>
-          <Box
-            component="form"
-            onSubmit={formMethods.handleSubmit(onSubmit)}
-            sx={{ mt: 2 }}
-          >
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
-
-            <Controller
-              name="loginKey"
-              control={formMethods.control}
-              rules={{ required: 'Login key is required' }}
-              render={({ field, fieldState }) => (
-                <MuiTextField
-                  label="Login Key"
-                  placeholder="Enter your login key"
-                  type={isRevealKey ? 'text' : 'password'}
-                  field={field}
-                  fieldState={fieldState}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton aria-label="toggle password visibility" onClick={() => setIsRevealKey(!isRevealKey)} edge="end">
-                            {isRevealKey ? <View size={20} /> : <ViewOff size={20} />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-              )}
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={formMethods.formState.isSubmitting}
+          <FormProvider {...formMethods}>
+            <Box
+              component="form"
+              onSubmit={formMethods.handleSubmit(onSubmit)}
               sx={{ mt: 2 }}
             >
-              Login
-            </Button>
-          </Box>
-        </FormProvider>
-      </CardContent>
-    </Card>
+              {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {error}
+                </Alert>
+              )}
+
+              <Controller
+                name="loginKey"
+                control={formMethods.control}
+                rules={{ required: 'Login key is required' }}
+                render={({ field, fieldState }) => (
+                  <MuiTextField
+                    label="Login Key"
+                    placeholder="Enter your login key"
+                    type={isRevealKey ? 'text' : 'password'}
+                    field={field}
+                    fieldState={fieldState}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setIsRevealKey(!isRevealKey)}
+                              edge="end"
+                            >
+                              {isRevealKey ? (
+                                <View size={20} />
+                              ) : (
+                                <ViewOff size={20} />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  />
+                )}
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+                disabled={formMethods.formState.isSubmitting}
+                sx={{ mt: 2 }}
+              >
+                Login
+              </Button>
+            </Box>
+          </FormProvider>
+        </CardContent>
+      </Card>
+    </Stack>
   );
-} 
+}
