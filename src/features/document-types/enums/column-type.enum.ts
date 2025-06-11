@@ -1,0 +1,16 @@
+export enum ColumnTypeEnum {
+  VARCHAR = 'varchar',
+  TEXT = 'text',
+  INTEGER = 'integer',
+  BIGINT = 'bigint',
+  DECIMAL = 'decimal',
+  NUMERIC = 'numeric',
+  BOOLEAN = 'boolean',
+  DATE = 'date',
+  TIMESTAMP = 'timestamp',
+  JSON = 'json',
+  JSONB = 'jsonb',
+  ARRAY = 'array',
+  UUID = 'uuid',
+  ENUM = 'enum',
+}

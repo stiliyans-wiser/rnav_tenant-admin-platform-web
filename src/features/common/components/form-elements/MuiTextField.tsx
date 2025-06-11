@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, InputLabel, StandardTextFieldProps } from '@mui/material';
+import { InputLabel, StandardTextFieldProps, TextField } from '@mui/material';
 import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
 
 interface MuiTextFieldProps extends StandardTextFieldProps {
@@ -20,23 +20,27 @@ export const MuiTextField = ({
 }: MuiTextFieldProps) => {
   return (
     <>
-      <InputLabel htmlFor={field.name} shrink>
-        {label}
+      <InputLabel sx={ { overflow: 'visible' } } htmlFor={ field.name } shrink>
+        { label }
       </InputLabel>
 
       <TextField
-        {...field}
-        id={field.name}
-        sx={sx}
+        { ...field }
+        id={ field.name }
+        sx={ sx }
         fullWidth
         variant="outlined"
-        type={type}
-        placeholder={placeholder}
-        slotProps={slotProps}
-        error={!!fieldState.error}
-        helperText={fieldState.error?.message}
-        multiline={multiline}
-        rows={rows}
+        type={ type }
+        placeholder={ placeholder }
+        slotProps={ slotProps }
+        error={ !!fieldState.error && fieldState.isTouched }
+        helperText={
+          fieldState.error?.message && fieldState.isTouched
+            ? fieldState.error.message
+            : ''
+        }
+        multiline={ multiline }
+        rows={ rows }
       />
     </>
   );
