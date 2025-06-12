@@ -1,7 +1,9 @@
+'use client';
+
 import { createTheme } from '@mui/material';
 import Link from 'next/link';
 
-export const defaultTheme = createTheme({
+export const redTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-mui-color-scheme',
   },
@@ -12,56 +14,40 @@ export const defaultTheme = createTheme({
     light: {
       palette: {
         primary: {
-          '50': '#E6FAF7',
-          '100': '#65E4CC',
-          '200': '#00D2AA',
-          '300': '#01BD99',
-          '400': '#04A788',
-          '500': '#009376',
-          '600': '#009482',
-          '700': '#016855',
-          '800': '#015444',
-          '900': '#003F33',
-          main: '#016855',
-          dark: '#015444',
-          light: '#04A788',
+          main: '#C53024',
+          dark: '#892119',
+          light: '#D0594F',
           contrastText: '#FFFFFF',
         },
         secondary: {
-          '50': '#E7EAEA',
-          '100': '#CFD5D5',
-          '200': '#B7C1C1',
-          '300': '#9EACAC',
-          '400': '#6F8182',
-          '500': '#566C6D',
-          '600': '#3E5959',
-          '700': '#274444',
-          '800': '#0F2F2F',
-          '900': '#1B1B19',
-          main: '#566C6D',
-          dark: '#274444',
-          light: '#9EACAC',
+          main: '#616161',
+          dark: '#434343',
+          light: '#808080',
           contrastText: '#FFFFFF',
         },
         error: {
           main: '#C53024',
-          dark: '#B82B1D',
+          dark: '#AA210F',
           light: '#E35545',
           contrastText: '#FFFFFF',
         },
         warning: {
           main: '#FDA700',
           dark: '#FB7A00',
-          light: '#FFEC0F',
+          light: '#FAE700',
           contrastText: '#FFFFFF',
         },
         info: {
-          contrastText: '#FFFFFF',
           main: '#0288D1',
+          dark: '#01579B',
+          light: '#03A9F4',
+          contrastText: '#FFFFFF',
         },
         success: {
-          contrastText: '#FFFFFF',
           main: '#2E7D32',
+          dark: '#1B5E20',
+          light: '#4CAF50',
+          contrastText: '#FFFFFF',
         },
         text: {
           primary: 'rgba(0, 0, 0, 0.87)',
@@ -71,7 +57,7 @@ export const defaultTheme = createTheme({
           disabledBackground: 'rgba(0, 0, 0, 0.12)',
         },
         background: {
-          default: '#F2F4F1',
+          default: '#F5F5F5',
           paper: '#FFFFFF',
         },
       },
@@ -79,35 +65,15 @@ export const defaultTheme = createTheme({
     dark: {
       palette: {
         primary: {
-          '50': '#E6FAF7',
-          '100': '#65E4CC',
-          '200': '#00D2AA',
-          '300': '#01BD99',
-          '400': '#04A788',
-          '500': '#009376',
-          '600': '#009482',
-          '700': '#016855',
-          '800': '#015444',
-          '900': '#003F33',
-          main: '#00D2AA',
-          dark: '#04A788',
-          light: '#E6FAF7',
+          main: '#E29591',
+          dark: '#9E6865',
+          light: '#E7AAA7',
           contrastText: 'rgba(0, 0, 0, 0.87)',
         },
         secondary: {
-          '50': '#E7EAEA',
-          '100': '#CFD5D5',
-          '200': '#B7C1C1',
-          '300': '#9EACAC',
-          '400': '#6F8182',
-          '500': '#566C6D',
-          '600': '#3E5959',
-          '700': '#274444',
-          '800': '#0F2F2F',
-          '900': '#1B1B19',
-          main: '#B7C1C1',
-          dark: '#04A788',
-          light: '#E6FAF7',
+          main: '#EEEEEE',
+          dark: '#A6A6A6',
+          light: '#F1F1F1',
           contrastText: 'rgba(0, 0, 0, 0.87)',
         },
         error: {
@@ -117,18 +83,22 @@ export const defaultTheme = createTheme({
           contrastText: '#FFFFFF',
         },
         warning: {
-          main: '#FFF263',
+          main: '#FFEF3F',
           dark: '#FEC000',
           light: '#FFF263',
           contrastText: 'rgba(0, 0, 0, 0.87)',
         },
         info: {
-          contrastText: 'rgba(0, 0, 0, 0.87)',
           main: '#29B6F6',
+          dark: '#0288D1',
+          light: '#4FC3F7',
+          contrastText: 'rgba(0, 0, 0, 0.87)',
         },
         success: {
-          contrastText: 'rgba(0, 0, 0, 0.87)',
           main: '#66BB6A',
+          dark: '#388E3C',
+          light: '#81C784',
+          contrastText: 'rgba(0, 0, 0, 0.87)',
         },
         text: {
           primary: '#FFFFFF',
@@ -136,6 +106,10 @@ export const defaultTheme = createTheme({
         common: {},
         action: {
           disabledBackground: 'rgba(255, 255, 255, 0.12)',
+        },
+        background: {
+          default: '#121212',
+          paper: '#121212',
         },
       },
     },
@@ -155,4 +129,4 @@ export const defaultTheme = createTheme({
   },
 });
 
-export default defaultTheme; 
+export default redTheme;

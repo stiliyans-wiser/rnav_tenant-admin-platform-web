@@ -9,7 +9,7 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
-import { Tenant } from '../interfaces/tenant.interface';
+import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 
 interface TenantsTableProps {
   tenants: Tenant[];
