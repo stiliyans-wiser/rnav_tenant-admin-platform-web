@@ -1,16 +1,19 @@
 import axios from 'axios';
 import { authConstants } from '@/features/auth/constants/authConstants';
+import { isClient } from '@/features/common/utils/is-client.util';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 api.interceptors.request.use((config) => {
-  const key = localStorage.getItem(authConstants.localStorage.masterLoginKey);
-  
-  if (key) {
-    const separator = config.url?.includes('?') ? '&' : '?';
-    config.url = `${config.url}${separator}key=${key}`;
+  if (isClient()) {
+    const key = localStorage.getItem(authConstants.localStorage.masterLoginKey);
+    
+    if (key) {
+      const separator = config.url?.includes('?') ? '&' : '?';
+      config.url = `${config.url}${separator}key=${key}`;
+    }
   }
   
   return config;
@@ -22,8 +25,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem(authConstants.localStorage.masterLoginKey);
-      window.location.href = '/login';
+      if (isClient()) {
+        localStorage.removeItem(authConstants.localStorage.masterLoginKey);
+        window.location.href = '/login';
+      }
     }
 
     return Promise.reject(error);

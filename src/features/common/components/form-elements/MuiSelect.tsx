@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Box, FormHelperText, InputLabel, Select, SelectProps } from '@mui/material';
+import {
+  Box,
+  FormHelperText,
+  InputLabel,
+  Select,
+  SelectProps,
+} from '@mui/material';
 import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
 
 interface MuiSelectProps extends Omit<SelectProps, 'options'> {
@@ -9,12 +15,26 @@ interface MuiSelectProps extends Omit<SelectProps, 'options'> {
   options: React.ReactNode;
 }
 
-export const MuiSelect = ({ label, placeholder, multiple = false, field, fieldState, options, renderValue, MenuProps }: MuiSelectProps) => {
+export const MuiSelect = ({
+  sx,
+  label,
+  placeholder,
+  multiple = false,
+  field,
+  fieldState,
+  options,
+  renderValue,
+  MenuProps,
+}: MuiSelectProps) => {
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
 
   return (
-    <>
-      <InputLabel htmlFor={field.name} shrink onClick={() => setSelectOpen(true)}>
+    <Box sx={sx}>
+      <InputLabel
+        htmlFor={field.name}
+        shrink
+        onClick={() => setSelectOpen(true)}
+      >
         {label}
       </InputLabel>
 
@@ -27,10 +47,14 @@ export const MuiSelect = ({ label, placeholder, multiple = false, field, fieldSt
         open={selectOpen}
         autoFocus={selectOpen}
         multiple={multiple}
-        error={!!fieldState.error}
+        error={!!fieldState.error && fieldState.isTouched}
         renderValue={(selected: any) => {
           if (!selected?.length) {
-            return <Box sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>{placeholder}</Box>;
+            return (
+              <Box sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>
+                {placeholder}
+              </Box>
+            );
           }
 
           return renderValue ? renderValue(selected) : selected;
@@ -42,11 +66,11 @@ export const MuiSelect = ({ label, placeholder, multiple = false, field, fieldSt
         {options}
       </Select>
 
-      {fieldState.error && (
+      {fieldState.error && fieldState.isTouched ? (
         <FormHelperText error sx={{ ml: 2 }}>
           {fieldState.error.message}
         </FormHelperText>
-      )}
-    </>
+      ) : null}
+    </Box>
   );
 };

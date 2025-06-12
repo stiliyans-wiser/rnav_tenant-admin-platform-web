@@ -2,11 +2,11 @@
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Stack } from '@mui/material';
+import { usePathname } from 'next/navigation';
 import { Topbar } from '@/features/layout/components/navigation/Topbar';
 import { SideNavbar } from '@/features/layout/components/navigation/SideNavbar';
 import { ThemeProvider } from '@mui/material/styles';
-import defaultTheme from '@/features/theming/default-theme';
-import { usePathname } from 'next/navigation';
+import defaultTheme from '@/features/theming/defaultTheme';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
