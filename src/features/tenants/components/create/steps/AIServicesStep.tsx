@@ -10,7 +10,7 @@ import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenant
 
 const FIELD_NAMES = [
   'ai_config.open_ai_type',
-  'ai_config.open_ai_embedding_type',
+  'ai_config.open_ai_embedding_model',
   'ai_config.temperature',
   'ai_config.open_ai_key',
   'ai_config.open_ai_endpoint',
@@ -18,7 +18,7 @@ const FIELD_NAMES = [
   'ai_config.web_search',
 ];
 
-export const AIServicesStep = ({ isFirstStep, isLastStep, onBack, onNext }: CreateTenantStepProps) => {
+export const AIServicesStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { adminConfig } = useCreateTenantContext();
   const { control } = useFormContext();
   const { hasError } = useStepValidation(FIELD_NAMES);
@@ -28,8 +28,6 @@ export const AIServicesStep = ({ isFirstStep, isLastStep, onBack, onNext }: Crea
       stepTitle="AI Services"
       stepIcon={<SettingsServices size={24} />}
       isNextButtonDisabled={hasError}
-      isFirstStep={isFirstStep}
-      isLastStep={isLastStep}
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >

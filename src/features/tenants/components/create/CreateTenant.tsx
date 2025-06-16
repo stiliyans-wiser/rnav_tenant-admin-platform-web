@@ -12,19 +12,24 @@ import { useGetDocumentTypes } from '@/features/document-types/hooks/useGetDocum
 import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
 import { useCreateTenant } from '@/features/tenants/hooks/useCreateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
+import { UsersStep } from '@/features/tenants/components/create/steps/UsersStep';
+import { SuccessStep } from '@/features/tenants/components/create/steps/SuccessStep';
 
 enum CreateTenantStepEnum {
-  GENERAL_DETAILS = 'General Details',
-  BRAND_THEMING = 'Brand & Theming',
-  AI_SERVICES = 'AI Services',
-  SSO = 'SSO',
-  DOCUMENTS = 'Documents',
-  PREVIEW = 'Preview',
+  GENERAL_DETAILS,
+  BRAND_THEMING,
+  AI_SERVICES,
+  SSO,
+  DOCUMENTS,
+  PREVIEW,
+  ADD_USERS,
+  SUCCESS,
 }
 
 interface CreateTenantStep {
   id: CreateTenantStepEnum;
   title: string;
+  subTitle?: string;
 }
 
 const steps: CreateTenantStep[] = [
@@ -52,29 +57,40 @@ const steps: CreateTenantStep[] = [
     id: CreateTenantStepEnum.PREVIEW,
     title: 'Preview & Create tenant',
   },
+  {
+    id: CreateTenantStepEnum.ADD_USERS,
+    title: 'Add user',
+    subTitle: 'You need to add at least one user to finalise the process of creating a tenant',
+  },
+  {
+    id: CreateTenantStepEnum.SUCCESS,
+    title: 'Finish',
+  },
 ];
 
 const getStepContent = (
-  stepId: string,
+  stepId: number,
   onNext: (hasError?: boolean) => void,
   onBack: (hasError?: boolean) => void,
   onEdit: (stepTitle: string) => void,
-  isFirstStep: boolean,
-  isLastStep: boolean,
 ) => {
   switch (stepId) {
     case CreateTenantStepEnum.GENERAL_DETAILS:
-      return <GeneralDetailsStep onNext={onNext} onBack={onBack} isFirstStep={isFirstStep} isLastStep={isLastStep} />;
+      return <GeneralDetailsStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.BRAND_THEMING:
-      return <BrandAndThemingStep onNext={onNext} onBack={onBack} isFirstStep={isFirstStep} isLastStep={isLastStep} />;
+      return <BrandAndThemingStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.AI_SERVICES:
-      return <AIServicesStep onNext={onNext} onBack={onBack} isFirstStep={isFirstStep} isLastStep={isLastStep} />;
+      return <AIServicesStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.SSO:
-      return <SSOStep onNext={onNext} onBack={onBack} isFirstStep={isFirstStep} isLastStep={isLastStep} />;
+      return <SSOStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.DOCUMENTS:
-      return <DocumentsStep onNext={onNext} onBack={onBack} isFirstStep={isFirstStep} isLastStep={isLastStep} />;
+      return <DocumentsStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.PREVIEW:
       return <PreviewStep onNext={onNext} onBack={onBack} onEdit={onEdit} />;
+    case CreateTenantStepEnum.ADD_USERS:
+      return <UsersStep onNext={onNext} onBack={onBack} />;
+    case CreateTenantStepEnum.SUCCESS:
+      return <SuccessStep />;
     default:
       return null;
   }
@@ -84,18 +100,14 @@ export const CreateTenant = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [errorSteps, setErrorSteps] = useState<boolean[]>(Array(steps.length).fill(false));
 
-  const { setAdminConfig, setDocumentTypes, selectedDocumentTypes } = useCreateTenantContext();
-
-  const { data: adminConfig } = useGetAdminConfig();
-  const { data: documentTypes } = useGetDocumentTypes();
-
   const formMethods = useForm<Tenant>({
     mode: 'onChange',
   });
 
-  const isFirstStep = activeStep === 0;
-  const isLastStep = activeStep === steps.length - 1;
+  const { setAccountId, setAdminConfig, setDocumentTypes, selectedDocumentTypes } = useCreateTenantContext();
 
+  const { data: adminConfig } = useGetAdminConfig();
+  const { data: documentTypes } = useGetDocumentTypes();
   const createTenant = useCreateTenant();
 
   useEffect(() => {
@@ -133,16 +145,18 @@ export const CreateTenant = () => {
   const handleNext = async (hasError?: boolean) => {
     updateErrorSteps(hasError);
 
-    if (isLastStep) {
-      const requestBody = getRequestBody();
-
-      try {
-        await createTenant.mutateAsync(requestBody);
-      } catch (error) {
-        console.error('Error saving document type:', error);
-      }
+    if (steps[activeStep].id === CreateTenantStepEnum.PREVIEW) {
+      await onSubmitTenant();
     } else {
       setActiveStep(prevActiveStep => prevActiveStep + 1);
+    }
+  };
+
+  const parseScopes = (scopesValue: string) => {
+    try {
+      return JSON.parse(scopesValue);
+    } catch (error) {
+      return [];
     }
   };
 
@@ -151,7 +165,7 @@ export const CreateTenant = () => {
       ...formMethods.getValues(),
       sso_config: {
         ...formMethods.getValues('sso_config'),
-        scopes: JSON.parse(formMethods.getValues('sso_config.scopes')),
+        scopes: parseScopes(formMethods.getValues('sso_config.scopes')),
       },
       document_types: selectedDocumentTypes,
     };
@@ -169,19 +183,34 @@ export const CreateTenant = () => {
     return requestBody;
   };
 
+  const onSubmitTenant = async () => {
+    const requestBody = getRequestBody();
+
+    try {
+      const responseData = await createTenant.mutateAsync(requestBody);
+
+      setAccountId(responseData.id);
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
+    } catch (error) {
+      console.error('Error creating tenant:', error);
+    }
+  };
+
   return (
     <Stack direction="row" gap={3} sx={{ height: 'calc(100vh - 180px)', overflow: 'hidden' }}>
       <FormProvider {...formMethods}>
         <Box component="form" sx={{ width: '50%' }}>
-          {getStepContent(steps[activeStep].id, handleNext, handleBack, handleEdit, isFirstStep, isLastStep)}
+          {getStepContent(steps[activeStep].id, handleNext, handleBack, handleEdit)}
         </Box>
       </FormProvider>
 
       <Box sx={{ width: '50%', paddingX: 3 }}>
-        <Stepper orientation="vertical" activeStep={activeStep} nonLinear>
+        <Stepper orientation="vertical" activeStep={activeStep}>
           {steps.map((step, index) => (
-            <Step key={step.id}>
-              <StepLabel error={errorSteps[index]}>{step.title}</StepLabel>
+            <Step key={step.id} completed={index < activeStep || activeStep === steps.length - 1}>
+              <StepLabel error={errorSteps[index]} optional={step.subTitle}>
+                {step.title}
+              </StepLabel>
             </Step>
           ))}
         </Stepper>

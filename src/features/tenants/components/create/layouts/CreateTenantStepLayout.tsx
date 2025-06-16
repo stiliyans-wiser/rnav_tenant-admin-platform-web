@@ -6,9 +6,9 @@ interface StepLayoutProps {
   stepTitle: string;
   stepIcon: React.ReactNode;
   children: React.ReactNode;
+  isBackButtonDisabled?: boolean;
   isNextButtonDisabled?: boolean;
-  isFirstStep?: boolean;
-  isLastStep?: boolean;
+  nextButtonLabel?: string;
 }
 
 export const CreateTenantStepLayout = ({
@@ -17,9 +17,9 @@ export const CreateTenantStepLayout = ({
   children,
   onNext,
   onBack,
+  isBackButtonDisabled = false,
   isNextButtonDisabled = false,
-  isFirstStep = false,
-  isLastStep = false,
+  nextButtonLabel = 'Continue',
 }: StepLayoutProps) => {
   return (
     <Paper variant="outlined" sx={{ height: '100%' }}>
@@ -36,12 +36,12 @@ export const CreateTenantStepLayout = ({
         <Box sx={{ p: 3 }}>
           <Divider />
           <Stack direction="row" sx={{ justifyContent: 'space-between', marginTop: 3 }}>
-            <Button disabled={isFirstStep} onClick={onBack}>
+            <Button disabled={isBackButtonDisabled} onClick={onBack}>
               Back
             </Button>
 
             <Button variant="contained" disabled={isNextButtonDisabled} onClick={onNext}>
-              {isLastStep ? 'Finish' : 'Continue'}
+              {nextButtonLabel}
             </Button>
           </Stack>
         </Box>

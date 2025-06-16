@@ -17,7 +17,7 @@ const FIELD_NAMES = [
   'sso_config.scopes',
 ];
 
-export const SSOStep = ({ isFirstStep, isLastStep, onBack, onNext }: CreateTenantStepProps) => {
+export const SSOStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { adminConfig } = useCreateTenantContext();
   const { control } = useFormContext();
   const { hasError } = useStepValidation(FIELD_NAMES);
@@ -27,8 +27,6 @@ export const SSOStep = ({ isFirstStep, isLastStep, onBack, onNext }: CreateTenan
       stepTitle="SSO"
       stepIcon={<IbmCloudHyperProtectCryptoServices size={24} />}
       isNextButtonDisabled={hasError}
-      isFirstStep={isFirstStep}
-      isLastStep={isLastStep}
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >

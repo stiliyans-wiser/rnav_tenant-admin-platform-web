@@ -22,7 +22,7 @@ import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenant
 
 const FIELD_NAMES = ['document_types'];
 
-export const DocumentsStep = ({ isFirstStep, isLastStep, onBack, onNext }: CreateTenantStepProps) => {
+export const DocumentsStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { documentTypes, selectedDocumentTypes, setSelectedDocumentTypes } = useCreateTenantContext();
 
   const { control } = useFormContext();
@@ -43,8 +43,6 @@ export const DocumentsStep = ({ isFirstStep, isLastStep, onBack, onNext }: Creat
       stepTitle="Documents"
       stepIcon={<Document size={24} />}
       isNextButtonDisabled={hasError}
-      isFirstStep={isFirstStep}
-      isLastStep={isLastStep}
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >
