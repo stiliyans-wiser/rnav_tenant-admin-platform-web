@@ -127,6 +127,7 @@ export const AIServicesStep = ({ onBack, onNext }: CreateTenantStepProps) => {
       <Controller
         name={FIELD_NAMES[6]}
         control={control}
+        defaultValue={false}
         render={({ field }) => <FormControlLabel control={<Switch {...field} checked={field.value} />} label="Include web search" />}
       />
     </CreateTenantStepLayout>
