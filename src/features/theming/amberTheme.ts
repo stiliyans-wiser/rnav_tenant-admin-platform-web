@@ -126,6 +126,14 @@ export const amberTheme = createTheme({
         variant: 'body1',
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        asterisk: {
+          color: '#C53024',
+          marginLeft: 5,
+        },
+      },
+    },
   },
 });
 

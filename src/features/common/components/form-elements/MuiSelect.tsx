@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  FormHelperText,
-  InputLabel,
-  Select,
-  SelectProps,
-} from '@mui/material';
+import { Box, FormHelperText, InputLabel, Select, SelectProps } from '@mui/material';
 import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
 
 interface MuiSelectProps extends Omit<SelectProps, 'options'> {
@@ -13,6 +7,7 @@ interface MuiSelectProps extends Omit<SelectProps, 'options'> {
   field: ControllerRenderProps<any, string>;
   fieldState: ControllerFieldState;
   options: React.ReactNode;
+  required?: boolean;
 }
 
 export const MuiSelect = ({
@@ -20,6 +15,7 @@ export const MuiSelect = ({
   label,
   placeholder,
   multiple = false,
+  required = true,
   field,
   fieldState,
   options,
@@ -30,11 +26,7 @@ export const MuiSelect = ({
 
   return (
     <Box sx={sx}>
-      <InputLabel
-        htmlFor={field.name}
-        shrink
-        onClick={() => setSelectOpen(true)}
-      >
+      <InputLabel htmlFor={field.name} required={required} shrink onClick={() => setSelectOpen(true)}>
         {label}
       </InputLabel>
 
@@ -50,11 +42,7 @@ export const MuiSelect = ({
         error={!!fieldState.error && fieldState.isTouched}
         renderValue={(selected: any) => {
           if (!selected?.length) {
-            return (
-              <Box sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>
-                {placeholder}
-              </Box>
-            );
+            return <Box sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>{placeholder}</Box>;
           }
 
           return renderValue ? renderValue(selected) : selected;
