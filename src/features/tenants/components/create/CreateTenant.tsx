@@ -152,9 +152,11 @@ export const CreateTenant = () => {
     }
   };
 
-  const parseScopes = (scopesValue: string) => {
+  const parseScopes = (scopesValue: string): any => {
     try {
-      return JSON.parse(scopesValue);
+      const parsedValue = JSON.parse(scopesValue);
+
+      return Array.isArray(parsedValue) ? parsedValue : [];
     } catch (error) {
       return [];
     }

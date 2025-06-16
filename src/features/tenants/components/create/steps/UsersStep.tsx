@@ -45,7 +45,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
       stepTitle="User & Role"
       stepIcon={<Events size={24} />}
       isNextButtonDisabled={hasError}
-      isBackButtonDisabled={false}
+      isBackButtonDisabled={true}
       nextButtonLabel="Finish"
       onBack={() => onBack(hasError)}
       onNext={onSubmit}
