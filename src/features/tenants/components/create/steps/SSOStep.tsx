@@ -53,6 +53,7 @@ export const SSOStep = ({ onBack, onNext }: CreateTenantStepProps) => {
       <Controller
         name={FIELD_NAMES[1]}
         control={control}
+        defaultValue={false}
         render={({ field }) => <FormControlLabel sx={{ mb: 4 }} control={<Switch {...field} checked={field.value} />} label="Enabled" />}
       />
 
