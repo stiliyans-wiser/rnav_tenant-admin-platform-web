@@ -19,7 +19,7 @@ export interface Tenant {
   };
   ai_config: {
     open_ai_type: string;
-    open_ai_embedding_type: string;
+    open_ai_embedding_model: string;
     temperature: number;
     open_ai_key: string;
     open_ai_endpoint: string;

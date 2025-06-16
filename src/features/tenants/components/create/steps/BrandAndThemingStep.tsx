@@ -58,7 +58,7 @@ const ErrorLabel = ({ field }) => {
   return null;
 };
 
-export const BrandAndThemingStep = ({ isFirstStep, isLastStep, onBack, onNext }: CreateTenantStepProps) => {
+export const BrandAndThemingStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { control, watch, setValue } = useFormContext();
 
   const themeMode = watch(FIELD_NAMES[2]) || ThemeMode.LIGHT;
@@ -136,8 +136,6 @@ export const BrandAndThemingStep = ({ isFirstStep, isLastStep, onBack, onNext }:
       stepTitle="Brand & Theming"
       stepIcon={<VisualRecognition size={24} />}
       isNextButtonDisabled={hasError}
-      isFirstStep={isFirstStep}
-      isLastStep={isLastStep}
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >

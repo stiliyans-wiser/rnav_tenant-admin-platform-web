@@ -43,7 +43,7 @@ export const AIServicesPreview = ({ onEdit }: CreateTenantPreviewProps) => {
           <Stack gap={1} sx={{ flex: 1 }}>
             <Typography variant="caption">Embedding model</Typography>
             <Typography variant="subtitle2">
-              {formValues.ai_config.open_ai_embedding_type}
+              {formValues.ai_config.open_ai_embedding_model}
             </Typography>
           </Stack>
         </Stack>

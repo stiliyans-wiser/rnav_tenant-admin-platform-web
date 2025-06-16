@@ -7,21 +7,11 @@ import { CreateTenantStepProps } from '@/features/tenants/interfaces/create-tena
 import { CreateTenantStepLayout } from '@/features/tenants/components/create/layouts/CreateTenantStepLayout';
 import { useStepValidation } from '@/features/tenants/hooks/useStepValidation';
 
-const FIELD_NAMES = [
-  'company_name',
-  'domain',
-  'settings.preferred_currency',
-  'settings.preferred_timezone',
-];
+const FIELD_NAMES = ['company_name', 'domain', 'settings.preferred_currency', 'settings.preferred_timezone'];
 const CURRENCY_OPTIONS: string[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD'];
 const TIMEZONE_OPTIONS: string[] = ['UTC', 'EST', 'PST', 'CET', 'GMT'];
 
-export const GeneralDetailsStep = ({
-  isFirstStep,
-  isLastStep,
-  onBack,
-  onNext,
-}: CreateTenantStepProps) => {
+export const GeneralDetailsStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { control } = useFormContext();
   const { hasError } = useStepValidation(FIELD_NAMES);
 
@@ -30,8 +20,7 @@ export const GeneralDetailsStep = ({
       stepTitle="General Details"
       stepIcon={<AudioConsole size={24} />}
       isNextButtonDisabled={hasError}
-      isFirstStep={isFirstStep}
-      isLastStep={isLastStep}
+      isBackButtonDisabled={true}
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >
@@ -40,13 +29,7 @@ export const GeneralDetailsStep = ({
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField
-            sx={{ mb: 4 }}
-            label="Company name"
-            placeholder="Add company name"
-            field={field}
-            fieldState={fieldState}
-          />
+          <MuiTextField sx={{ mb: 4 }} label="Company name" placeholder="Add company name" field={field} fieldState={fieldState} />
         )}
       />
 
@@ -55,13 +38,7 @@ export const GeneralDetailsStep = ({
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField
-            sx={{ mb: 4 }}
-            label="Domain name"
-            placeholder="Add domain name"
-            field={field}
-            fieldState={fieldState}
-          />
+          <MuiTextField sx={{ mb: 4 }} label="Domain name" placeholder="Add domain name" field={field} fieldState={fieldState} />
         )}
       />
 
@@ -78,7 +55,7 @@ export const GeneralDetailsStep = ({
             label="Preferred currency"
             placeholder="Select currency type"
             fieldState={fieldState}
-            options={CURRENCY_OPTIONS.map((option) => (
+            options={CURRENCY_OPTIONS.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
@@ -97,7 +74,7 @@ export const GeneralDetailsStep = ({
             label="Preferred timezone"
             placeholder="Select timezone"
             fieldState={fieldState}
-            options={TIMEZONE_OPTIONS.map((option) => (
+            options={TIMEZONE_OPTIONS.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
