@@ -1,5 +1,7 @@
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
 import { TenantLogo } from '@/features/tenants/interfaces/tenant-logo.interface';
+import { AIConfig } from '@/features/tenants/interfaces/ai-config.interface';
+import { SSOConfig } from '@/features/tenants/interfaces/sso-config.interface';
 
 export interface Tenant {
   id?: string;
@@ -17,22 +19,7 @@ export interface Tenant {
     };
     has_dark_logo?: boolean;
   };
-  ai_config: {
-    open_ai_type: string;
-    open_ai_embedding_model: string;
-    temperature: number;
-    open_ai_key: string;
-    open_ai_endpoint: string;
-    open_ai_version: string;
-    web_search: boolean;
-  };
-  sso_config: {
-    type: string;
-    enabled: boolean;
-    tenant_id: string;
-    client_id: string;
-    client_secret: string;
-    scopes: string;
-  };
+  ai_config: AIConfig;
+  sso_config: SSOConfig;
   document_types: DocumentType[];
 }

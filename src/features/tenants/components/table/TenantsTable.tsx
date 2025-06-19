@@ -6,6 +6,7 @@ import { OverflowMenuVertical } from '@carbon/icons-react';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import { ConfirmDialog } from '@/features/common/components/dialogs/ConfirmDialog';
 import { useDeleteTenant } from '@/features/tenants/hooks/useDeleteTenant';
+import { useRouter } from 'next/navigation';
 
 interface TenantsTableProps {
   tenants: Tenant[];
@@ -17,6 +18,7 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({ tenants }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
 
   const deleteTenant = useDeleteTenant();
+  const router = useRouter();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, tenant: Tenant) => {
     setSelectedTenant(tenant);
@@ -34,6 +36,14 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({ tenants }) => {
 
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
+  };
+
+  const handleViewDetails = () => {
+    if (selectedTenant?.id) {
+      router.push(`/tenants/${selectedTenant.id}`);
+    }
+
+    handleMenuClose();
   };
 
   const confirmDelete = () => {
@@ -78,6 +88,7 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({ tenants }) => {
       </TableContainer>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={handleViewDetails}>Details</MenuItem>
         <MenuItem onClick={handleOpenDeleteDialog}>Delete</MenuItem>
       </Menu>
 

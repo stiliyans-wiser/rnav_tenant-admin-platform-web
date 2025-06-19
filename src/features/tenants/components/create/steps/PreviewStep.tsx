@@ -1,25 +1,86 @@
 import { Button, Paper, Stack } from '@mui/material';
-import { GeneralDetailsPreview } from '@/features/tenants/components/create/preview/GeneralDetailsPreview';
-import { BrandAndThemingPreview } from '@/features/tenants/components/create/preview/BrandAndThemingPreview';
-import { AIServicesPreview } from '@/features/tenants/components/create/preview/AIServicesPreview';
-import { SSOPreview } from '@/features/tenants/components/create/preview/SSOPreview';
-import { CreateTenantPreviewProps } from '@/features/tenants/interfaces/create-tenant-preview-props.interface';
-import { DocumentsPreview } from '@/features/tenants/components/create/preview/DocumentsPreview';
+import { TenantPreviewProps } from '@/features/tenants/interfaces/tenant-preview-props.interface';
+import { useFormContext } from 'react-hook-form';
+import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/GeneralDetailsView';
+import { TenantViewLayout } from '@/features/tenants/components/common/TenantViewLayout';
+import {
+  AudioConsole, Document,
+  IbmCloudHyperProtectCryptoServices,
+  SettingsServices,
+  VisualRecognition,
+} from '@carbon/icons-react';
+import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/components/common/BrandAndThemingView';
+import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/AIServicesView';
+import { SSOData, SSOView } from '@/features/tenants/components/common/SSOView';
+import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/DocumentsView';
+import React from 'react';
+import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
 
-interface PreviewStepProps extends CreateTenantPreviewProps {
+interface PreviewStepProps extends TenantPreviewProps {
   onNext: (hasError: boolean) => void;
   onBack: (hasError: boolean) => void;
 }
 
 export const PreviewStep = ({ onBack, onNext, onEdit }: PreviewStepProps) => {
+  const { getValues } = useFormContext();
+
+  const { selectedDocumentTypes } = useCreateTenantContext();
+  const documentTypes = {
+    document_types: selectedDocumentTypes,
+  } as DocumentsData;
+
+  const generalDetailsFormValues = getValues() as GeneralDetailsData;
+  const brandAndThemingFormValues = getValues() as BrandAndThemingData;
+  const aiServicesFormValues = getValues() as AIServicesData;
+  const ssoFormValues = getValues() as SSOData;
+
   return (
     <Stack gap={2} sx={{ height: '100%' }}>
       <Stack gap={2} sx={{ overflow: 'auto' }}>
-        <GeneralDetailsPreview onEdit={onEdit} />
-        <BrandAndThemingPreview onEdit={onEdit} />
-        <AIServicesPreview onEdit={onEdit} />
-        <SSOPreview onEdit={onEdit} />
-        <DocumentsPreview onEdit={onEdit} />
+        <TenantViewLayout
+          title="General Details"
+          icon={<AudioConsole size={24} />}
+          hasEditButton={true}
+          onEdit={() => onEdit('General Details')}
+        >
+          <GeneralDetailsView data={generalDetailsFormValues} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title="Brand & Theming"
+          icon={<VisualRecognition size={24} />}
+          hasEditButton={true}
+          onEdit={() => onEdit('Brand & Theming')}
+        >
+          <BrandAndThemingView data={brandAndThemingFormValues} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title="AI Services"
+          icon={<SettingsServices size={24} />}
+          hasEditButton={true}
+          onEdit={() => onEdit('AI Services')}
+        >
+          <AIServicesView data={aiServicesFormValues} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title="SSO"
+          icon={<IbmCloudHyperProtectCryptoServices size={24} />}
+          hasEditButton={true}
+          onEdit={() => onEdit('SSO')}
+        >
+          <SSOView data={ssoFormValues} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title="Documents"
+          icon={<Document size={24} />}
+          hasEditButton={true}
+          onEdit={() => onEdit('Documents')}
+        >
+          <DocumentsView data={documentTypes} />
+        </TenantViewLayout>
       </Stack>
 
       <Paper variant="outlined" sx={{ p: 3 }}>
