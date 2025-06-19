@@ -16,4 +16,4 @@ export const ThemeSwitcher = () => {
   };
 
   return <FormControlLabel control={<Switch checked={mode === 'dark'} />} label="Dark Mode" onChange={handleThemeModeChange} />;
-}; 
+};

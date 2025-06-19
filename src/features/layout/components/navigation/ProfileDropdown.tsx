@@ -29,7 +29,9 @@ export const ProfileDropdown = () => {
           <Avatar sx={{ width: 28, height: 28, marginLeft: 2 }}>
             <Typography variant="body1">A</Typography>
           </Avatar>
-          <Typography variant="body1" noWrap>Admin</Typography>
+          <Typography variant="body1" noWrap>
+            Admin
+          </Typography>
         </Stack>
 
         <Button variant="text" fullWidth sx={{ marginX: 1 }} onClick={handleLogout}>
@@ -57,4 +59,4 @@ export const ProfileDropdown = () => {
       </Menu>
     </>
   );
-}; 
+};

@@ -11,14 +11,7 @@
     "JSX": "readonly"
   },
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "jsx-a11y",
-    "import",
-    "sort-keys-fix",
-    "react-hooks",
-    "@typescript-eslint",
-    "prettier"
-  ],
+  "plugins": ["jsx-a11y", "import", "sort-keys-fix", "react-hooks", "@typescript-eslint", "prettier"],
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-unused-vars": "error",
@@ -38,15 +31,7 @@
           "caseInsensitive": true,
           "order": "asc"
         },
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-          "object"
-        ]
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object"]
       }
     ],
     "no-alert": "error",

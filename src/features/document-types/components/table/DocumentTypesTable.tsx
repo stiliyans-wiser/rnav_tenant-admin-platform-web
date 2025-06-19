@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Menu, MenuItem, Chip,
-} from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Menu, MenuItem, Chip } from '@mui/material';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
 import { CustomDialog } from '@/features/common/components/dialogs/CustomDialog';
 import { useState } from 'react';
@@ -51,9 +41,9 @@ export const DocumentTypesTable: React.FC<DocumentTypesTableProps> = ({ document
           setOpenDeleteDialog(false);
           setSelectedDocumentType(undefined);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Failed to delete document type:', error);
-        }
+        },
       });
     }
   };
@@ -74,7 +64,7 @@ export const DocumentTypesTable: React.FC<DocumentTypesTableProps> = ({ document
             {documentTypes.map(docType => (
               <TableRow key={docType.id}>
                 <TableCell>{docType.name}</TableCell>
-                <TableCell sx={{maxWidth: 500}}>{docType.description || '-'}</TableCell>
+                <TableCell sx={{ maxWidth: 500 }}>{docType.description || '-'}</TableCell>
                 <TableCell align="center">
                   <Chip label={docType.metadata_fields?.length || 0} color="primary" size="small" />
                 </TableCell>

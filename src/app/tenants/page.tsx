@@ -25,10 +25,7 @@ export default function TenantsPage() {
   return (
     <PageContainer>
       <PageHeader titleKey="Tenants" actionChildren={<TenantActionControls />} />
-      <ClientTableContainer
-        filterChildren={null}
-        tableChildren={<TenantsTable tenants={tenants || []} />}
-      />
+      <ClientTableContainer filterChildren={null} tableChildren={<TenantsTable tenants={tenants || []} />} />
     </PageContainer>
   );
-} 
+}

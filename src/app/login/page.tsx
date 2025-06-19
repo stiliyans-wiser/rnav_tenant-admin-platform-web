@@ -3,17 +3,7 @@
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAuth } from '@/features/auth/context/AuthContext';
-import {
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  Alert,
-  Typography,
-  Card,
-  CardContent,
-  Stack,
-} from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, Alert, Typography, Card, CardContent, Stack } from '@mui/material';
 import { View, ViewOff } from '@carbon/icons-react';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
@@ -51,21 +41,14 @@ export default function LoginPage() {
 
   return (
     <Stack sx={{ height: '100%', justifyContent: 'center' }}>
-      <Card
-        variant="outlined"
-        sx={{ alignSelf: 'center', width: '520px', padding: 3 }}
-      >
+      <Card variant="outlined" sx={{ alignSelf: 'center', width: '520px', padding: 3 }}>
         <CardContent>
           <Typography variant="h6" sx={{ marginY: 2, textAlign: 'center' }}>
             Login
           </Typography>
 
           <FormProvider {...formMethods}>
-            <Box
-              component="form"
-              onSubmit={formMethods.handleSubmit(onSubmit)}
-              sx={{ mt: 2 }}
-            >
+            <Box component="form" onSubmit={formMethods.handleSubmit(onSubmit)} sx={{ mt: 2 }}>
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {error}
@@ -87,16 +70,8 @@ export default function LoginPage() {
                       input: {
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton
-                              aria-label="toggle password visibility"
-                              onClick={() => setIsRevealKey(!isRevealKey)}
-                              edge="end"
-                            >
-                              {isRevealKey ? (
-                                <View size={20} />
-                              ) : (
-                                <ViewOff size={20} />
-                              )}
+                            <IconButton aria-label="toggle password visibility" onClick={() => setIsRevealKey(!isRevealKey)} edge="end">
+                              {isRevealKey ? <View size={20} /> : <ViewOff size={20} />}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -106,14 +81,7 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                size="large"
-                disabled={formMethods.formState.isSubmitting}
-                sx={{ mt: 2 }}
-              >
+              <Button type="submit" fullWidth variant="contained" size="large" disabled={formMethods.formState.isSubmitting} sx={{ mt: 2 }}>
                 Login
               </Button>
             </Box>

@@ -1,7 +1,7 @@
 import api from '@/features/auth/api/axiosConfig';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 
-const url = '/admin/accounts'
+const url = '/admin/accounts';
 
 export const getTenants = async (): Promise<Tenant[]> => {
   const response = await api.get<Tenant[]>(url);

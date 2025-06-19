@@ -23,25 +23,15 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
 
   useEffect(() => {
     trigger(`metadata_fields.${index}`);
-  }, [trigger])
+  }, [trigger]);
 
   return (
-    <Paper
-      elevation={4}
-      sx={{ padding: 2, marginBottom: 2 }}
-    >
+    <Paper elevation={4} sx={{ padding: 2, marginBottom: 2 }}>
       <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="subtitle2">
-          {isEdit ? 'Edit metadata field' : 'New metadata field'}
-        </Typography>
+        <Typography variant="subtitle2">{isEdit ? 'Edit metadata field' : 'New metadata field'}</Typography>
 
         <Stack direction="row" gap={2}>
-          <Button
-            color="secondary"
-            size="small"
-            startIcon={<Close />}
-            onClick={() => isEdit ? onCancel?.() : onDiscard?.()}
-          >
+          <Button color="secondary" size="small" startIcon={<Close />} onClick={() => (isEdit ? onCancel?.() : onDiscard?.())}>
             {isEdit ? 'Cancel' : 'Discard'}
           </Button>
           <Button
@@ -65,13 +55,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
           control={control}
           rules={{ required: 'This field is required' }}
           render={({ field, fieldState }) => (
-            <MuiTextField
-              sx={{ mb: 3 }}
-              label="Name"
-              placeholder="Enter metadata field name"
-              field={field}
-              fieldState={fieldState}
-            />
+            <MuiTextField sx={{ mb: 3 }} label="Name" placeholder="Enter metadata field name" field={field} fieldState={fieldState} />
           )}
         />
 
@@ -100,7 +84,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
               fieldState={fieldState}
               placeholder="Select field type"
               label="Field type"
-              options={Object.values(ColumnTypeEnum).map((type) => (
+              options={Object.values(ColumnTypeEnum).map(type => (
                 <MenuItem key={type} value={type}>
                   {type}
                 </MenuItem>
@@ -112,8 +96,8 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
                       maxHeight: 300,
                       maxWidth: 100,
                     },
-                  }
-                }
+                  },
+                },
               }}
             />
           )}

@@ -41,17 +41,13 @@ export const BrandAndThemingView = ({ data }: BrandAndThemingViewProps) => {
           </Stack>
           <Stack direction="row" gap={1} sx={{ alignItems: 'center' }}>
             <Sun />
-            <Typography variant="subtitle2">
-              {data.settings.default_theme_mode === ThemeMode.LIGHT ? 'Light mode' : 'Dark mode'}
-            </Typography>
+            <Typography variant="subtitle2">{data.settings.default_theme_mode === ThemeMode.LIGHT ? 'Light mode' : 'Dark mode'}</Typography>
           </Stack>
           <Stack direction="row" gap={1} sx={{ alignItems: 'center' }}>
             <IconButton color="primary" sx={{ p: 0 }}>
               <CheckmarkFilled />
             </IconButton>
-            <Typography variant="caption">
-              Users allowed to change modes
-            </Typography>
+            <Typography variant="caption">Users allowed to change modes</Typography>
           </Stack>
         </Stack>
 
@@ -69,4 +65,4 @@ export const BrandAndThemingView = ({ data }: BrandAndThemingViewProps) => {
       </Stack>
     </Stack>
   );
-}
+};

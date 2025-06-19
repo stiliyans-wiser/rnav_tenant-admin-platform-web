@@ -28,17 +28,13 @@ export const GeneralDetailsView = ({ data }: GeneralDetailsViewProps) => {
 
       <Stack gap={1} sx={{ flex: 1 }}>
         <Typography variant="caption">Preferred currency</Typography>
-        <Typography variant="subtitle2">
-          {data.settings.preferred_currency}
-        </Typography>
+        <Typography variant="subtitle2">{data.settings.preferred_currency}</Typography>
       </Stack>
 
       <Stack gap={1} sx={{ flex: 1 }}>
         <Typography variant="caption">Preferred timezone</Typography>
-        <Typography variant="subtitle2">
-          {data.settings.preferred_timezone}
-        </Typography>
+        <Typography variant="subtitle2">{data.settings.preferred_timezone}</Typography>
       </Stack>
     </Stack>
   );
-}; 
+};

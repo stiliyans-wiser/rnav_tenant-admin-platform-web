@@ -5,7 +5,7 @@ interface ThemeConfigurationSelectorProps {
   label: string;
 }
 
-export const ThemeConfigSelector = ({icon, label}: ThemeConfigurationSelectorProps) => (
+export const ThemeConfigSelector = ({ icon, label }: ThemeConfigurationSelectorProps) => (
   <Stack direction="row" gap={1} sx={{ alignItems: 'center' }}>
     {icon}
     <Typography>{label}</Typography>

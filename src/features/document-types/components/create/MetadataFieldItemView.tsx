@@ -14,7 +14,6 @@ interface MetadataFieldItemViewProps {
   canEdit?: boolean;
 }
 
-
 export const MetadataFieldItemView = ({ field, onEdit, onDelete, canEdit = true }: MetadataFieldItemViewProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -39,21 +38,18 @@ export const MetadataFieldItemView = ({ field, onEdit, onDelete, canEdit = true 
 
   return (
     <>
-      <Paper
-        variant="outlined"
-        sx={{ padding: 2, marginBottom: 2 }}
-      >
+      <Paper variant="outlined" sx={{ padding: 2, marginBottom: 2 }}>
         <Stack gap={1}>
           <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="subtitle2">{field.name}</Typography>
             <Stack direction="row" gap={1} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <IconButton 
-                color="secondary" 
+              <IconButton
+                color="secondary"
                 onClick={handleEdit}
                 disabled={!canEdit}
-                title={!canEdit ? "Please save or cancel the current editing field first" : "Edit field"}
+                title={!canEdit ? 'Please save or cancel the current editing field first' : 'Edit field'}
               >
-                <Edit size={20}/>
+                <Edit size={20} />
               </IconButton>
               <IconButton onClick={handleMenuOpen}>
                 <OverflowMenuVertical size={20} />
@@ -67,9 +63,7 @@ export const MetadataFieldItemView = ({ field, onEdit, onDelete, canEdit = true 
       </Paper>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={handleDelete}>
-          Delete
-        </MenuItem>
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
       </Menu>
     </>
   );
