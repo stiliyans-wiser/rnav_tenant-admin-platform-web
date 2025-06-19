@@ -33,57 +33,42 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
         light: tenant.settings.logos.light,
         dark: tenant.settings.logos.dark,
       },
-    }
+    },
   };
 
   const aiServices: AIServicesData = {
-    ai_config: { ...tenant.ai_config }
+    ai_config: { ...tenant.ai_config },
   };
 
   const sso: SSOData = {
-    sso_config: { ...tenant.sso_config }
+    sso_config: { ...tenant.sso_config },
   };
 
   const documentTypes: DocumentsData = {
-    document_types: [...tenant.document_types]
+    document_types: [...tenant.document_types],
   };
 
   return (
     <Stack gap={2}>
-      <TenantViewLayout
-        title="General Details"
-        icon={<AudioConsole size={24} />}
-      >
+      <TenantViewLayout title="General Details" icon={<AudioConsole size={24} />}>
         <GeneralDetailsView data={generalDetails} />
       </TenantViewLayout>
 
-      <TenantViewLayout
-        title="Brand & Theming"
-        icon={<AudioConsole size={24} />}
-      >
+      <TenantViewLayout title="Brand & Theming" icon={<AudioConsole size={24} />}>
         <BrandAndThemingView data={brandAndTheming} />
       </TenantViewLayout>
 
-      <TenantViewLayout
-        title="AI Services"
-        icon={<SettingsServices size={24} />}
-      >
+      <TenantViewLayout title="AI Services" icon={<SettingsServices size={24} />}>
         <AIServicesView data={aiServices} />
       </TenantViewLayout>
 
-      <TenantViewLayout
-        title="AI Services"
-        icon={<IbmCloudHyperProtectCryptoServices size={24} />}
-      >
+      <TenantViewLayout title="AI Services" icon={<IbmCloudHyperProtectCryptoServices size={24} />}>
         <SSOView data={sso} />
       </TenantViewLayout>
 
-      <TenantViewLayout
-        title="Documents"
-        icon={<Document size={24} />}
-      >
+      <TenantViewLayout title="Documents" icon={<Document size={24} />}>
         <DocumentsView data={documentTypes} />
       </TenantViewLayout>
     </Stack>
   );
-}; 
+};

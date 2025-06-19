@@ -16,9 +16,7 @@ export const SSOView = ({ data }: SSOViewProps) => {
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">SSO type</Typography>
-          <Typography variant="subtitle2">
-            {data.sso_config.type}
-          </Typography>
+          <Typography variant="subtitle2">{data.sso_config.type}</Typography>
         </Stack>
 
         <Stack gap={1} sx={{ flex: 1 }}>
@@ -40,16 +38,12 @@ export const SSOView = ({ data }: SSOViewProps) => {
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Tenant ID</Typography>
-          <Typography variant="subtitle2">
-            {data.sso_config.tenant_id}
-          </Typography>
+          <Typography variant="subtitle2">{data.sso_config.tenant_id}</Typography>
         </Stack>
 
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Client ID</Typography>
-          <Typography variant="subtitle2">
-            {data.sso_config.client_id}
-          </Typography>
+          <Typography variant="subtitle2">{data.sso_config.client_id}</Typography>
         </Stack>
       </Stack>
 
@@ -72,4 +66,4 @@ export const SSOView = ({ data }: SSOViewProps) => {
       </Stack>
     </Stack>
   );
-}
+};

@@ -22,7 +22,7 @@ const smallSizeStyles = {
     width: '24px',
     height: '24px',
   },
-}
+};
 
 const largeSizeStyles = {
   light: {
@@ -37,7 +37,7 @@ const largeSizeStyles = {
     width: '60px',
     height: '60px',
   },
-}
+};
 
 export const ColorThemeSelector = ({ theme, title, themeMode, size = 'small', showColorLabels = false }: ColorThemeSelectorProps) => {
   const palette = theme.colorSchemes[themeMode].palette;
@@ -46,50 +46,73 @@ export const ColorThemeSelector = ({ theme, title, themeMode, size = 'small', sh
   const sizeStyles = isSmallSize ? smallSizeStyles : largeSizeStyles;
 
   return (
-    <Stack gap={1} sx={{
-      alignItems: 'center',
-      width: '100%',
-      padding: 2,
-      borderRadius: '4px',
-      backgroundColor: palette.background.default
-    }}>
+    <Stack
+      gap={1}
+      sx={{
+        alignItems: 'center',
+        width: '100%',
+        padding: 2,
+        borderRadius: '4px',
+        backgroundColor: palette.background.default,
+      }}
+    >
       {title && (
-        <Typography variant="caption" sx={{ color: palette.text.primary}}>{title}</Typography>
+        <Typography variant="caption" sx={{ color: palette.text.primary }}>
+          {title}
+        </Typography>
       )}
       <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Stack sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: sizeStyles.dark.width,
-          height: sizeStyles.dark.height,
-          borderRadius: '4px 0 0 4px',
-          backgroundColor: palette.primary.dark
-        }}>
-          {showColorLabels && (<Typography variant="caption" sx={{ color: palette.primary.contrastText}}>dark</Typography>)}
+        <Stack
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: sizeStyles.dark.width,
+            height: sizeStyles.dark.height,
+            borderRadius: '4px 0 0 4px',
+            backgroundColor: palette.primary.dark,
+          }}
+        >
+          {showColorLabels && (
+            <Typography variant="caption" sx={{ color: palette.primary.contrastText }}>
+              dark
+            </Typography>
+          )}
         </Stack>
 
-        <Stack sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: sizeStyles.main.width,
-          height: sizeStyles.main.height,
-          borderRadius: '4px',
-          backgroundColor: palette.primary.main
-        }}>
-          {showColorLabels && (<Typography variant="caption" sx={{ color: palette.primary.contrastText}}>main</Typography>)}
+        <Stack
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: sizeStyles.main.width,
+            height: sizeStyles.main.height,
+            borderRadius: '4px',
+            backgroundColor: palette.primary.main,
+          }}
+        >
+          {showColorLabels && (
+            <Typography variant="caption" sx={{ color: palette.primary.contrastText }}>
+              main
+            </Typography>
+          )}
         </Stack>
 
-        <Stack sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: sizeStyles.light.width,
-          height: sizeStyles.light.height,
-          borderRadius: '0 4px 4px 0',
-          backgroundColor: palette.primary.light
-        }}>
-          {showColorLabels && (<Typography variant="caption" sx={{ color: palette.primary.contrastText}}>light</Typography>)}
+        <Stack
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: sizeStyles.light.width,
+            height: sizeStyles.light.height,
+            borderRadius: '0 4px 4px 0',
+            backgroundColor: palette.primary.light,
+          }}
+        >
+          {showColorLabels && (
+            <Typography variant="caption" sx={{ color: palette.primary.contrastText }}>
+              light
+            </Typography>
+          )}
         </Stack>
       </Stack>
     </Stack>
   );
-}
+};

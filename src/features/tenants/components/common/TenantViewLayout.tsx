@@ -10,32 +10,20 @@ interface TenantViewLayoutProps {
   hasEditButton?: boolean;
 }
 
-export const TenantViewLayout = ({
-  title,
-  icon,
-  children,
-  onEdit,
-  hasEditButton = false,
-}: TenantViewLayoutProps) => {
+export const TenantViewLayout = ({ title, icon, children, onEdit, hasEditButton = false }: TenantViewLayoutProps) => {
   const shouldShowEditButton = hasEditButton && onEdit;
 
   return (
     <Paper variant="outlined" sx={{ height: '100%', p: 3 }}>
       <Stack gap={2} sx={{ height: '100%', justifyContent: 'space-between' }}>
-        <Stack
-          direction="row"
-          sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-        >
+        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Stack direction="row" gap={1} sx={{ alignItems: 'center' }}>
             {icon}
             <Typography variant="h6">{title}</Typography>
           </Stack>
 
           {shouldShowEditButton && (
-            <Button
-              startIcon={<Edit size={20} />}
-              onClick={onEdit}
-            >
+            <Button startIcon={<Edit size={20} />} onClick={onEdit}>
               Edit
             </Button>
           )}
@@ -45,4 +33,4 @@ export const TenantViewLayout = ({
       </Stack>
     </Paper>
   );
-}; 
+};

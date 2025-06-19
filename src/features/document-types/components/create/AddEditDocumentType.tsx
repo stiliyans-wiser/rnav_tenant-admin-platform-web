@@ -22,7 +22,7 @@ interface AddEditForm {
     name: string;
     description: string;
     column_type: ColumnTypeEnum;
-  }[]
+  }[];
 }
 
 export const AddEditDocumentType = ({ onClose, documentType }: AddEditDocumentTypeProps) => {
@@ -34,7 +34,7 @@ export const AddEditDocumentType = ({ onClose, documentType }: AddEditDocumentTy
       description: documentType?.description || '',
       metadata_fields: documentType?.metadata_fields || [],
     },
-    mode: 'onChange'
+    mode: 'onChange',
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -45,10 +45,11 @@ export const AddEditDocumentType = ({ onClose, documentType }: AddEditDocumentTy
   /**
    * Watch the current form values for metadata_fields to ensure view component shows updated values
    */
-  const watchedMetadataFields = useWatch({
-    control: formMethods.control,
-    name: 'metadata_fields',
-  }) || [];
+  const watchedMetadataFields =
+    useWatch({
+      control: formMethods.control,
+      name: 'metadata_fields',
+    }) || [];
 
   const createDocumentType = useCreateDocumentType();
   const updateDocumentType = useUpdateDocumentType();
@@ -201,13 +202,7 @@ export const AddEditDocumentType = ({ onClose, documentType }: AddEditDocumentTy
             );
           })}
 
-          <Button
-            variant="outlined"
-            startIcon={<Add />}
-            onClick={addMetadataField}
-            fullWidth
-            disabled={editingFieldIndex !== null}
-          >
+          <Button variant="outlined" startIcon={<Add />} onClick={addMetadataField} fullWidth disabled={editingFieldIndex !== null}>
             Add new metadata field
           </Button>
         </Box>
@@ -216,16 +211,11 @@ export const AddEditDocumentType = ({ onClose, documentType }: AddEditDocumentTy
           <Button variant="outlined" color="primary" onClick={onClose}>
             Cancel
           </Button>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            type="submit"
-            disabled={!formMethods.formState.isValid}
-          >
+          <Button variant="contained" color="primary" type="submit" disabled={!formMethods.formState.isValid}>
             {documentType ? 'Edit' : 'Create'}
           </Button>
         </Stack>
       </Box>
     </FormProvider>
   );
-}
+};

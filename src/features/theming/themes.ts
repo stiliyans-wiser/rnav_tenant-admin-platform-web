@@ -1,10 +1,10 @@
-import { Theme } from "@mui/material";
-import defaultTheme from "./defaultTheme";
-import amberTheme from "./amberTheme";
-import redTheme from "./redTheme";
-import deepPurpleTheme from "./deepPurpleTheme";
-import lightBlueTheme from "./lightBlueTheme";
-import lightGreenTheme from "./lightGreenTheme";
+import { Theme } from '@mui/material';
+import defaultTheme from './defaultTheme';
+import amberTheme from './amberTheme';
+import redTheme from './redTheme';
+import deepPurpleTheme from './deepPurpleTheme';
+import lightBlueTheme from './lightBlueTheme';
+import lightGreenTheme from './lightGreenTheme';
 
 interface ThemeDefinition {
   name: string;
@@ -13,27 +13,27 @@ interface ThemeDefinition {
 
 export const themes: { [key: string]: ThemeDefinition } = {
   default: {
-    name: "Default",
+    name: 'Default',
     theme: defaultTheme,
   },
   amber: {
-    name: "Amber",
+    name: 'Amber',
     theme: amberTheme,
   },
   red: {
-    name: "Red",
+    name: 'Red',
     theme: redTheme,
   },
   deepPurple: {
-    name: "Deep purple",
+    name: 'Deep purple',
     theme: deepPurpleTheme,
   },
   lightBlue: {
-    name: "Light blue",
+    name: 'Light blue',
     theme: lightBlueTheme,
   },
   lightGreen: {
-    name: "Light green",
+    name: 'Light green',
     theme: lightGreenTheme,
   },
 };

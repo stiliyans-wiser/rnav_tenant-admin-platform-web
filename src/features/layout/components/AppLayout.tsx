@@ -13,11 +13,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isLoginPage = pathname === '/login';
 
   return (
-    <ThemeProvider
-      theme={defaultTheme}
-      {...({ forceThemeRerender: true } as any)}
-      modeStorageKey="mui-mode"
-    >
+    <ThemeProvider theme={defaultTheme} {...({ forceThemeRerender: true } as any)} modeStorageKey="mui-mode">
       <CssBaseline />
 
       <Stack
@@ -36,9 +32,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Box sx={{ width: 280 }}>
                 <SideNavbar />
               </Box>
-              <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-                {children}
-              </Box>
+              <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>{children}</Box>
             </Stack>
           </>
         )}

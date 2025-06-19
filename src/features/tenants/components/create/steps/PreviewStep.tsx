@@ -3,12 +3,7 @@ import { TenantPreviewProps } from '@/features/tenants/interfaces/tenant-preview
 import { useFormContext } from 'react-hook-form';
 import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/GeneralDetailsView';
 import { TenantViewLayout } from '@/features/tenants/components/common/TenantViewLayout';
-import {
-  AudioConsole, Document,
-  IbmCloudHyperProtectCryptoServices,
-  SettingsServices,
-  VisualRecognition,
-} from '@carbon/icons-react';
+import { AudioConsole, Document, IbmCloudHyperProtectCryptoServices, SettingsServices, VisualRecognition } from '@carbon/icons-react';
 import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/components/common/BrandAndThemingView';
 import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/AIServicesView';
 import { SSOData, SSOView } from '@/features/tenants/components/common/SSOView';
@@ -73,12 +68,7 @@ export const PreviewStep = ({ onBack, onNext, onEdit }: PreviewStepProps) => {
           <SSOView data={ssoFormValues} />
         </TenantViewLayout>
 
-        <TenantViewLayout
-          title="Documents"
-          icon={<Document size={24} />}
-          hasEditButton={true}
-          onEdit={() => onEdit('Documents')}
-        >
+        <TenantViewLayout title="Documents" icon={<Document size={24} />} hasEditButton={true} onEdit={() => onEdit('Documents')}>
           <DocumentsView data={documentTypes} />
         </TenantViewLayout>
       </Stack>

@@ -17,11 +17,7 @@ const font = Montserrat({
   variable: '--font-montserrat',
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={font.variable}>
@@ -36,4 +32,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-} 
+}

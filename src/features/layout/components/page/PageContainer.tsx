@@ -20,4 +20,4 @@ export const PageContainer = ({ children }: PageContainerProps) => {
       {children}
     </Box>
   );
-}; 
+};

@@ -7,8 +7,7 @@ export const useUpdateTenant = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, tenant }: { id: string; tenant: Partial<Tenant> }) =>
-      updateTenant(id, tenant),
+    mutationFn: ({ id, tenant }: { id: string; tenant: Partial<Tenant> }) => updateTenant(id, tenant),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: tenantsConstants.tenantKeys.lists() });
       queryClient.invalidateQueries({ queryKey: tenantsConstants.tenantKeys.detail(id) });

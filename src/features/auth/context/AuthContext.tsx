@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (key: string) => {
     const masterKey = process.env.NEXT_PUBLIC_MASTER_KEY;
-    
+
     if (!masterKey) {
       throw new Error('Master key is not configured in environment variables');
     }
@@ -49,11 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   };
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, loginKey, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ isAuthenticated, loginKey, login, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
@@ -63,4 +59,4 @@ export function useAuth() {
   }
 
   return context;
-} 
+}

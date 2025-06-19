@@ -18,4 +18,4 @@ export const DocumentsView = ({ data }: DocumentsViewProps) => {
       ))}
     </Stack>
   );
-}
+};

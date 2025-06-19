@@ -131,7 +131,11 @@ export const UploadComponent = ({
           <Button variant="contained" onClick={e => e.preventDefault()} startIcon={<Upload size={20} />}>
             Upload
           </Button>
-          {uploadHintMessage && <Typography variant="body2" color="textSecondary">{uploadHintMessage}</Typography>}
+          {uploadHintMessage && (
+            <Typography variant="body2" color="textSecondary">
+              {uploadHintMessage}
+            </Typography>
+          )}
         </Stack>
 
         {(fileList.length > 0 || fileListRejected.length > 0) && (

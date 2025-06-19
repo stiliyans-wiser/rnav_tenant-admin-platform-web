@@ -16,9 +16,7 @@ export const AIServicesView = ({ data }: AIServicesViewProps) => {
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">AI tool</Typography>
-          <Typography variant="subtitle2">
-            {data.ai_config.open_ai_type}
-          </Typography>
+          <Typography variant="subtitle2">{data.ai_config.open_ai_type}</Typography>
         </Stack>
       </Stack>
 
@@ -40,18 +38,14 @@ export const AIServicesView = ({ data }: AIServicesViewProps) => {
 
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Embedding model</Typography>
-          <Typography variant="subtitle2">
-            {data.ai_config.open_ai_embedding_model}
-          </Typography>
+          <Typography variant="subtitle2">{data.ai_config.open_ai_embedding_model}</Typography>
         </Stack>
       </Stack>
 
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Temperature</Typography>
-          <Typography variant="subtitle2">
-            {data.ai_config.temperature}
-          </Typography>
+          <Typography variant="subtitle2">{data.ai_config.temperature}</Typography>
         </Stack>
 
         <Stack gap={1} sx={{ flex: 1 }}>
@@ -65,9 +59,7 @@ export const AIServicesView = ({ data }: AIServicesViewProps) => {
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Open AI version</Typography>
-          <Typography variant="subtitle2">
-            {data.ai_config.open_ai_version}
-          </Typography>
+          <Typography variant="subtitle2">{data.ai_config.open_ai_version}</Typography>
         </Stack>
 
         <Stack gap={1} sx={{ flex: 1 }}>
@@ -79,4 +71,4 @@ export const AIServicesView = ({ data }: AIServicesViewProps) => {
       </Stack>
     </Stack>
   );
-}
+};

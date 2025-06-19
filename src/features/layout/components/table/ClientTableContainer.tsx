@@ -8,17 +8,10 @@ interface ClientTableContainerProps {
   tableChildren: ReactNode;
 }
 
-export const ClientTableContainer = ({
-  filterChildren,
-  tableChildren,
-}: ClientTableContainerProps) => {
+export const ClientTableContainer = ({ filterChildren, tableChildren }: ClientTableContainerProps) => {
   return (
     <Box>
-      {filterChildren && (
-        <Box sx={{ mb: 3 }}>
-          {filterChildren}
-        </Box>
-      )}
+      {filterChildren && <Box sx={{ mb: 3 }}>{filterChildren}</Box>}
       <Paper
         sx={{
           width: '100%',
@@ -30,4 +23,4 @@ export const ClientTableContainer = ({
       </Paper>
     </Box>
   );
-}; 
+};
