@@ -8,8 +8,8 @@ import { AuthGuard } from '@/features/auth/components/AuthGuard';
 import { QueryProvider } from '@/features/common/providers/QueryProvider';
 
 export const metadata: Metadata = {
-  title: 'Tenant Admin Platform',
-  description: 'Admin platform for tenant management',
+  title: 'Productised AI Services - Back-office',
+  description: 'Back office platform for tenant management',
 };
 
 const font = Montserrat({

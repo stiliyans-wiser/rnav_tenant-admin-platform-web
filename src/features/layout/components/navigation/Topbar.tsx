@@ -34,7 +34,7 @@ export const Topbar = () => {
         <Divider orientation="vertical" variant="middle" flexItem />
 
         <Typography variant="body1" sx={{ paddingLeft: 2 }}>
-          Tenant Admin Platform
+          Productised AI Services - Back-office
         </Typography>
       </Stack>
 
