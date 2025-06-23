@@ -12,18 +12,19 @@ interface MetadataFieldItemEditProps {
   onSave: () => void;
   onDiscard?: () => void;
   onCancel?: () => void;
+  fieldPath: 'metadata_fields' | 'brief_metadata.metadata_fields';
 }
 
 /**
  * Component for editing metadata fields in single-field edit mode.
  * Only one field can be edited at a time to prevent conflicts.
  */
-export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCancel }: MetadataFieldItemEditProps) => {
+export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCancel, fieldPath }: MetadataFieldItemEditProps) => {
   const { control, formState, getFieldState, trigger } = useFormContext();
 
   useEffect(() => {
-    trigger(`metadata_fields.${index}`);
-  }, [trigger]);
+    trigger(`${fieldPath}.${index}`);
+  }, [trigger, fieldPath, index]);
 
   return (
     <Paper elevation={4} sx={{ padding: 2, marginBottom: 2 }}>
@@ -39,7 +40,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
             variant="outlined"
             size="small"
             startIcon={<Checkmark />}
-            disabled={getFieldState(`metadata_fields.${index}`, formState).invalid}
+            disabled={getFieldState(`${fieldPath}.${index}`, formState).invalid}
             onClick={() => onSave()}
           >
             {isEdit ? 'Save' : 'Add'}
@@ -51,7 +52,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
 
       <Stack>
         <Controller
-          name={`metadata_fields.${index}.name`}
+          name={`${fieldPath}.${index}.name`}
           control={control}
           rules={{ required: 'This field is required' }}
           render={({ field, fieldState }) => (
@@ -60,7 +61,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
         />
 
         <Controller
-          name={`metadata_fields.${index}.description`}
+          name={`${fieldPath}.${index}.description`}
           control={control}
           rules={{ required: 'This field is required' }}
           render={({ field, fieldState }) => (
@@ -75,7 +76,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
         />
 
         <Controller
-          name={`metadata_fields.${index}.column_type`}
+          name={`${fieldPath}.${index}.column_type`}
           control={control}
           rules={{ required: 'This field is required' }}
           render={({ field, fieldState }) => (
