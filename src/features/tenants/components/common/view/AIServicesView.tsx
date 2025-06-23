@@ -3,6 +3,7 @@ import { CheckmarkFilled, Misuse } from '@carbon/icons-react';
 import { AIConfig } from '@/features/tenants/interfaces/ai-config.interface';
 
 export interface AIServicesData {
+  company_name: string;
   ai_config: AIConfig;
 }
 

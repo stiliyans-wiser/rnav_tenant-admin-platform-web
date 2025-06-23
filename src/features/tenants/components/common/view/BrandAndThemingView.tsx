@@ -1,13 +1,14 @@
 import { Divider, IconButton, Stack, Typography } from '@mui/material';
-import { ThemeLogoPreview } from '@/features/tenants/components/create/common/ThemeLogoPreview';
+import { ThemeLogoPreview } from '@/features/tenants/components/common/theming/ThemeLogoPreview';
 import { ThemeMode } from '@/features/theming/enums/theme-mode.enum';
 import { CheckmarkFilled, ColorSwitch, Sun } from '@carbon/icons-react';
 import { Image as ImageIcon } from '@carbon/icons-react/lib/generated/bucket-9';
-import { ColorThemeSelector } from '@/features/tenants/components/create/common/ColorThemeSelector';
+import { ColorThemeSelector } from '@/features/tenants/components/common/theming/ColorThemeSelector';
 import { themes } from '@/features/theming/themes';
 import { TenantLogo } from '@/features/tenants/interfaces/tenant-logo.interface';
 
 export interface BrandAndThemingData {
+  company_name: string;
   settings: {
     theme: string;
     theme_color: string;

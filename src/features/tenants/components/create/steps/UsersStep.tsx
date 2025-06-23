@@ -3,15 +3,15 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Box, IconButton, InputAdornment, MenuItem } from '@mui/material';
 import { Events, View, ViewOff } from '@carbon/icons-react';
 import { CreateTenantStepProps } from '@/features/tenants/interfaces/create-tenant-step-props.interface';
-import { CreateTenantStepLayout } from '@/features/tenants/components/create/layouts/CreateTenantStepLayout';
+import { CreateTenantLayout } from '@/features/tenants/components/common/layouts/CreateTenantLayout';
 import { CreateTenantUser } from '@/features/tenants/interfaces/create-tenant-user.interface';
 import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
 import { useCreateTenantUsers } from '@/features/tenants/hooks/useCreateTenantUsers';
 import { emailRegex } from '@/features/common/utils/regexes';
+import { formFieldNames } from '@/features/tenants/constants/form.constants';
 
-const FIELD_NAMES: (keyof CreateTenantUser)[] = ['email', 'first_name', 'last_name', 'password', 'role', 'account_id'];
 const ROLE_OPTIONS: string[] = ['admin'];
 
 export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
@@ -41,7 +41,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   };
 
   return (
-    <CreateTenantStepLayout
+    <CreateTenantLayout
       stepTitle="User & Role"
       stepIcon={<Events size={24} />}
       isNextButtonDisabled={hasError}
@@ -53,7 +53,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
       <FormProvider {...formMethods}>
         <Box component="form">
           <Controller
-            name={FIELD_NAMES[0]}
+            name={formFieldNames.users.email as 'email'}
             control={formMethods.control}
             rules={{
               required: 'This field is required',
@@ -75,7 +75,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
           />
 
           <Controller
-            name={FIELD_NAMES[1]}
+            name={formFieldNames.users.firstName as 'first_name'}
             control={formMethods.control}
             rules={{ required: 'This field is required' }}
             render={({ field, fieldState }) => (
@@ -84,7 +84,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
           />
 
           <Controller
-            name={FIELD_NAMES[2]}
+            name={formFieldNames.users.lastName as 'last_name'}
             control={formMethods.control}
             rules={{ required: 'This field is required' }}
             render={({ field, fieldState }) => (
@@ -93,7 +93,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
           />
 
           <Controller
-            name={FIELD_NAMES[3]}
+            name={formFieldNames.users.password as 'password'}
             control={formMethods.control}
             rules={{ required: 'This field is required' }}
             render={({ field, fieldState }) => (
@@ -120,7 +120,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
           />
 
           <Controller
-            name={FIELD_NAMES[4]}
+            name={formFieldNames.users.role as 'role'}
             control={formMethods.control}
             rules={{ required: 'This field is required' }}
             render={({ field, fieldState }) => (
@@ -139,6 +139,6 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
           />
         </Box>
       </FormProvider>
-    </CreateTenantStepLayout>
+    </CreateTenantLayout>
   );
 };

@@ -1,0 +1,118 @@
+import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
+import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
+import { FormControlLabel, MenuItem, Switch } from '@mui/material';
+import { Controller, useFormContext } from 'react-hook-form';
+import { AdminConfig } from '@/features/tenants/interfaces/admin-config.interface';
+import { formFieldNames } from '@/features/tenants/constants/form.constants';
+
+interface AIServicesFormProps {
+  adminConfig: AdminConfig;
+}
+
+export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
+  const { control } = useFormContext();
+
+  return (
+    <>
+      <Controller
+        name={formFieldNames.aiConfig.aiType}
+        control={control}
+        rules={{ required: 'This field is required' }}
+        render={({ field, fieldState }) => (
+          <MuiSelect
+            sx={{ mb: 4 }}
+            field={{ ...field, value: field.value || '' }}
+            label="AI tool / Open AI type"
+            placeholder="Select AI tool"
+            fieldState={fieldState}
+            options={adminConfig?.ai_providers.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          />
+        )}
+      />
+
+      <Controller
+        name={formFieldNames.aiConfig.aiEmbeddingModel}
+        control={control}
+        rules={{ required: 'This field is required' }}
+        render={({ field, fieldState }) => (
+          <MuiSelect
+            sx={{ mb: 4 }}
+            field={{ ...field, value: field.value || '' }}
+            label="Default embedding model"
+            placeholder="Select embedding model"
+            fieldState={fieldState}
+            options={adminConfig?.embedding_types.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          />
+        )}
+      />
+
+      <Controller
+        name={formFieldNames.aiConfig.temperature}
+        control={control}
+        rules={{
+          required: 'This field is required',
+          min: {
+            value: 0,
+            message: 'The value must be at least 0',
+          },
+          max: {
+            value: 1,
+            message: 'The value must not exceed 1',
+          },
+        }}
+        render={({ field, fieldState }) => (
+          <MuiTextField
+            sx={{ mb: 4 }}
+            type="number"
+            label="Temperature"
+            placeholder="Add temperature value"
+            field={field}
+            fieldState={fieldState}
+          />
+        )}
+      />
+
+      <Controller
+        name={formFieldNames.aiConfig.openAiKey}
+        control={control}
+        rules={{ required: 'This field is required' }}
+        render={({ field, fieldState }) => (
+          <MuiTextField sx={{ mb: 4 }} label="Open AI key" placeholder="Add key value" field={field} fieldState={fieldState} />
+        )}
+      />
+
+      <Controller
+        name={formFieldNames.aiConfig.openAiEndpoint}
+        control={control}
+        rules={{ required: 'This field is required' }}
+        render={({ field, fieldState }) => (
+          <MuiTextField sx={{ mb: 4 }} label="Open AI endpoint" placeholder="Add endpoint URL" field={field} fieldState={fieldState} />
+        )}
+      />
+
+      <Controller
+        name={formFieldNames.aiConfig.openAiVersion}
+        control={control}
+        rules={{ required: 'This field is required' }}
+        render={({ field, fieldState }) => (
+          <MuiTextField sx={{ mb: 4 }} label="Open AI version" placeholder="Add version" field={field} fieldState={fieldState} />
+        )}
+      />
+
+      <Controller
+        name={formFieldNames.aiConfig.webSearch}
+        control={control}
+        defaultValue={false}
+        render={({ field }) => <FormControlLabel control={<Switch {...field} checked={field.value} />} label="Include web search" />}
+      />
+    </>
+  );
+};

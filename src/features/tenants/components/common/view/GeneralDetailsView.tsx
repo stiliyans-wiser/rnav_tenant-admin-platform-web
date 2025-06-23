@@ -1,12 +1,10 @@
 import { Stack, Typography } from '@mui/material';
+import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.interface';
 
 export interface GeneralDetailsData {
   company_name: string;
   domain: string;
-  settings: {
-    preferred_currency: string;
-    preferred_timezone: string;
-  };
+  settings: TenantSettings;
 }
 
 interface GeneralDetailsViewProps {

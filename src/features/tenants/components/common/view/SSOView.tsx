@@ -3,6 +3,7 @@ import { CheckmarkFilled, Misuse } from '@carbon/icons-react';
 import { SSOConfig } from '@/features/tenants/interfaces/sso-config.interface';
 
 export interface SSOData {
+  company_name: string;
   sso_config: SSOConfig;
 }
 

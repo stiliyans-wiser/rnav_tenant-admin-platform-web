@@ -7,12 +7,9 @@ interface TenantViewLayoutProps {
   icon: React.ReactNode;
   children: React.ReactNode;
   onEdit?: () => void;
-  hasEditButton?: boolean;
 }
 
-export const TenantViewLayout = ({ title, icon, children, onEdit, hasEditButton = false }: TenantViewLayoutProps) => {
-  const shouldShowEditButton = hasEditButton && onEdit;
-
+export const TenantViewLayout = ({ title, icon, children, onEdit }: TenantViewLayoutProps) => {
   return (
     <Paper variant="outlined" sx={{ height: '100%', p: 3 }}>
       <Stack gap={2} sx={{ height: '100%', justifyContent: 'space-between' }}>
@@ -22,11 +19,9 @@ export const TenantViewLayout = ({ title, icon, children, onEdit, hasEditButton 
             <Typography variant="h6">{title}</Typography>
           </Stack>
 
-          {shouldShowEditButton && (
-            <Button startIcon={<Edit size={20} />} onClick={onEdit}>
-              Edit
-            </Button>
-          )}
+          <Button startIcon={<Edit size={20} />} onClick={onEdit}>
+            Edit
+          </Button>
         </Stack>
 
         <Stack>{children}</Stack>
