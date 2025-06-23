@@ -11,9 +11,11 @@ import { useGetAdminConfig } from '@/features/tenants/hooks/useGetAdminConfig';
 import { useGetDocumentTypes } from '@/features/document-types/hooks/useGetDocumentTypes';
 import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
 import { useCreateTenant } from '@/features/tenants/hooks/useCreateTenant';
-import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
+import { Tenant, TenantForm } from '@/features/tenants/interfaces/tenant.interface';
 import { UsersStep } from '@/features/tenants/components/create/steps/UsersStep';
 import { SuccessStep } from '@/features/tenants/components/create/steps/SuccessStep';
+import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
+import { buildSSOConfigRequestBody, buildThemingRequestBody, parseDocumentTypes } from '@/features/tenants/utils/buildRequestBody';
 
 enum CreateTenantStepEnum {
   GENERAL_DETAILS,
@@ -35,23 +37,23 @@ interface CreateTenantStep {
 const steps: CreateTenantStep[] = [
   {
     id: CreateTenantStepEnum.GENERAL_DETAILS,
-    title: 'General Details',
+    title: TenantSectionTitlesEnum.GENERAL_DETAILS,
   },
   {
     id: CreateTenantStepEnum.BRAND_THEMING,
-    title: 'Brand & Theming',
+    title: TenantSectionTitlesEnum.BRAND_AND_THEMING,
   },
   {
     id: CreateTenantStepEnum.AI_SERVICES,
-    title: 'AI Services',
+    title: TenantSectionTitlesEnum.AI_SERVICES,
   },
   {
     id: CreateTenantStepEnum.SSO,
-    title: 'SSO',
+    title: TenantSectionTitlesEnum.SSO,
   },
   {
     id: CreateTenantStepEnum.DOCUMENTS,
-    title: 'Documents',
+    title: TenantSectionTitlesEnum.DOCUMENTS,
   },
   {
     id: CreateTenantStepEnum.PREVIEW,
@@ -100,11 +102,11 @@ export const CreateTenant = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [errorSteps, setErrorSteps] = useState<boolean[]>(Array(steps.length).fill(false));
 
-  const formMethods = useForm<Tenant>({
+  const formMethods = useForm<TenantForm>({
     mode: 'onChange',
   });
 
-  const { setAccountId, setAdminConfig, setDocumentTypes, selectedDocumentTypes } = useCreateTenantContext();
+  const { setAccountId, setAdminConfig, setDocumentTypes } = useCreateTenantContext();
 
   const { data: adminConfig } = useGetAdminConfig();
   const { data: documentTypes } = useGetDocumentTypes();
@@ -152,37 +154,15 @@ export const CreateTenant = () => {
     }
   };
 
-  const parseScopes = (scopesValue: string): any => {
-    try {
-      const parsedValue = JSON.parse(scopesValue);
-
-      return Array.isArray(parsedValue) ? parsedValue : [];
-    } catch (error) {
-      return [];
-    }
-  };
-
   const getRequestBody = (): Tenant => {
-    const requestBody = {
-      ...formMethods.getValues(),
-      sso_config: {
-        ...formMethods.getValues('sso_config'),
-        scopes: parseScopes(formMethods.getValues('sso_config.scopes')),
-      },
-      document_types: selectedDocumentTypes,
+    const formValues = formMethods.getValues();
+
+    return {
+      ...formValues,
+      settings: buildThemingRequestBody(formValues.settings),
+      sso_config: buildSSOConfigRequestBody(formMethods.getValues('sso_config')),
+      document_types: parseDocumentTypes(formMethods.getValues('document_types')),
     };
-
-    if (!requestBody.settings.logos?.light) {
-      delete requestBody.settings.logos;
-    } else {
-      if (!requestBody.settings.logos?.dark) {
-        requestBody.settings.logos.dark = { ...requestBody.settings.logos.light };
-      }
-    }
-
-    delete requestBody.settings.has_dark_logo;
-
-    return requestBody;
   };
 
   const onSubmitTenant = async () => {

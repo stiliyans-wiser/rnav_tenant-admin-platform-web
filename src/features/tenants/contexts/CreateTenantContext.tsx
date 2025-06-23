@@ -6,11 +6,9 @@ interface TenantContextType {
   accountId: string;
   adminConfig: AdminConfig;
   documentTypes: DocumentType[];
-  selectedDocumentTypes: DocumentType[];
   setAccountId: (accountId: string) => void;
   setAdminConfig: (config: AdminConfig) => void;
   setDocumentTypes: (documents: DocumentType[]) => void;
-  setSelectedDocumentTypes: (documents: DocumentType[]) => void;
 }
 
 const CreateTenantContext = createContext<TenantContextType>(undefined);
@@ -19,7 +17,6 @@ export const CreateTenantProvider = ({ children }: { children: ReactNode }) => {
   const [accountId, setAccountId] = useState<string>(null);
   const [adminConfig, setAdminConfig] = useState<AdminConfig>();
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
-  const [selectedDocumentTypes, setSelectedDocumentTypes] = useState<DocumentType[]>([]);
 
   return (
     <CreateTenantContext.Provider
@@ -27,11 +24,9 @@ export const CreateTenantProvider = ({ children }: { children: ReactNode }) => {
         accountId,
         adminConfig,
         documentTypes,
-        selectedDocumentTypes,
         setAccountId,
         setAdminConfig,
         setDocumentTypes,
-        setSelectedDocumentTypes,
       }}
     >
       {children}

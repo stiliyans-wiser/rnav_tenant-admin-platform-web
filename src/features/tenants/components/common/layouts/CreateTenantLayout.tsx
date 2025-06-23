@@ -11,7 +11,7 @@ interface StepLayoutProps {
   nextButtonLabel?: string;
 }
 
-export const CreateTenantStepLayout = ({
+export const CreateTenantLayout = ({
   stepTitle,
   stepIcon,
   children,

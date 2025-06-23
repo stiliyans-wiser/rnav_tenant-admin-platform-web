@@ -1,15 +1,15 @@
+import React from 'react';
 import { Button, Paper, Stack } from '@mui/material';
 import { TenantPreviewProps } from '@/features/tenants/interfaces/tenant-preview-props.interface';
 import { useFormContext } from 'react-hook-form';
-import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/GeneralDetailsView';
-import { TenantViewLayout } from '@/features/tenants/components/common/TenantViewLayout';
+import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/view/GeneralDetailsView';
+import { TenantViewLayout } from '@/features/tenants/components/common/view/TenantViewLayout';
 import { AudioConsole, Document, IbmCloudHyperProtectCryptoServices, SettingsServices, VisualRecognition } from '@carbon/icons-react';
-import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/components/common/BrandAndThemingView';
-import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/AIServicesView';
-import { SSOData, SSOView } from '@/features/tenants/components/common/SSOView';
-import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/DocumentsView';
-import React from 'react';
-import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
+import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/components/common/view/BrandAndThemingView';
+import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/view/AIServicesView';
+import { SSOData, SSOView } from '@/features/tenants/components/common/view/SSOView';
+import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/view/DocumentsView';
+import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 
 interface PreviewStepProps extends TenantPreviewProps {
   onNext: (hasError: boolean) => void;
@@ -19,56 +19,52 @@ interface PreviewStepProps extends TenantPreviewProps {
 export const PreviewStep = ({ onBack, onNext, onEdit }: PreviewStepProps) => {
   const { getValues } = useFormContext();
 
-  const { selectedDocumentTypes } = useCreateTenantContext();
-  const documentTypes = {
-    document_types: selectedDocumentTypes,
-  } as DocumentsData;
-
   const generalDetailsFormValues = getValues() as GeneralDetailsData;
   const brandAndThemingFormValues = getValues() as BrandAndThemingData;
   const aiServicesFormValues = getValues() as AIServicesData;
   const ssoFormValues = getValues() as SSOData;
+  const documentTypes: DocumentsData = getValues() as DocumentsData;
 
   return (
     <Stack gap={2} sx={{ height: '100%' }}>
       <Stack gap={2} sx={{ overflow: 'auto' }}>
         <TenantViewLayout
-          title="General Details"
+          title={TenantSectionTitlesEnum.GENERAL_DETAILS}
           icon={<AudioConsole size={24} />}
-          hasEditButton={true}
-          onEdit={() => onEdit('General Details')}
+          onEdit={() => onEdit(TenantSectionTitlesEnum.GENERAL_DETAILS)}
         >
           <GeneralDetailsView data={generalDetailsFormValues} />
         </TenantViewLayout>
 
         <TenantViewLayout
-          title="Brand & Theming"
+          title={TenantSectionTitlesEnum.BRAND_AND_THEMING}
           icon={<VisualRecognition size={24} />}
-          hasEditButton={true}
-          onEdit={() => onEdit('Brand & Theming')}
+          onEdit={() => onEdit(TenantSectionTitlesEnum.BRAND_AND_THEMING)}
         >
           <BrandAndThemingView data={brandAndThemingFormValues} />
         </TenantViewLayout>
 
         <TenantViewLayout
-          title="AI Services"
+          title={TenantSectionTitlesEnum.AI_SERVICES}
           icon={<SettingsServices size={24} />}
-          hasEditButton={true}
-          onEdit={() => onEdit('AI Services')}
+          onEdit={() => onEdit(TenantSectionTitlesEnum.AI_SERVICES)}
         >
           <AIServicesView data={aiServicesFormValues} />
         </TenantViewLayout>
 
         <TenantViewLayout
-          title="SSO"
+          title={TenantSectionTitlesEnum.SSO}
           icon={<IbmCloudHyperProtectCryptoServices size={24} />}
-          hasEditButton={true}
-          onEdit={() => onEdit('SSO')}
+          onEdit={() => onEdit(TenantSectionTitlesEnum.SSO)}
         >
           <SSOView data={ssoFormValues} />
         </TenantViewLayout>
 
-        <TenantViewLayout title="Documents" icon={<Document size={24} />} hasEditButton={true} onEdit={() => onEdit('Documents')}>
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.DOCUMENTS}
+          icon={<Document size={24} />}
+          onEdit={() => onEdit(TenantSectionTitlesEnum.DOCUMENTS)}
+        >
           <DocumentsView data={documentTypes} />
         </TenantViewLayout>
       </Stack>
