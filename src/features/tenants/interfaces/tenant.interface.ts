@@ -9,7 +9,7 @@ export interface Tenant {
   domain: string;
   settings: TenantSettings;
   ai_config: AIConfig;
-  sso_config: SSOConfig;
+  sso_config: SSOConfig | null;
   document_types: DocumentType[];
 }
 
