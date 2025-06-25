@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Accept, FileRejection, useDropzone } from 'react-dropzone';
-import { Alert, Box, Button, IconButton, Typography, CircularProgress, Stack, Paper, Link } from '@mui/material';
+import { Alert, Box, Button, IconButton, Typography, CircularProgress, Stack, Paper } from '@mui/material';
 import { CloudUpload, DocumentImport, TrashCan, Upload } from '@carbon/icons-react';
 
 interface UploadComponentProps {
@@ -89,7 +89,7 @@ export const UploadComponent = ({
     onUpload?.(acceptedFiles);
   };
 
-  const { fileRejections, getRootProps, getInputProps } = useDropzone({
+  const { fileRejections, getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleFilesAccepted,
     validator,
     accept: acceptedFileTypes,
@@ -121,7 +121,14 @@ export const UploadComponent = ({
 
       <Paper
         variant="outlined"
-        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 2 }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 2,
+          border: isDragActive ? '1px dashed var(--mui-palette-primary-main)' : '1px solid var(--mui-palette-divider)',
+        }}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
