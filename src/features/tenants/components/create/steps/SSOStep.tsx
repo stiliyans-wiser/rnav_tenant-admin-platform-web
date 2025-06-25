@@ -10,7 +10,6 @@ import { formFieldNames } from '@/features/tenants/constants/form.constants';
 export const SSOStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { hasError } = useStepValidation([
     formFieldNames.sso.type,
-    formFieldNames.sso.enabled,
     formFieldNames.sso.tenantId,
     formFieldNames.sso.clientId,
     formFieldNames.sso.clientSecret,

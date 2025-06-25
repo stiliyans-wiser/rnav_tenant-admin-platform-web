@@ -20,7 +20,15 @@ export const parseDocumentTypes = (documentTypesValue: string[]): DocumentType[]
   }
 };
 
-export const buildSSOConfigRequestBody = (ssoData: SSOConfig): SSOConfig => {
+export const buildSSOConfigRequestBody = (ssoData: SSOConfig): SSOConfig | null => {
+  // If SSO is disabled and all fields are empty, return null
+  if (!ssoData.enabled) {
+    const isEmpty = !ssoData.type && !ssoData.tenant_id && !ssoData.client_id && !ssoData.client_secret && !ssoData.scopes;
+    if (isEmpty) {
+      return null;
+    }
+  }
+
   return {
     ...ssoData,
     scopes: parseScopes(ssoData.scopes),

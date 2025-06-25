@@ -1,5 +1,6 @@
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { FormControlLabel, MenuItem, Switch } from '@mui/material';
+import { useEffect } from 'react';
 import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 import { AdminConfig } from '@/features/tenants/interfaces/admin-config.interface';
@@ -10,14 +11,44 @@ interface SSOFormProps {
 }
 
 export const SSOForm = ({ adminConfig }: SSOFormProps) => {
-  const { control } = useFormContext();
+  const { control, trigger, clearErrors } = useFormContext();
+
+  const isRequired = useWatch({
+    control,
+    name: formFieldNames.sso.enabled,
+    defaultValue: false,
+  });
+
+  // Trigger validation when toggle changes
+  useEffect(() => {
+    const ssoFields = [
+      formFieldNames.sso.type,
+      formFieldNames.sso.tenantId,
+      formFieldNames.sso.clientId,
+      formFieldNames.sso.clientSecret,
+      formFieldNames.sso.scopes,
+    ];
+
+    if (isRequired) {
+      trigger(ssoFields);
+    } else {
+      clearErrors(ssoFields);
+    }
+  }, [isRequired, trigger, clearErrors]);
 
   return (
     <>
       <Controller
+        name={formFieldNames.sso.enabled}
+        control={control}
+        defaultValue={false}
+        render={({ field }) => <FormControlLabel sx={{ mb: 4 }} control={<Switch {...field} checked={field.value} />} label="Enabled" />}
+      />
+
+      <Controller
         name={formFieldNames.sso.type}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={isRequired ? { required: 'This field is required' } : {}}
         render={({ field, fieldState }) => (
           <MuiSelect
             sx={{ mb: 4 }}
@@ -25,6 +56,7 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
             label="SSO type"
             placeholder="Select SSO type"
             fieldState={fieldState}
+            required={isRequired}
             options={adminConfig?.sso_providers.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
@@ -35,34 +67,41 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
       />
 
       <Controller
-        name={formFieldNames.sso.enabled}
-        control={control}
-        defaultValue={false}
-        render={({ field }) => <FormControlLabel sx={{ mb: 4 }} control={<Switch {...field} checked={field.value} />} label="Enabled" />}
-      />
-
-      <Controller
         name={formFieldNames.sso.tenantId}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={isRequired ? { required: 'This field is required' } : {}}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Tenant ID" placeholder="Add tenant ID" field={field} fieldState={fieldState} />
+          <MuiTextField
+            sx={{ mb: 4 }}
+            label="Tenant ID"
+            placeholder="Add tenant ID"
+            field={field}
+            fieldState={fieldState}
+            required={isRequired}
+          />
         )}
       />
 
       <Controller
         name={formFieldNames.sso.clientId}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={isRequired ? { required: 'This field is required' } : {}}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Client ID" placeholder="Add client ID" field={field} fieldState={fieldState} />
+          <MuiTextField
+            sx={{ mb: 4 }}
+            label="Client ID"
+            placeholder="Add client ID"
+            field={field}
+            fieldState={fieldState}
+            required={isRequired}
+          />
         )}
       />
 
       <Controller
         name={formFieldNames.sso.clientSecret}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={isRequired ? { required: 'This field is required' } : {}}
         render={({ field, fieldState }) => (
           <MuiTextField
             sx={{ mb: 4 }}
@@ -70,6 +109,7 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
             placeholder="Add client secret"
             field={field}
             fieldState={fieldState}
+            required={isRequired}
             multiline={true}
             rows={4}
           />
@@ -79,9 +119,17 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
       <Controller
         name={formFieldNames.sso.scopes}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={isRequired ? { required: 'This field is required' } : {}}
         render={({ field, fieldState }) => (
-          <MuiTextField label="Scopes" placeholder="Add scopes" field={field} fieldState={fieldState} multiline={true} rows={4} />
+          <MuiTextField
+            label="Scopes"
+            placeholder="Add scopes"
+            field={field}
+            fieldState={fieldState}
+            required={isRequired}
+            multiline={true}
+            rows={4}
+          />
         )}
       />
     </>
