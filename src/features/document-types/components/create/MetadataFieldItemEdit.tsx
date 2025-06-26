@@ -1,10 +1,11 @@
-import { Button, Divider, MenuItem, Paper, Stack, Typography } from '@mui/material';
+import { Button, Divider, MenuItem, Stack, Typography } from '@mui/material';
 import { Checkmark, Close } from '@carbon/icons-react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
 import { ColumnTypeEnum } from '@/features/document-types/enums/column-type.enum';
 import { useEffect } from 'react';
+import { ColoredPaper } from '@/features/common/components/layout/ColoredPaper';
 
 interface MetadataFieldItemEditProps {
   index: number;
@@ -27,7 +28,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
   }, [trigger, fieldPath, index]);
 
   return (
-    <Paper elevation={4} sx={{ padding: 2, marginBottom: 2 }}>
+    <ColoredPaper variant="outlined" sx={{ padding: 2, marginBottom: 2 }}>
       <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="subtitle2">{isEdit ? 'Edit metadata field' : 'New metadata field'}</Typography>
 
@@ -56,7 +57,7 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
           control={control}
           rules={{ required: 'This field is required' }}
           render={({ field, fieldState }) => (
-            <MuiTextField sx={{ mb: 3 }} label="Name" placeholder="Enter metadata field name" field={field} fieldState={fieldState} />
+            <MuiTextField sx={{ mb: 3 }} label="Name" placeholder="Enter metadata field name" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
           )}
         />
 
@@ -104,6 +105,6 @@ export const MetadataFieldItemEdit = ({ index, isEdit, onDiscard, onSave, onCanc
           )}
         />
       </Stack>
-    </Paper>
+    </ColoredPaper>
   );
 };

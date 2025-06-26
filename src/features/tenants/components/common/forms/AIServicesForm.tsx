@@ -74,7 +74,7 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
             type="number"
             label="Temperature"
             placeholder="Add temperature value"
-            field={field}
+            field={{ ...field, value: field.value || '' }}
             fieldState={fieldState}
           />
         )}
@@ -85,7 +85,7 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Open AI key" placeholder="Add key value" field={field} fieldState={fieldState} />
+          <MuiTextField sx={{ mb: 4 }} label="Open AI key" placeholder="Add key value" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
         )}
       />
 
@@ -94,7 +94,7 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Open AI endpoint" placeholder="Add endpoint URL" field={field} fieldState={fieldState} />
+          <MuiTextField sx={{ mb: 4 }} label="Open AI endpoint" placeholder="Add endpoint URL" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
         )}
       />
 
@@ -103,7 +103,7 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Open AI version" placeholder="Add version" field={field} fieldState={fieldState} />
+          <MuiTextField sx={{ mb: 4 }} label="Open AI version" placeholder="Add version" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
         )}
       />
 

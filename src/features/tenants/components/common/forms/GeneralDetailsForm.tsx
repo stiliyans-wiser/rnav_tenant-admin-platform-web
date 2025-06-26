@@ -18,7 +18,7 @@ export const GeneralDetailsForm = ({ disabledFields = [] }: TenantFormConfig) =>
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Company name" placeholder="Add company name" field={field} fieldState={fieldState} />
+          <MuiTextField sx={{ mb: 4 }} label="Company name" placeholder="Add company name" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
         )}
       />
 
@@ -28,7 +28,7 @@ export const GeneralDetailsForm = ({ disabledFields = [] }: TenantFormConfig) =>
         disabled={disabledFields.includes(formFieldNames.generalDetails.domain)}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Domain name" placeholder="Add domain name" field={field} fieldState={fieldState} />
+          <MuiTextField sx={{ mb: 4 }} label="Domain name" placeholder="Add domain name" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
         )}
       />
 

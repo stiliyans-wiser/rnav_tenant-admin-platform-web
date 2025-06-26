@@ -68,7 +68,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
                 label="Email"
                 type="email"
                 placeholder="example@email.com"
-                field={field}
+                field={{ ...field, value: field.value || '' }}
                 fieldState={fieldState}
               />
             )}
@@ -79,7 +79,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
             control={formMethods.control}
             rules={{ required: 'This field is required' }}
             render={({ field, fieldState }) => (
-              <MuiTextField sx={{ mb: 4 }} label="First name" placeholder="John" field={field} fieldState={fieldState} />
+              <MuiTextField sx={{ mb: 4 }} label="First name" placeholder="John" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
             )}
           />
 
@@ -88,7 +88,7 @@ export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
             control={formMethods.control}
             rules={{ required: 'This field is required' }}
             render={({ field, fieldState }) => (
-              <MuiTextField sx={{ mb: 4 }} label="Last name" placeholder="Doe" field={field} fieldState={fieldState} />
+              <MuiTextField sx={{ mb: 4 }} label="Last name" placeholder="Doe" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
             )}
           />
 

@@ -75,7 +75,7 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
             sx={{ mb: 4 }}
             label="Tenant ID"
             placeholder="Add tenant ID"
-            field={field}
+            field={{ ...field, value: field.value || '' }}
             fieldState={fieldState}
             required={isRequired}
           />
@@ -91,7 +91,7 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
             sx={{ mb: 4 }}
             label="Client ID"
             placeholder="Add client ID"
-            field={field}
+            field={{ ...field, value: field.value || '' }}
             fieldState={fieldState}
             required={isRequired}
           />
@@ -107,7 +107,7 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
             sx={{ mb: 4 }}
             label="Client secret"
             placeholder="Add client secret"
-            field={field}
+            field={{ ...field, value: field.value || '' }}
             fieldState={fieldState}
             required={isRequired}
             multiline={true}
@@ -124,7 +124,7 @@ export const SSOForm = ({ adminConfig }: SSOFormProps) => {
           <MuiTextField
             label="Scopes"
             placeholder="Add scopes"
-            field={field}
+            field={{ ...field, value: field.value || '' }}
             fieldState={fieldState}
             required={isRequired}
             multiline={true}
