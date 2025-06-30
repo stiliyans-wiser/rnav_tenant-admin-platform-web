@@ -15,7 +15,12 @@ import { Tenant, TenantForm } from '@/features/tenants/interfaces/tenant.interfa
 import { UsersStep } from '@/features/tenants/components/create/steps/UsersStep';
 import { SuccessStep } from '@/features/tenants/components/create/steps/SuccessStep';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
-import { buildSSOConfigRequestBody, buildThemingRequestBody, parseDocumentTypes } from '@/features/tenants/utils/buildRequestBody';
+import {
+  buildDocumentDataSourcesRequestBody,
+  buildSSOConfigRequestBody,
+  buildThemingRequestBody,
+  parseDocumentTypes,
+} from '@/features/tenants/utils/buildRequestBody';
 
 enum CreateTenantStepEnum {
   GENERAL_DETAILS,
@@ -162,6 +167,7 @@ export const CreateTenant = () => {
       settings: buildThemingRequestBody(formValues.settings),
       sso_config: buildSSOConfigRequestBody(formMethods.getValues('sso_config')),
       document_types: parseDocumentTypes(formMethods.getValues('document_types')),
+      document_data_sources: buildDocumentDataSourcesRequestBody(formMethods.getValues('document_data_sources')),
     };
   };
 

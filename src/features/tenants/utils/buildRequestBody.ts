@@ -1,6 +1,7 @@
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
 import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.interface';
 import { SSOConfig } from '@/features/tenants/interfaces/sso-config.interface';
+import { DocumentsDataSourceEnum } from '@/features/tenants/enums/documents-data-source.enum';
 
 export const parseScopes = (scopesValue: string): any => {
   try {
@@ -47,4 +48,12 @@ export const buildThemingRequestBody = (tenantSettings: TenantSettings): TenantS
   delete tenantSettings.has_dark_logo;
 
   return tenantSettings;
+};
+
+export const buildDocumentDataSourcesRequestBody = (dataSourceValues: string[]): string[] => {
+  if (!dataSourceValues || !dataSourceValues.length) {
+    return Object.values(DocumentsDataSourceEnum);
+  }
+
+  return dataSourceValues;
 };

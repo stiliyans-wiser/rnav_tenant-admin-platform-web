@@ -11,6 +11,7 @@ export interface Tenant {
   ai_config: AIConfig;
   sso_config: SSOConfig | null;
   document_types: DocumentType[];
+  document_data_sources: string[];
 }
 
 export interface TenantForm extends Omit<Tenant, 'document_types'> {

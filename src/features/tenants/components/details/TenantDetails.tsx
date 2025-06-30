@@ -33,6 +33,7 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
         ...tenant.settings.logos,
       },
     },
+    document_data_sources: tenant.document_data_sources,
   };
 
   const brandAndTheming: BrandAndThemingData = {
