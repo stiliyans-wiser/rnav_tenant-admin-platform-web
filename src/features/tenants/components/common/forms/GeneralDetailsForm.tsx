@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Controller, ControllerRenderProps, FieldValues, useFormContext, useWatch } from 'react-hook-form';
 import { Chip, Divider, MenuItem, Stack } from '@mui/material';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
@@ -16,9 +16,16 @@ const CURRENCY_OPTIONS: string[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD'];
 const TIMEZONE_OPTIONS: string[] = ['UTC', 'EST', 'PST', 'CET', 'GMT'];
 
 export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: GeneralDetailsFormProps) => {
-  const { control } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
 
-  console.log(adminConfig);
+  useEffect(() => {
+    if (adminConfig?.document_data_sources) {
+      const currentValue = getValues(formFieldNames.documents.documentDataSources);
+      if (!currentValue?.length) {
+        setValue(formFieldNames.documents.documentDataSources, adminConfig.document_data_sources);
+      }
+    }
+  }, [adminConfig, setValue, getValues]);
 
   const selectedDataSourceValues = useWatch({
     control,
@@ -68,7 +75,7 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
       <Controller
         name={formFieldNames.documents.documentDataSources}
         control={control}
-        defaultValue={adminConfig?.document_data_sources || []}
+        defaultValue={[]}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
           <MuiSelect
@@ -82,9 +89,9 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
                 {DOCUMENT_DATA_SOURCE_LABELS[dataSource]}
               </MenuItem>
             ))}
-            renderValue={(selectedDocuments: string[]) => (
+            renderValue={(sources: string[]) => (
               <Stack direction="row" sx={{ flexWrap: 'wrap' }} gap={0.5}>
-                {selectedDocuments?.map(item => renderChip(item, field))}
+                {sources?.map(s => renderChip(s, field))}
               </Stack>
             )}
           />
