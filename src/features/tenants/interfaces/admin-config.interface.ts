@@ -6,4 +6,5 @@ export interface AdminConfig {
   theme_colors: string[];
   sso_providers: string[];
   themes: string[];
+  document_data_sources: string[];
 }

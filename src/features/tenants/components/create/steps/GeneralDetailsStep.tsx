@@ -5,14 +5,18 @@ import { useStepValidation } from '@/features/tenants/hooks/useStepValidation';
 import { GeneralDetailsForm } from '@/features/tenants/components/common/forms/GeneralDetailsForm';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import { formFieldNames } from '@/features/tenants/constants/form.constants';
+import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
 
 export const GeneralDetailsStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { hasError } = useStepValidation([
     formFieldNames.generalDetails.companyName,
     formFieldNames.generalDetails.domain,
+    formFieldNames.documents.documentDataSources,
     formFieldNames.settings.preferredCurrency,
     formFieldNames.settings.preferredTimezone,
   ]);
+
+  const { adminConfig } = useCreateTenantContext();
 
   return (
     <CreateTenantLayout
@@ -23,7 +27,7 @@ export const GeneralDetailsStep = ({ onBack, onNext }: CreateTenantStepProps) =>
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >
-      <GeneralDetailsForm />
+      <GeneralDetailsForm adminConfig={adminConfig} />
     </CreateTenantLayout>
   );
 };

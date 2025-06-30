@@ -1,5 +1,3 @@
-import { CreateTenantUser } from '@/features/tenants/interfaces/create-tenant-user.interface';
-
 export const formFieldNames = {
   generalDetails: {
     companyName: 'company_name',
@@ -36,6 +34,7 @@ export const formFieldNames = {
   },
   documents: {
     documentTypes: 'document_types',
+    documentDataSources: 'document_data_sources',
   },
   users: {
     email: 'email',
