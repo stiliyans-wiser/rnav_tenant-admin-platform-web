@@ -2,12 +2,12 @@
 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Menu, MenuItem, Chip } from '@mui/material';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
-import { CustomDialog } from '@/features/common/components/dialogs/CustomDialog';
 import { useState } from 'react';
 import { AddEditDocumentType } from '../create/AddEditDocumentType';
 import { OverflowMenuVertical } from '@carbon/icons-react';
 import { ConfirmDialog } from '@/features/common/components/dialogs/ConfirmDialog';
 import { useDeleteDocumentType } from '@/features/document-types/hooks/useDeleteDocumentType';
+import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 
 interface DocumentTypesTableProps {
   documentTypes: DocumentType[];
@@ -98,11 +98,9 @@ export const DocumentTypesTable: React.FC<DocumentTypesTableProps> = ({ document
         </MenuItem>
       </Menu>
 
-      {openEditDialog && (
-        <CustomDialog title="Edit document type" handleClose={handleCloseEditDialog}>
-          <AddEditDocumentType documentType={selectedDocumentType} onClose={handleCloseEditDialog} />
-        </CustomDialog>
-      )}
+      <CustomDrawer title="Edit document type" open={openEditDialog} drawerSxProps={{ width: '40%' }} handleClose={handleCloseEditDialog}>
+        <AddEditDocumentType documentType={selectedDocumentType} onClose={handleCloseEditDialog} />
+      </CustomDrawer>
 
       {openDeleteDialog && (
         <ConfirmDialog

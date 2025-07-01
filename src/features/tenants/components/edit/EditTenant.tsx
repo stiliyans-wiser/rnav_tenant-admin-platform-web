@@ -81,7 +81,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
   return (
     <Stack sx={{ height: '100%' }}>
       <FormProvider {...formMethods}>
-        <Stack component="form" sx={{ flex: 1, justifyContent: 'space-between' }}>
+        <Stack component="form" sx={{ flex: 1 }}>
           <Stack sx={{ flex: 1 }}>{getSectionContent()}</Stack>
         </Stack>
       </FormProvider>

@@ -1,8 +1,8 @@
 import { Add } from '@carbon/icons-react';
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import { CustomDialog } from '@/features/common/components/dialogs/CustomDialog';
 import { AddEditDocumentType } from '@/features/document-types/components/create/AddEditDocumentType';
+import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 
 export const DocumentTypeActionControls = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -13,11 +13,14 @@ export const DocumentTypeActionControls = () => {
         New Document Type
       </Button>
 
-      {openAddDialog && (
-        <CustomDialog title="Add document type" handleClose={() => setOpenAddDialog(false)}>
-          <AddEditDocumentType onClose={() => setOpenAddDialog(false)} />
-        </CustomDialog>
-      )}
+      <CustomDrawer
+        title="Add document type"
+        open={openAddDialog}
+        drawerSxProps={{ width: '30%' }}
+        handleClose={() => setOpenAddDialog(false)}
+      >
+        <AddEditDocumentType onClose={() => setOpenAddDialog(false)} />
+      </CustomDrawer>
     </>
   );
 };
