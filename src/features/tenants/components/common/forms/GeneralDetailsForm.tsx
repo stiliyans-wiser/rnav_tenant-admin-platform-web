@@ -25,6 +25,13 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
         setValue(formFieldNames.documents.documentDataSources, adminConfig.document_data_sources);
       }
     }
+
+    if (adminConfig?.chat_strategy) {
+      const currentValue = getValues(formFieldNames.generalDetails.chatStrategy);
+      if (!currentValue) {
+        setValue(formFieldNames.generalDetails.chatStrategy, adminConfig.chat_strategy[0]);
+      }
+    }
   }, [adminConfig, setValue, getValues]);
 
   const selectedDataSourceValues = useWatch({
@@ -99,6 +106,28 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
       />
 
       <Divider sx={{ my: 4 }} />
+
+      <Controller
+        name={formFieldNames.generalDetails.chatStrategy}
+        control={control}
+        rules={{ required: 'This field is required' }}
+        render={({ field, fieldState }) => (
+          <MuiSelect
+            sx={{ mb: 4 }}
+            field={{ ...field, value: field.value || '' }}
+            label="Chat strategy"
+            placeholder="Select chat strategy"
+            fieldState={fieldState}
+            options={adminConfig?.chat_strategy?.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          />
+        )}
+      />
+
+      <Divider sx={{ mb: 4 }} />
 
       <Controller
         name={formFieldNames.settings.preferredCurrency}
