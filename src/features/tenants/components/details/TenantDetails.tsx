@@ -34,6 +34,7 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
       },
     },
     document_data_sources: tenant.document_data_sources,
+    chat_strategy: tenant.chat_strategy,
   };
 
   const brandAndTheming: BrandAndThemingData = {

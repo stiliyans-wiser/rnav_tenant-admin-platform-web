@@ -2,6 +2,7 @@ export const formFieldNames = {
   generalDetails: {
     companyName: 'company_name',
     domain: 'domain',
+    chatStrategy: 'chat_strategy'
   },
   settings: {
     preferredCurrency: 'settings.preferred_currency',

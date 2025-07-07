@@ -7,4 +7,5 @@ export interface AdminConfig {
   sso_providers: string[];
   themes: string[];
   document_data_sources: string[];
+  chat_strategy: string[];
 }

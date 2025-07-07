@@ -1,12 +1,14 @@
 import { Stack, Typography } from '@mui/material';
 import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.interface';
 import { DOCUMENT_DATA_SOURCE_LABELS } from '@/features/tenants/constants/messages.constants';
+import { ChatStrategyEnum } from '@/features/tenants/enums/chat-strategy.enum';
 
 export interface GeneralDetailsData {
   company_name: string;
   domain: string;
   settings: TenantSettings;
   document_data_sources: string[];
+  chat_strategy: ChatStrategyEnum;
 }
 
 interface GeneralDetailsViewProps {
@@ -43,6 +45,15 @@ export const GeneralDetailsView = ({ data }: GeneralDetailsViewProps) => {
           <Typography variant="caption">Selected document data sources</Typography>
           <Typography variant="subtitle2">
             {data.document_data_sources?.map(dataSource => DOCUMENT_DATA_SOURCE_LABELS[dataSource] || dataSource).join(', ')}
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <Stack direction="row" gap={3}>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Chat strategy</Typography>
+          <Typography variant="subtitle2">
+            {data.chat_strategy}
           </Typography>
         </Stack>
       </Stack>

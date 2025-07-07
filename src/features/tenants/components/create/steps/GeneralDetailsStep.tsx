@@ -12,6 +12,7 @@ export const GeneralDetailsStep = ({ onBack, onNext }: CreateTenantStepProps) =>
     formFieldNames.generalDetails.companyName,
     formFieldNames.generalDetails.domain,
     formFieldNames.documents.documentDataSources,
+    formFieldNames.generalDetails.chatStrategy,
     formFieldNames.settings.preferredCurrency,
     formFieldNames.settings.preferredTimezone,
   ]);
