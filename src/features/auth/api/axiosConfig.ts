@@ -1,41 +1,37 @@
-import axios from 'axios';
-import { authConstants } from '@/features/auth/constants/authConstants';
-import { isClient } from '@/features/common/utils/is-client.util';
+import { signOut } from 'next-auth/react';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { url as loginUrl } from '@/features/auth/api/authApi';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-api.interceptors.request.use(
-  config => {
-    if (isClient()) {
-      const key = localStorage.getItem(authConstants.localStorage.masterLoginKey);
+let sessionToken: string | null = null;
 
-      if (key) {
-        const separator = config.url?.includes('?') ? '&' : '?';
-        config.url = `${config.url}${separator}key=${key}`;
-      }
-    }
+export const setSessionToken = (token: string | null) => {
+  sessionToken = token;
+};
 
-    return config;
-  },
-  error => {
-    return Promise.reject(error);
-  },
-);
+const setAuthorizationHeader = (config: InternalAxiosRequestConfig) => {
+  if (sessionToken) {
+    config.headers['Authorization'] = `Bearer ${sessionToken}`;
+  }
 
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      if (isClient()) {
-        localStorage.removeItem(authConstants.localStorage.masterLoginKey);
-        window.location.href = '/login';
-      }
-    }
+  return config;
+};
 
-    return Promise.reject(error);
-  },
-);
+const handleUnauthorizedResponse = async (error: AxiosError) => {
+  const isLoginEndpoint = error.config?.url === loginUrl;
+
+  if (error.response?.status === 401 && !isLoginEndpoint) {
+    sessionToken = null;
+    await signOut({ redirect: false });
+  }
+
+  return Promise.reject(error);
+};
+
+api.interceptors.request.use(setAuthorizationHeader, error => Promise.reject(error));
+api.interceptors.response.use(response => response, handleUnauthorizedResponse);
 
 export default api;

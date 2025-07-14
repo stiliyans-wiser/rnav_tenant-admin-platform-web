@@ -9,6 +9,10 @@ const settingsNavRoutes: NavItemRoute[] = [
     href: '/settings/document-types',
     label: 'Document types',
   },
+  {
+    href: '/settings/users',
+    label: 'Users',
+  },
 ];
 
 export const SettingsNavbar = () => {

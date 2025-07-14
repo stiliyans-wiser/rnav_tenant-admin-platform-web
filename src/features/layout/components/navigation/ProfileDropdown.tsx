@@ -1,13 +1,17 @@
 'use client';
 
-import { Avatar, Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import { signOut } from 'next-auth/react';
+import { Avatar, Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { getUserInitials } from '@/features/layout/utils/userInitialsUtil';
 import { ThemeSwitcher } from '@/features/theming/components/ThemeSwitcher';
-import { useAuth } from '@/features/auth/context/AuthContext';
 
 export const ProfileDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { logout } = useAuth();
+  const { currentUser } = useAuth();
+
+  const initials = getUserInitials(currentUser?.name);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
@@ -17,9 +21,9 @@ export const ProfileDropdown = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/login' });
     handleMenuClose();
-    logout();
   };
 
   return (
@@ -27,10 +31,10 @@ export const ProfileDropdown = () => {
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', cursor: 'pointer' }}>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }} onClick={e => handleMenuOpen(e)}>
           <Avatar sx={{ width: 28, height: 28, marginLeft: 2 }}>
-            <Typography variant="body1">A</Typography>
+            <Typography variant="body1">{initials}</Typography>
           </Avatar>
           <Typography variant="body1" noWrap>
-            Admin
+            {currentUser?.name}
           </Typography>
         </Stack>
 
