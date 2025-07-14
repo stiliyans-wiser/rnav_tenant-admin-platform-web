@@ -1,37 +1,39 @@
 'use client';
 
-import { useAuth } from '../context/AuthContext';
-import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { isClient } from '@/features/common/utils/is-client.util';
+import { redirect, usePathname } from 'next/navigation';
+import { Typography } from '@mui/material';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-export function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
+export const AuthGuard = ({ children }: AuthGuardProps) => {
+  const { isAuthenticated, isLoading } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
     if (!isAuthenticated && pathname !== '/login') {
-      router.replace('/login');
+      redirect('/login');
     }
 
-    if (isAuthenticated && pathname === '/login') {
-      router.replace('/tenants');
+    if (isAuthenticated && (pathname === '/login' || pathname === '/')) {
+      redirect('/tenants');
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, isLoading, pathname]);
 
-  // Don't render anything during SSR for unauthenticated users
-  if (!isClient()) {
-    return null;
-  }
-
-  if (!isAuthenticated && pathname !== '/login') {
-    return null;
+  if (isLoading) {
+    return (
+      <Typography variant="h6" align="center">
+        Loading...
+      </Typography>
+    );
   }
 
   return <>{children}</>;
-}
+};

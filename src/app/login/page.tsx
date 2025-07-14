@@ -2,40 +2,35 @@
 
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { useAuth } from '@/features/auth/context/AuthContext';
+import { signIn } from 'next-auth/react';
 import { Box, Button, IconButton, InputAdornment, Alert, Typography, Card, CardContent, Stack } from '@mui/material';
 import { View, ViewOff } from '@carbon/icons-react';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
+import { emailRegex } from '@/features/common/utils/regexes';
 
-interface LoginFormData {
-  loginKey: string;
+interface LoginCredentials {
+  username: string;
+  password: string;
 }
 
 export default function LoginPage() {
   const [isRevealKey, setIsRevealKey] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
 
-  const formMethods = useForm<LoginFormData>({
-    defaultValues: {
-      loginKey: '',
-    },
-  });
+  const formMethods = useForm<LoginCredentials>();
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (loginCredentials: LoginCredentials) => {
     try {
-      setError(null);
+      const result = await signIn('credentials', {
+        ...loginCredentials,
+        redirect: false,
+      });
 
-      const loginKeyInput = data.loginKey.trim();
-      if (loginKeyInput) {
-        login(loginKeyInput);
+      if (result?.error) {
+        setError('Invalid credentials');
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Invalid login key. Please try again.');
-      }
+      setError('Login failed. Please try again.');
     }
   };
 
@@ -56,13 +51,34 @@ export default function LoginPage() {
               )}
 
               <Controller
-                name="loginKey"
+                name="username"
                 control={formMethods.control}
-                rules={{ required: 'Login key is required' }}
+                rules={{
+                  required: 'This field is required',
+                  pattern: {
+                    value: emailRegex,
+                    message: 'Please enter a valid email address.',
+                  },
+                }}
                 render={({ field, fieldState }) => (
                   <MuiTextField
-                    label="Login Key"
-                    placeholder="Enter your login key"
+                    label="Your company email"
+                    placeholder="email@example.com"
+                    field={field}
+                    fieldState={fieldState}
+                    sx={{ mb: 3 }}
+                  />
+                )}
+              />
+
+              <Controller
+                name="password"
+                control={formMethods.control}
+                rules={{ required: 'This field is required' }}
+                render={({ field, fieldState }) => (
+                  <MuiTextField
+                    label="Your Password"
+                    placeholder="Enter your password"
                     type={isRevealKey ? 'text' : 'password'}
                     field={field}
                     fieldState={fieldState}
@@ -81,7 +97,7 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button type="submit" fullWidth variant="contained" size="large" disabled={formMethods.formState.isSubmitting} sx={{ mt: 2 }}>
+              <Button type="submit" fullWidth variant="contained" size="large" disabled={!formMethods.formState.isValid} sx={{ mt: 2 }}>
                 Login
               </Button>
             </Box>

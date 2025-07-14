@@ -102,14 +102,12 @@ export const DocumentTypesTable: React.FC<DocumentTypesTableProps> = ({ document
         <AddEditDocumentType documentType={selectedDocumentType} onClose={handleCloseEditDialog} />
       </CustomDrawer>
 
-      {openDeleteDialog && (
-        <ConfirmDialog
-          title={`Are you sure you want to delete document type ${selectedDocumentType?.name}?`}
-          isOpen={openDeleteDialog}
-          handleClose={handleCloseDeleteDialog}
-          handleConfirm={confirmDelete}
-        />
-      )}
+      <ConfirmDialog
+        title={`Are you sure you want to delete document type ${selectedDocumentType?.name}?`}
+        isOpen={openDeleteDialog}
+        handleClose={handleCloseDeleteDialog}
+        handleConfirm={confirmDelete}
+      />
     </>
   );
 };
