@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Topbar } from '@/features/layout/components/navigation/Topbar';
 import { SideNavbar } from '@/features/layout/components/navigation/SideNavbar';
 import { ThemeProvider } from '@mui/material/styles';
+import { ThemeMode } from '@/features/theming/enums/theme-mode.enum';
 import defaultTheme from '@/features/theming/defaultTheme';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +14,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isLoginPage = pathname === '/login';
 
   return (
-    <ThemeProvider theme={defaultTheme} {...({ forceThemeRerender: true } as any)} modeStorageKey="mui-mode">
+    <ThemeProvider theme={defaultTheme} defaultMode={ThemeMode.LIGHT} {...({ forceThemeRerender: true } as any)} modeStorageKey="mui-mode">
       <CssBaseline />
 
       <Stack
