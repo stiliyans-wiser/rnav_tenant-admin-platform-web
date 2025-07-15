@@ -16,13 +16,14 @@ const CURRENCY_OPTIONS: string[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD'];
 const TIMEZONE_OPTIONS: string[] = ['UTC', 'EST', 'PST', 'CET', 'GMT'];
 
 export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: GeneralDetailsFormProps) => {
-  const { control, setValue, getValues } = useFormContext();
+  const { control, setValue, getValues, trigger } = useFormContext();
 
   useEffect(() => {
     if (adminConfig?.document_data_sources) {
       const currentValue = getValues(formFieldNames.documents.documentDataSources);
       if (!currentValue?.length) {
         setValue(formFieldNames.documents.documentDataSources, adminConfig.document_data_sources);
+        trigger(formFieldNames.documents.documentDataSources);
       }
     }
 
@@ -30,9 +31,10 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
       const currentValue = getValues(formFieldNames.generalDetails.chatStrategy);
       if (!currentValue) {
         setValue(formFieldNames.generalDetails.chatStrategy, adminConfig.chat_strategy[0]);
+        trigger(formFieldNames.generalDetails.chatStrategy);
       }
     }
-  }, [adminConfig, setValue, getValues]);
+  }, [adminConfig, setValue, getValues, trigger]);
 
   const selectedDataSourceValues = useWatch({
     control,
