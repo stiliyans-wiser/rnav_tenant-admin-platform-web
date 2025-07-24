@@ -14,6 +14,7 @@ import { useCreateTenant } from '@/features/tenants/hooks/useCreateTenant';
 import { Tenant, TenantForm } from '@/features/tenants/interfaces/tenant.interface';
 import { UsersStep } from '@/features/tenants/components/create/steps/UsersStep';
 import { SuccessStep } from '@/features/tenants/components/create/steps/SuccessStep';
+import { DocumentGroupsStep } from '@/features/tenants/components/create/steps/DocumentGroupsStep';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import {
   buildDocumentDataSourcesRequestBody,
@@ -27,6 +28,7 @@ enum CreateTenantStepEnum {
   BRAND_THEMING,
   AI_SERVICES,
   SSO,
+  DOCUMENT_GROUPS,
   DOCUMENTS,
   PREVIEW,
   ADD_USERS,
@@ -65,6 +67,10 @@ const steps: CreateTenantStep[] = [
     title: 'Preview & Create tenant',
   },
   {
+    id: CreateTenantStepEnum.DOCUMENT_GROUPS,
+    title: TenantSectionTitlesEnum.DOCUMENT_GROUPS,
+  },
+  {
     id: CreateTenantStepEnum.ADD_USERS,
     title: 'Add user',
     subTitle: 'You need to add at least one user to finalise the process of creating a tenant',
@@ -94,6 +100,8 @@ const getStepContent = (
       return <DocumentsStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.PREVIEW:
       return <PreviewStep onNext={onNext} onBack={onBack} onEdit={onEdit} />;
+    case CreateTenantStepEnum.DOCUMENT_GROUPS:
+      return <DocumentGroupsStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.ADD_USERS:
       return <UsersStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.SUCCESS:

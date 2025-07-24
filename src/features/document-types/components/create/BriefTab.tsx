@@ -2,8 +2,9 @@ import { Box } from '@mui/material';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 import { Controller, useFormContext } from 'react-hook-form';
 import { AddEditForm } from '@/features/document-types/interfaces/add-edit-form.interface';
-import { MetadataFieldsSection } from './MetadataFieldsSection';
+import { MetadataFieldPathEnum } from '@/features/common/enums/metadata-field-path.enum';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
+import { MetadataFieldsSection } from '@/features/common/components/metadata-fields/MetadataFieldsSection';
 
 interface BriefTabProps {
   documentType?: DocumentType;
@@ -48,7 +49,11 @@ export const BriefTab = ({ documentType }: BriefTabProps) => {
         )}
       />
 
-      <MetadataFieldsSection fieldPath="brief_metadata.metadata_fields" title="Brief metadata fields" documentType={documentType} />
+      <MetadataFieldsSection<DocumentType>
+        fieldPath={MetadataFieldPathEnum.BRIEF_METADATA_FIELDS}
+        title="Brief metadata fields"
+        documentType={documentType}
+      />
     </Box>
   );
 };

@@ -1,23 +1,22 @@
+import { useState } from 'react';
 import { useFormContext, useFieldArray, useWatch } from 'react-hook-form';
 import { Box, Button, Divider, Typography } from '@mui/material';
 import { Add } from '@carbon/icons-react';
-import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
-import { ColumnTypeEnum } from '../../enums/column-type.enum';
-import { useState } from 'react';
+import { MetadataFieldPathEnum } from '@/features/common/enums/metadata-field-path.enum';
 import { MetadataFieldItemEdit } from './MetadataFieldItemEdit';
-import { MetadataFieldItemView } from '@/features/document-types/components/create/MetadataFieldItemView';
-import { AddEditForm } from '@/features/document-types/interfaces/add-edit-form.interface';
+import { MetadataFieldItemView } from '@/features/common/components/metadata-fields/MetadataFieldItemView';
+import { ColumnTypeEnum } from '@/features/common/enums/column-type.enum';
 
-interface MetadataFieldsSectionProps {
-  fieldPath: 'metadata_fields' | 'brief_metadata.metadata_fields';
+interface MetadataFieldsSectionProps<T> {
+  fieldPath: MetadataFieldPathEnum;
   title: string;
-  documentType?: DocumentType;
+  documentType?: T;
 }
 
-export const MetadataFieldsSection = ({ fieldPath, title, documentType }: MetadataFieldsSectionProps) => {
+export const MetadataFieldsSection = <T = null,>({ fieldPath, title, documentType }: MetadataFieldsSectionProps<T>) => {
   const [editingFieldIndex, setEditingFieldIndex] = useState<number | null>(null);
 
-  const formMethods = useFormContext<AddEditForm>();
+  const formMethods = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control: formMethods.control,
     name: fieldPath,
@@ -36,13 +35,7 @@ export const MetadataFieldsSection = ({ fieldPath, title, documentType }: Metada
    * Get existing fields from document type based on field path
    */
   const getExistingFields = () => {
-    if (fieldPath === 'metadata_fields') {
-      return documentType?.metadata_fields;
-    } else if (fieldPath === 'brief_metadata.metadata_fields') {
-      return documentType?.brief_metadata?.metadata_fields;
-    }
-
-    return [];
+    return documentType ? documentType[fieldPath] || [] : [];
   };
 
   const existingFields = getExistingFields();

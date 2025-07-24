@@ -3,7 +3,8 @@ import { Box } from '@mui/material';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 import { AddEditForm } from '@/features/document-types/interfaces/add-edit-form.interface';
-import { MetadataFieldsSection } from './MetadataFieldsSection';
+import { MetadataFieldPathEnum } from '@/features/common/enums/metadata-field-path.enum';
+import { MetadataFieldsSection } from '@/features/common/components/metadata-fields/MetadataFieldsSection';
 
 interface GeneralTabProps {
   documentType?: DocumentType;
@@ -46,7 +47,11 @@ export const GeneralTab = ({ documentType }: GeneralTabProps) => {
         )}
       />
 
-      <MetadataFieldsSection fieldPath="metadata_fields" title="Included metadata fields" documentType={documentType} />
+      <MetadataFieldsSection<DocumentType>
+        fieldPath={MetadataFieldPathEnum.METADATA_FIELDS}
+        title="Included metadata fields"
+        documentType={documentType}
+      />
     </Box>
   );
 };

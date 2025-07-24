@@ -1,4 +1,4 @@
-import { ColumnTypeEnum } from '@/features/document-types/enums/column-type.enum';
+import { ColumnTypeEnum } from '@/features/common/enums/column-type.enum';
 
 export interface DocumentTypeMetadataFields {
   name: string;
