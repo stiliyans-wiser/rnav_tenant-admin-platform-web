@@ -1,7 +1,7 @@
-import { ColumnTypeEnum } from '@/features/document-types/enums/column-type.enum';
+import { useState } from 'react';
 import { IconButton, Menu, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import { Edit, OverflowMenuVertical } from '@carbon/icons-react';
-import { useState } from 'react';
+import { ColumnTypeEnum } from '@/features/common/enums/column-type.enum';
 
 interface MetadataFieldItemViewProps {
   field: {

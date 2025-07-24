@@ -4,4 +4,5 @@ export enum TenantSectionTitlesEnum {
   AI_SERVICES = 'AI Services',
   SSO = 'SSO',
   DOCUMENTS = 'Documents',
+  DOCUMENT_GROUPS = 'Group Types',
 }

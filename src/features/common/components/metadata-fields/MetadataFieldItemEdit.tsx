@@ -3,9 +3,10 @@ import { Checkmark, Close } from '@carbon/icons-react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
-import { ColumnTypeEnum } from '@/features/document-types/enums/column-type.enum';
+import { ColumnTypeEnum } from '@/features/common/enums/column-type.enum';
 import { useEffect } from 'react';
 import { ColoredPaper } from '@/features/common/components/layout/ColoredPaper';
+import { MetadataFieldPathEnum } from '@/features/common/enums/metadata-field-path.enum';
 
 interface MetadataFieldItemEditProps {
   index: number;
@@ -13,7 +14,7 @@ interface MetadataFieldItemEditProps {
   onSave: () => void;
   onDiscard?: () => void;
   onCancel?: () => void;
-  fieldPath: 'metadata_fields' | 'brief_metadata.metadata_fields';
+  fieldPath: MetadataFieldPathEnum;
 }
 
 /**
