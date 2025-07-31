@@ -8,7 +8,12 @@ import { SSOSection } from '@/features/tenants/components/edit/sections/SSOSecti
 import { DocumentsSection } from '@/features/tenants/components/edit/sections/DocumentsSection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
-import { buildSSOConfigRequestBody, buildThemingRequestBody, parseDocumentTypes } from '@/features/tenants/utils/buildRequestBody';
+import {
+  buildSSOConfigRequestBody,
+  buildThemingRequestBody,
+  parseDocumentTypes,
+  buildIntegrationsRequestBody,
+} from '@/features/tenants/utils/buildRequestBody';
 
 interface EditTenantProps {
   title: TenantSectionTitlesEnum;
@@ -24,6 +29,13 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
   const updateTenant = useUpdateTenant();
 
   const getRequestBody = (): Partial<Tenant> => {
+    if (title === TenantSectionTitlesEnum.GENERAL_DETAILS) {
+      return {
+        ...getValues(),
+        integrations: buildIntegrationsRequestBody(getValues('integrations')),
+      };
+    }
+
     if (title === TenantSectionTitlesEnum.BRAND_AND_THEMING) {
       return {
         ...getValues(),

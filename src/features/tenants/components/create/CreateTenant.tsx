@@ -18,6 +18,7 @@ import { DocumentGroupsStep } from '@/features/tenants/components/create/steps/D
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import {
   buildDocumentDataSourcesRequestBody,
+  buildIntegrationsRequestBody,
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
   parseDocumentTypes,
@@ -172,6 +173,7 @@ export const CreateTenant = () => {
 
     return {
       ...formValues,
+      integrations: buildIntegrationsRequestBody(formValues.integrations),
       settings: buildThemingRequestBody(formValues.settings),
       sso_config: buildSSOConfigRequestBody(formMethods.getValues('sso_config')),
       document_types: parseDocumentTypes(formMethods.getValues('document_types')),

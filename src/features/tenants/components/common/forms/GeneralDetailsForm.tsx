@@ -65,7 +65,13 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
         control={control}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Company name" placeholder="Add company name" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
+          <MuiTextField
+            sx={{ mb: 4 }}
+            label="Company name"
+            placeholder="Add company name"
+            field={{ ...field, value: field.value || '' }}
+            fieldState={fieldState}
+          />
         )}
       />
 
@@ -75,7 +81,13 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
         disabled={disabledFields.includes(formFieldNames.generalDetails.domain)}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Domain name" placeholder="Add domain name" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
+          <MuiTextField
+            sx={{ mb: 4 }}
+            label="Domain name"
+            placeholder="Add domain name"
+            field={{ ...field, value: field.value || '' }}
+            fieldState={fieldState}
+          />
         )}
       />
 
@@ -88,6 +100,7 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
           <MuiSelect
+            sx={{ mb: 4 }}
             field={field}
             label="Document Data Sources"
             placeholder="Select Document Data Sources"
@@ -107,7 +120,40 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
         )}
       />
 
-      <Divider sx={{ my: 4 }} />
+      <Controller
+        name={formFieldNames.generalDetails.integrations}
+        control={control}
+        render={({ field, fieldState }) => (
+          <MuiSelect
+            sx={{ mb: 4 }}
+            field={{ ...field, value: field.value || [] }}
+            label="Integrations"
+            placeholder="Select integration(s)"
+            fieldState={fieldState}
+            required={false}
+            multiple={true}
+            options={adminConfig?.integrations?.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+            renderValue={(selected: string[]) => (
+              <Stack direction="row" sx={{ flexWrap: 'wrap' }} gap={0.5}>
+                {selected?.map((integration: string) => (
+                  <Chip
+                    key={integration}
+                    label={integration}
+                    onDelete={() => {
+                      field.onChange(selected.filter(s => s !== integration));
+                    }}
+                    onMouseDown={event => event.stopPropagation()}
+                  />
+                ))}
+              </Stack>
+            )}
+          />
+        )}
+      />
 
       <Controller
         name={formFieldNames.generalDetails.chatStrategy}
