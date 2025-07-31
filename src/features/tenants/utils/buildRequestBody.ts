@@ -57,3 +57,13 @@ export const buildDocumentDataSourcesRequestBody = (dataSourceValues: string[]):
 
   return dataSourceValues;
 };
+
+export const buildIntegrationsRequestBody = (selectedIntegrations: string[]): Record<string, { enabled: boolean }> => {
+  if (!selectedIntegrations?.length) {
+    return {};
+  }
+
+  const integrations: Record<string, { enabled: boolean }> = {};
+  selectedIntegrations.forEach(integration => (integrations[integration] = { enabled: true }));
+  return integrations;
+};

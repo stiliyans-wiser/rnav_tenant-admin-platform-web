@@ -8,6 +8,7 @@ export interface Tenant {
   id?: string;
   company_name: string;
   domain: string;
+  integrations: Record<string, any>;
   settings: TenantSettings;
   ai_config: AIConfig;
   sso_config: SSOConfig | null;
@@ -16,6 +17,7 @@ export interface Tenant {
   chat_strategy: ChatStrategyEnum;
 }
 
-export interface TenantForm extends Omit<Tenant, 'document_types'> {
+export interface TenantForm extends Omit<Tenant, 'document_types' | 'integrations'> {
   document_types: string[];
+  integrations: string[];
 }

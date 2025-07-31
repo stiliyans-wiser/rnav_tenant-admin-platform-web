@@ -8,4 +8,5 @@ export interface AdminConfig {
   themes: string[];
   document_data_sources: string[];
   chat_strategy: string[];
+  integrations: string[];
 }
