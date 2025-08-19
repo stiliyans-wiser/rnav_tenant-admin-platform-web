@@ -15,6 +15,7 @@ export const MuiTextField = ({
   type = 'text',
   field,
   fieldState,
+  size = 'medium',
   required = true,
   multiline = false,
   rows,
@@ -33,6 +34,7 @@ export const MuiTextField = ({
         fullWidth
         variant="outlined"
         type={type}
+        size={size}
         placeholder={placeholder}
         slotProps={slotProps}
         error={!!fieldState.error && fieldState.isTouched}

@@ -4,7 +4,7 @@ import { ThemeMode } from '@/features/theming/enums/theme-mode.enum';
 import { CheckmarkFilled, ColorSwitch, Sun } from '@carbon/icons-react';
 import { Image as ImageIcon } from '@carbon/icons-react/lib/generated/bucket-9';
 import { ColorThemeSelector } from '@/features/tenants/components/common/theming/ColorThemeSelector';
-import { themes } from '@/features/theming/themes';
+import { themes } from '@/features/theming/constants/themes';
 import { TenantLogo } from '@/features/tenants/interfaces/tenant-logo.interface';
 
 export interface BrandAndThemingData {

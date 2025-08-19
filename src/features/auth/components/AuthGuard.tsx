@@ -23,7 +23,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     }
 
     if (isAuthenticated && (pathname === '/login' || pathname === '/')) {
-      redirect('/tenants');
+      redirect('/dashboard');
     }
   }, [isAuthenticated, isLoading, pathname]);
 

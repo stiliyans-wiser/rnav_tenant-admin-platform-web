@@ -9,4 +9,5 @@ export interface AdminConfig {
   document_data_sources: string[];
   chat_strategy: string[];
   integrations: string[];
+  time_periods: string[];
 }
