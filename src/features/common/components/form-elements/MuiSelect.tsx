@@ -12,6 +12,7 @@ interface MuiSelectProps extends Omit<SelectProps, 'options'> {
 
 export const MuiSelect = ({
   sx,
+  size,
   label,
   placeholder,
   multiple = false,
@@ -36,6 +37,7 @@ export const MuiSelect = ({
         fullWidth
         displayEmpty
         variant="outlined"
+        size={size}
         open={selectOpen}
         autoFocus={selectOpen}
         multiple={multiple}

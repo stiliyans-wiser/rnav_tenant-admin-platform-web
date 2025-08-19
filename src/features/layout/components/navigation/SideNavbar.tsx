@@ -3,11 +3,16 @@
 import { Divider, List, ListItemButton, ListItemIcon, ListItemText, Paper } from '@mui/material';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Group as TenantsIcon, SettingsAdjust } from '@carbon/icons-react';
+import { Group as TenantsIcon, SettingsAdjust, Dashboard as DashboardIcon } from '@carbon/icons-react';
 import { NavItemRoute } from '@/features/layout/interfaces/nav-item-route.interface';
 import { SettingsNavbar } from '@/features/layout/components/navigation/SettingsNavbar';
 
 const sideNavRoutes: NavItemRoute[] = [
+  {
+    href: '/dashboard',
+    label: 'Dashboard',
+    icon: <DashboardIcon />,
+  },
   {
     href: '/tenants',
     label: 'Tenants',
