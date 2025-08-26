@@ -19,7 +19,7 @@ export const CostSummaryWidget = ({ data }: CostSummaryWidgetProps) => {
       return (
         <Paper variant="outlined" sx={{ p: 1 }}>
           <Typography variant="body2">
-            {data.name}: ${formatNumber(data.value)}
+            {data.name}: ${formatNumber(data.value, 2)}
           </Typography>
         </Paper>
       );
@@ -57,7 +57,7 @@ export const CostSummaryWidget = ({ data }: CostSummaryWidgetProps) => {
               textAlign: 'center',
             }}
           >
-            ${formatNumber(data.totalCost)}
+            ${formatNumber(data.totalCost, 2)}
           </Typography>
         </Box>
       ) : (
