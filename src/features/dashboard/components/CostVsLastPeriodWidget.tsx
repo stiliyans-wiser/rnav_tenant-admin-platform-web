@@ -20,11 +20,11 @@ export const CostVsLastPeriodWidget = ({ data }: CostVsLastPeriodWidgetProps) =>
 
       {data ? (
         <Stack direction="row" gap={2} sx={{ justifyContent: 'center', alignItems: 'center', flex: 1, height: 200 }}>
-          <Typography variant="h4">${formatNumber(data?.currentPeriodCost)}</Typography>
+          <Typography variant="h4">${formatNumber(data?.currentPeriodCost, 2)}</Typography>
 
           <Stack direction="row" sx={{ alignItems: 'center', color }}>
             {isCostIncreased ? <ArrowUp /> : <ArrowDown />}
-            <Typography variant="h5">${formatNumber(data?.previousPeriodCost)}</Typography>
+            <Typography variant="h5">${formatNumber(data?.previousPeriodCost, 2)}</Typography>
           </Stack>
         </Stack>
       ) : (
