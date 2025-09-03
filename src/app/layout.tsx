@@ -1,27 +1,22 @@
 import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
 import InitColorSchemeScript from '@mui/system/InitColorSchemeScript';
 import { AppLayout } from '@/features/layout/components/AppLayout';
 import { AuthGuard } from '@/features/auth/components/AuthGuard';
 import { ClientProviders } from '@/features/common/providers/ClientProviders';
 
 import '../index.scss';
+import { colorSchemeSelectorConst, muiModeStorageKeyConst } from '@/features/theming/constants/themingConst';
 
 export const metadata: Metadata = {
-  title: 'Productised AI Services - Back-office',
+  title: 'Productised AI Factory - Back-office',
   description: 'Back office platform for tenant management',
 };
-
-const font = Montserrat({
-  subsets: ['latin'],
-  variable: '--font-montserrat',
-});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={font.variable}>
-        <InitColorSchemeScript modeStorageKey="mui-mode" attribute="data-mui-color-scheme" />
+      <body>
+        <InitColorSchemeScript modeStorageKey={muiModeStorageKeyConst} attribute={colorSchemeSelectorConst} />
         <ClientProviders>
           <AuthGuard>
             <AppLayout>{children}</AppLayout>
