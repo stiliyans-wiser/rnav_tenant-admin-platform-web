@@ -2,13 +2,15 @@
 
 import { createTheme } from '@mui/material';
 import Link from 'next/link';
+import { colorSchemeSelectorConst, typographyConst } from '@/features/theming/constants/themingConst';
+import { createFontFaceDeclarations } from '@/features/theming/utils/themeUtils';
 
 export const lightBlueTheme = createTheme({
   cssVariables: {
-    colorSchemeSelector: 'data-mui-color-scheme',
+    colorSchemeSelector: colorSchemeSelectorConst,
   },
   typography: {
-    fontFamily: 'var(--font-montserrat)',
+    fontFamily: typographyConst.fontFamily,
   },
   colorSchemes: {
     light: {
@@ -115,6 +117,9 @@ export const lightBlueTheme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: createFontFaceDeclarations(typographyConst.fontFamily),
+    },
     MuiButton: {
       defaultProps: {
         LinkComponent: Link,

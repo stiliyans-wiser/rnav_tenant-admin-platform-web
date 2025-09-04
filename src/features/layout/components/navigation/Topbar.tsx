@@ -26,15 +26,15 @@ export const Topbar = () => {
     >
       <Stack direction="row" sx={{ alignItems: 'center' }}>
         <Link data-testid="topbarLogo" component="div">
-          <Typography variant="h2" sx={{ paddingX: 3 }}>
-            <Image src={logo} alt="Logo" width={104} height={32} />
-          </Typography>
+          <Stack sx={{ paddingX: 3, alignItems: 'center' }}>
+            <Image src={logo} alt="Logo" width={104} height={32} style={{ objectFit: 'contain' }} />
+          </Stack>
         </Link>
 
         <Divider orientation="vertical" variant="middle" flexItem />
 
         <Typography variant="body1" sx={{ paddingLeft: 2 }}>
-          Productised AI Services - Back-office
+          Productised AI Factory - Back-office
         </Typography>
       </Stack>
 
