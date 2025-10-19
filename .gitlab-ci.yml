@@ -7,7 +7,7 @@ include:
 stages:
 - build
 - test
-- package-dev
+- package
 
 default:
   tags:
@@ -35,8 +35,8 @@ build-app:
   - main
   - merge_requests
 
-package-dev:
-  stage: package-dev
+package:
+  stage: package
   image:
     name: gcr.io/kaniko-project/executor:v1.23.2-debug
     entrypoint: ['']
@@ -45,7 +45,11 @@ package-dev:
   script:
     - |
       echo "Building and shipping image to $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s)".
-      cp ./deploy/.env.dev ./.env.production
+      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+        cp ./deploy/.env.main ./.env.production
+      else
+        cp ./deploy/.env.dev ./.env.production
+      fi
       mkdir -p /kaniko/.docker
       echo "{\"auths\":{\"$PRIME_REGISTRY\":{\"auth\":\"$(echo -n $PRIME_REGISTRY_USER:$PRIME_REGISTRY_TOKEN | base64 -w0)\"}}}" > /kaniko/.docker/config.json
       /kaniko/executor --compressed-caching=false --cache=true --cache-copy-layers=true --cache-ttl=48h --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s) --single-snapshot --snapshotMode=redo --use-new-run
