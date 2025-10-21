@@ -57,6 +57,8 @@ package:
       /kaniko/executor --compressed-caching=false --cache=true --cache-copy-layers=true --cache-ttl=48h --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s) --single-snapshot --snapshotMode=redo --use-new-run
   only:
   - dev
+  - main
+  - taqa
 
 owasp-zap:
   image: zaproxy/zap-stable
