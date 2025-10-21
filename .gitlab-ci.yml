@@ -47,6 +47,8 @@ package:
       echo "Building and shipping image to $DOCKER_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$(date +%s)".
       if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
         cp ./deploy/.env.main ./.env.production
+      elif [ "$CI_COMMIT_REF_NAME" = "taqa" ]; then
+        cp ./deploy/.env.taqa ./.env.production
       else
         cp ./deploy/.env.dev ./.env.production
       fi
