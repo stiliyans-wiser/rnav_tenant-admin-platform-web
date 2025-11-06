@@ -16,6 +16,8 @@ interface LoginCredentials {
 export default function LoginPage() {
   const [isRevealKey, setIsRevealKey] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isTaqaHost = typeof window !== 'undefined' && (window.location.hostname === 'taqa' || window.location.href.includes('taqa'));
+  const loginTitle = isTaqaHost ? 'Login into TQ* Back-office' : 'Login';
 
   const formMethods = useForm<LoginCredentials>();
 
@@ -39,7 +41,7 @@ export default function LoginPage() {
       <Card variant="outlined" sx={{ alignSelf: 'center', width: '520px', padding: 3 }}>
         <CardContent>
           <Typography variant="h6" sx={{ marginY: 2, textAlign: 'center' }}>
-            Login
+            {loginTitle}
           </Typography>
 
           <FormProvider {...formMethods}>
