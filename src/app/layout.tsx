@@ -6,11 +6,17 @@ import { ClientProviders } from '@/features/common/providers/ClientProviders';
 
 import '../index.scss';
 import { colorSchemeSelectorConst, muiModeStorageKeyConst } from '@/features/theming/constants/themingConst';
+import { headers } from 'next/headers';
 
-export const metadata: Metadata = {
-  title: 'Productised AI Factory - Back-office',
-  description: 'Back office platform for tenant management',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const hdrs = headers();
+  const host = hdrs.get('x-forwarded-host') ?? hdrs.get('host') ?? '';
+  const isTaqa = host.includes('taqa');
+  return {
+    title: isTaqa ? 'TQ* Investment Advisor - Back-office' : 'Productised AI Factory - Back-office',
+    description: isTaqa ? 'Back office platform for TQ* Investment Advisor' : 'Back office platform for Productised AI Factory',
+  };
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

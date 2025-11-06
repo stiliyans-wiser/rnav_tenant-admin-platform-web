@@ -3,14 +3,42 @@
 import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import { useColorScheme } from '@mui/material';
+import { useParams } from 'next/navigation';
 import { ProfileDropdown } from './ProfileDropdown';
 import { ThemeMode } from '@/features/theming/enums/theme-mode.enum';
 import lightThemeLogo from '@/assets/logo-light-theme.png';
 import darkThemeLogo from '@/assets/logo-dark-theme.png';
+import { useGetTenantById } from '@/features/tenants/hooks/useGetTenantById';
+import { useGetTenants } from '@/features/tenants/hooks/useGetTenants';
+import { ChatStrategyEnum } from '@/features/tenants/enums/chat-strategy.enum';
 
 export const Topbar = () => {
   const { mode } = useColorScheme();
-  const logo = mode === ThemeMode.LIGHT ? lightThemeLogo : darkThemeLogo;
+  const params = useParams();
+  const tenantId = (params as any)?.id as string | undefined;
+  const { data: tenant } = useGetTenantById(tenantId || '');
+  const { data: tenants } = useGetTenants();
+  const effectiveTenant = tenant ?? tenants?.[0];
+
+  const lightLogoSrc = effectiveTenant?.settings?.logos?.light
+    ? `data:${effectiveTenant.settings.logos.light.file_type};base64,${effectiveTenant.settings.logos.light.content_base64}`
+    : lightThemeLogo;
+
+  const darkLogoSrc = effectiveTenant?.settings?.logos?.dark
+    ? `data:${effectiveTenant.settings.logos.dark.file_type};base64,${effectiveTenant.settings.logos.dark.content_base64}`
+    : effectiveTenant?.settings?.logos?.light
+      ? `data:${effectiveTenant.settings.logos.light.file_type};base64,${effectiveTenant.settings.logos.light.content_base64}`
+      : darkThemeLogo;
+
+  const logo = mode === ThemeMode.LIGHT ? lightLogoSrc : darkLogoSrc;
+
+  const defaultTitle = 'Productised AI Factory - Back-office';
+  const titleByStrategy: Record<ChatStrategyEnum, string> = {
+    [ChatStrategyEnum.DEFAULT]: defaultTitle,
+    [ChatStrategyEnum.PATIENT_HEALTH_PROFILE]: 'Patient Health Profile - Back-office',
+    [ChatStrategyEnum.TAQA]: 'TQ* Investment Advisor - Back-office',
+  };
+  const title = effectiveTenant?.chat_strategy ? (titleByStrategy[effectiveTenant.chat_strategy] ?? defaultTitle) : defaultTitle;
 
   return (
     <Paper
@@ -34,7 +62,7 @@ export const Topbar = () => {
         <Divider orientation="vertical" variant="middle" flexItem />
 
         <Typography variant="body1" sx={{ paddingLeft: 2 }}>
-          Productised AI Factory - Back-office
+          {title}
         </Typography>
       </Stack>
 
