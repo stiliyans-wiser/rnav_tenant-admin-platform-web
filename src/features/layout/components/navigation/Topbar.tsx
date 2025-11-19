@@ -32,11 +32,11 @@ export const Topbar = () => {
 
   const logo = mode === ThemeMode.LIGHT ? lightLogoSrc : darkLogoSrc;
 
-  const defaultTitle = 'Productised AI Factory - Back-office';
+  const defaultTitle = 'Productised AI Factory - Back Office';
   const titleByStrategy: Record<ChatStrategyEnum, string> = {
     [ChatStrategyEnum.DEFAULT]: defaultTitle,
-    [ChatStrategyEnum.PATIENT_HEALTH_PROFILE]: 'Patient Health Profile - Back-office',
-    [ChatStrategyEnum.TAQA]: 'TQ* Investment Advisor - Back-office',
+    [ChatStrategyEnum.PATIENT_HEALTH_PROFILE]: 'Patient Health Profile - Back Office',
+    [ChatStrategyEnum.TAQA]: 'TQ* Investment Advisor - Back Office',
   };
   const title = effectiveTenant?.chat_strategy ? (titleByStrategy[effectiveTenant.chat_strategy] ?? defaultTitle) : defaultTitle;
 
