@@ -7,14 +7,27 @@ interface MuiSelectProps extends Omit<SelectProps, 'options'> {
   field: ControllerRenderProps<any, string>;
   fieldState: ControllerFieldState;
   options: React.ReactNode;
+  required?: boolean;
 }
 
-export const MuiSelect = ({ label, placeholder, multiple = false, field, fieldState, options, renderValue, MenuProps }: MuiSelectProps) => {
+export const MuiSelect = ({
+  sx,
+  size,
+  label,
+  placeholder,
+  multiple = false,
+  required = true,
+  field,
+  fieldState,
+  options,
+  renderValue,
+  MenuProps,
+}: MuiSelectProps) => {
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
 
   return (
-    <>
-      <InputLabel htmlFor={field.name} shrink onClick={() => setSelectOpen(true)}>
+    <Box sx={sx}>
+      <InputLabel htmlFor={field.name} required={required} shrink onClick={() => setSelectOpen(true)}>
         {label}
       </InputLabel>
 
@@ -24,10 +37,11 @@ export const MuiSelect = ({ label, placeholder, multiple = false, field, fieldSt
         fullWidth
         displayEmpty
         variant="outlined"
+        size={size}
         open={selectOpen}
         autoFocus={selectOpen}
         multiple={multiple}
-        error={!!fieldState.error}
+        error={!!fieldState.error && fieldState.isTouched}
         renderValue={(selected: any) => {
           if (!selected?.length) {
             return <Box sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>{placeholder}</Box>;
@@ -42,11 +56,11 @@ export const MuiSelect = ({ label, placeholder, multiple = false, field, fieldSt
         {options}
       </Select>
 
-      {fieldState.error && (
+      {fieldState.error && fieldState.isTouched ? (
         <FormHelperText error sx={{ ml: 2 }}>
           {fieldState.error.message}
         </FormHelperText>
-      )}
-    </>
+      ) : null}
+    </Box>
   );
 };

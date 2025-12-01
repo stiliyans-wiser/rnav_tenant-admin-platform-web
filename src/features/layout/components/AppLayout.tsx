@@ -2,33 +2,38 @@
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Stack } from '@mui/material';
+import { usePathname } from 'next/navigation';
 import { Topbar } from '@/features/layout/components/navigation/Topbar';
 import { SideNavbar } from '@/features/layout/components/navigation/SideNavbar';
 import { ThemeProvider } from '@mui/material/styles';
-import defaultTheme from '@/features/theming/default-theme';
-import { usePathname } from 'next/navigation';
+import { ThemeMode } from '@/features/theming/enums/theme-mode.enum';
+import defaultTheme from '@/features/theming/constants/defaultTheme';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isLoginPage = pathname === '/login';
 
   return (
-    <ThemeProvider theme={defaultTheme} {...({ forceThemeRerender: true } as any)} modeStorageKey="mui-mode">
+    <ThemeProvider theme={defaultTheme} defaultMode={ThemeMode.LIGHT} {...({ forceThemeRerender: true } as any)} modeStorageKey="mui-mode">
       <CssBaseline />
 
-      <Stack sx={{ width: '100%', minHeight: '100vh', backgroundColor: 'background.default' }}>
+      <Stack
+        sx={{
+          width: '100%',
+          height: '100vh',
+          backgroundColor: 'background.default',
+        }}
+      >
         {isLoginPage ? (
           children
         ) : (
           <>
             <Topbar />
-            <Stack direction="row" sx={{ flex: 1 }}>
+            <Stack direction="row" sx={{ flex: 1, overflowY: 'auto' }}>
               <Box sx={{ width: 280 }}>
                 <SideNavbar />
               </Box>
-              <Box sx={{ flex: 1 }}>
-                {children}
-              </Box>
+              <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>{children}</Box>
             </Stack>
           </>
         )}

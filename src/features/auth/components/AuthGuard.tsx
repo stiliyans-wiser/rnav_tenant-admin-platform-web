@@ -1,25 +1,39 @@
 'use client';
 
-import { useAuth } from '../context/AuthContext';
-import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import { redirect, usePathname } from 'next/navigation';
+import { Typography } from '@mui/material';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-export function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
+export const AuthGuard = ({ children }: AuthGuardProps) => {
+  const { isAuthenticated, isLoading } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isAuthenticated && pathname !== '/login') {
-      router.replace('/login');
-    } else if (isAuthenticated && pathname === '/login') {
-      router.replace('/tenants');
+    if (isLoading) {
+      return;
     }
-  }, [isAuthenticated, pathname, router]);
+
+    if (!isAuthenticated && pathname !== '/login') {
+      redirect('/login');
+    }
+
+    if (isAuthenticated && (pathname === '/login' || pathname === '/')) {
+      redirect('/dashboard');
+    }
+  }, [isAuthenticated, isLoading, pathname]);
+
+  if (isLoading) {
+    return (
+      <Typography variant="h6" align="center">
+        Loading...
+      </Typography>
+    );
+  }
 
   return <>{children}</>;
-} 
+};

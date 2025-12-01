@@ -4,7 +4,8 @@ const nextConfig = {
   swcMinify: true,
   compiler: {
     emotion: true
-  }
+  },
+  output: 'standalone',
 };
 
 export default nextConfig; 

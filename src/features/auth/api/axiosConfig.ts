@@ -1,33 +1,37 @@
-import axios from 'axios';
-import { authConstants } from '@/features/auth/constants/authConstants';
+import { signOut } from 'next-auth/react';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { url as loginUrl } from '@/features/auth/api/authApi';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-api.interceptors.request.use((config) => {
-  const key = localStorage.getItem(authConstants.localStorage.masterLoginKey);
-  
-  if (key) {
-    const separator = config.url?.includes('?') ? '&' : '?';
-    config.url = `${config.url}${separator}key=${key}`;
+let sessionToken: string | null = null;
+
+export const setSessionToken = (token: string | null) => {
+  sessionToken = token;
+};
+
+const setAuthorizationHeader = (config: InternalAxiosRequestConfig) => {
+  if (sessionToken) {
+    config.headers['Authorization'] = `Bearer ${sessionToken}`;
   }
-  
+
   return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+};
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem(authConstants.localStorage.masterLoginKey);
-      window.location.href = '/login';
-    }
+const handleUnauthorizedResponse = async (error: AxiosError) => {
+  const isLoginEndpoint = error.config?.url === loginUrl;
 
-    return Promise.reject(error);
+  if (error.response?.status === 401 && !isLoginEndpoint) {
+    sessionToken = null;
+    await signOut({ redirect: false });
   }
-);
 
-export default api; 
+  return Promise.reject(error);
+};
+
+api.interceptors.request.use(setAuthorizationHeader, error => Promise.reject(error));
+api.interceptors.response.use(response => response, handleUnauthorizedResponse);
+
+export default api;

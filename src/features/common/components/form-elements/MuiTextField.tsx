@@ -5,6 +5,7 @@ import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
 interface MuiTextFieldProps extends StandardTextFieldProps {
   field: ControllerRenderProps<any, string>;
   fieldState: ControllerFieldState;
+  required?: boolean;
 }
 
 export const MuiTextField = ({
@@ -14,13 +15,15 @@ export const MuiTextField = ({
   type = 'text',
   field,
   fieldState,
+  size = 'medium',
+  required = true,
   multiline = false,
   rows,
   slotProps = {},
 }: MuiTextFieldProps) => {
   return (
     <>
-      <InputLabel htmlFor={field.name} shrink>
+      <InputLabel sx={{ overflow: 'visible' }} htmlFor={field.name} required={required} shrink>
         {label}
       </InputLabel>
 
@@ -31,10 +34,11 @@ export const MuiTextField = ({
         fullWidth
         variant="outlined"
         type={type}
+        size={size}
         placeholder={placeholder}
         slotProps={slotProps}
-        error={!!fieldState.error}
-        helperText={fieldState.error?.message}
+        error={!!fieldState.error && fieldState.isTouched}
+        helperText={fieldState.error?.message && fieldState.isTouched ? fieldState.error.message : ''}
         multiline={multiline}
         rows={rows}
       />

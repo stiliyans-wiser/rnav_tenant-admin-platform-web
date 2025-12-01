@@ -1,24 +1,23 @@
-import { SearchConfig } from './search-config.interface';
-import { AIConfig } from './ai-config.interface';
-import { EmbeddingsConfig } from './embeddings-config.interface';
-import { PromptConfig } from './prompt-config.interface';
-import { DocumentConfig } from './document-config.interface';
-import { FeaturesState } from './features-state.interface';
-import { Settings } from './settings.interface';
+import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
+import { AIConfig } from '@/features/tenants/interfaces/ai-config.interface';
+import { SSOConfig } from '@/features/tenants/interfaces/sso-config.interface';
+import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.interface';
+import { ChatStrategyEnum } from '@/features/tenants/enums/chat-strategy.enum';
 
 export interface Tenant {
-  id: string;
+  id?: string;
   company_name: string;
   domain: string;
-  embeddings_config: EmbeddingsConfig;
-  search_config: SearchConfig;
-  sso_config: null;
-  salesforce_config: null;
+  integrations: Record<string, any>;
+  settings: TenantSettings;
   ai_config: AIConfig;
-  prompt_config: PromptConfig;
-  settings: Settings;
-  document_config: DocumentConfig;
-  features_state: FeaturesState;
-  available_features: string[];
-  custom_document_metadata: null;
+  sso_config: SSOConfig | null;
+  document_types: DocumentType[];
+  document_data_sources: string[];
+  chat_strategy: ChatStrategyEnum;
+}
+
+export interface TenantForm extends Omit<Tenant, 'document_types' | 'integrations'> {
+  document_types: string[];
+  integrations: string[];
 }
