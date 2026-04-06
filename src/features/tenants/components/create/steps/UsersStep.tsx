@@ -12,7 +12,7 @@ import { useCreateTenantUsers } from '@/features/tenants/hooks/useCreateTenantUs
 import { emailRegex } from '@/features/common/utils/regexes';
 import { formFieldNames } from '@/features/tenants/constants/form.constants';
 
-const ROLE_OPTIONS: string[] = ['admin'];
+const ROLE_OPTIONS: string[] = ['admin', 'reqruitment_power_user'];
 
 export const UsersStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
