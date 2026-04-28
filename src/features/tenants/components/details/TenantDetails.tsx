@@ -51,6 +51,7 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const aiServices: AIServicesData = {
     company_name: tenant.company_name,
     ai_config: { ...tenant.ai_config },
+    match_config: tenant.match_config ? { ...tenant.match_config } : { top_k: 50 },
   };
 
   const sso: SSOData = {

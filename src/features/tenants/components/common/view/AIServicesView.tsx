@@ -1,10 +1,12 @@
 import { IconButton, Stack, Typography } from '@mui/material';
 import { CheckmarkFilled, Misuse } from '@carbon/icons-react';
 import { AIConfig } from '@/features/tenants/interfaces/ai-config.interface';
+import { MatchConfig } from '@/features/tenants/interfaces/match-config.interface';
 
 export interface AIServicesData {
   company_name: string;
   ai_config: AIConfig;
+  match_config?: MatchConfig;
 }
 
 interface AIServicesViewProps {
@@ -68,6 +70,13 @@ export const AIServicesView = ({ data }: AIServicesViewProps) => {
           <Typography variant="subtitle2" sx={{ wordBreak: 'break-all' }}>
             {data.ai_config.open_ai_endpoint}
           </Typography>
+        </Stack>
+      </Stack>
+
+      <Stack direction="row" gap={3}>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Recruitment top_k</Typography>
+          <Typography variant="subtitle2">{data.match_config?.top_k ?? 50}</Typography>
         </Stack>
       </Stack>
     </Stack>

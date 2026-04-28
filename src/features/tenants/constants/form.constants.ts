@@ -34,6 +34,9 @@ export const formFieldNames = {
     openAiVersion: 'ai_config.open_ai_version',
     webSearch: 'ai_config.web_search',
   },
+  matchConfig: {
+    topK: 'match_config.top_k',
+  },
   documents: {
     documentTypes: 'document_types',
     documentDataSources: 'document_data_sources',

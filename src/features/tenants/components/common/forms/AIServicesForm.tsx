@@ -113,6 +113,33 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
         defaultValue={false}
         render={({ field }) => <FormControlLabel control={<Switch {...field} checked={field.value} />} label="Include web search" />}
       />
+
+      <Controller
+        name={formFieldNames.matchConfig.topK}
+        control={control}
+        defaultValue={50}
+        rules={{
+          required: 'This field is required',
+          min: {
+            value: 1,
+            message: 'The value must be at least 1',
+          },
+          max: {
+            value: 100,
+            message: 'The value must not exceed 100',
+          },
+        }}
+        render={({ field, fieldState }) => (
+          <MuiTextField
+            sx={{ mt: 4, mb: 1 }}
+            type="number"
+            label="Recruitment matching top_k"
+            placeholder="Add top_k value"
+            field={{ ...field, value: field.value ?? 50 }}
+            fieldState={fieldState}
+          />
+        )}
+      />
     </>
   );
 };
