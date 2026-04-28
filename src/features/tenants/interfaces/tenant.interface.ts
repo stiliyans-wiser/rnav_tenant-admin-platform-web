@@ -3,6 +3,7 @@ import { AIConfig } from '@/features/tenants/interfaces/ai-config.interface';
 import { SSOConfig } from '@/features/tenants/interfaces/sso-config.interface';
 import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.interface';
 import { ChatStrategyEnum } from '@/features/tenants/enums/chat-strategy.enum';
+import { MatchConfig } from '@/features/tenants/interfaces/match-config.interface';
 
 export interface Tenant {
   id?: string;
@@ -15,6 +16,7 @@ export interface Tenant {
   document_types: DocumentType[];
   document_data_sources: string[];
   chat_strategy: ChatStrategyEnum;
+  match_config?: MatchConfig;
 }
 
 export interface TenantForm extends Omit<Tenant, 'document_types' | 'integrations'> {

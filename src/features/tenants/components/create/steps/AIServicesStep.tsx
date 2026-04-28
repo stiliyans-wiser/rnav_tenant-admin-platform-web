@@ -16,6 +16,7 @@ export const AIServicesStep = ({ onBack, onNext }: CreateTenantStepProps) => {
     formFieldNames.aiConfig.openAiEndpoint,
     formFieldNames.aiConfig.openAiVersion,
     formFieldNames.aiConfig.webSearch,
+    formFieldNames.matchConfig.topK,
   ]);
   const { adminConfig } = useCreateTenantContext();
 

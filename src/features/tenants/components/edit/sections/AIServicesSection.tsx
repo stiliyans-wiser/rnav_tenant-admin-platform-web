@@ -16,6 +16,7 @@ export const AIServicesSection = ({ onSave, onCancel }: EditTenantSectionProps) 
     formFieldNames.aiConfig.openAiEndpoint,
     formFieldNames.aiConfig.openAiVersion,
     formFieldNames.aiConfig.webSearch,
+    formFieldNames.matchConfig.topK,
   ]);
 
   return (
