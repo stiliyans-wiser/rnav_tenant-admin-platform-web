@@ -27,10 +27,10 @@ Primary responsibilities:
 
 ```mermaid
 flowchart LR
-    U[Back-office User Browser]
-    N[Next.js Web App<br/>tenant-admin-platform-web]
-    A[NextAuth Route<br/>/next-api/auth/[...nextauth]]
-    B[Backend API<br/>NEXT_PUBLIC_API_URL]
+    U["Back-office User Browser"]
+    N["Next.js Web App<br/>tenant-admin-platform-web"]
+    A["NextAuth Route<br/>/next-api/auth/[...nextauth]"]
+    B["Backend API<br/>NEXT_PUBLIC_API_URL"]
 
     U -->|HTTPS| N
     N -->|credentials login| A
