@@ -246,7 +246,25 @@ Environment variables used by runtime:
 - `AUTH_SECRET`: NextAuth signing secret.
 - `NEXTAUTH_URL`: NextAuth URL base.
 
-## 11. Architectural Strengths and Risks
+## 11. SSO Provider Support
+
+The tenant creation wizard (Step 4: SSO) and tenant edit SSO section now support three identity providers:
+
+| Provider | `type` value | Required config fields |
+|----------|-------------|----------------------|
+| Azure AD | `azure_ad` | `client_id`, `client_secret`, `tenant_id` |
+| Google | `google` | `client_id`, `client_secret` |
+| Keycloak | `keycloak` | `client_id`, `client_secret`, `tenant_id`, `keycloak_url` |
+
+The SSO form should conditionally show `keycloak_url` when Keycloak type is selected. Backend `SsoConfig` model on Account stores the provider config.
+
+## 12. Talent Automation Config (Backend Context)
+
+The backend now supports `TalentAutomationConfig` on Account alongside `MatchWeightConfig`. This config controls M1-M4 talent automation modules (screening, enrichment, reroute, interview prep) with per-tenant toggles and thresholds.
+
+Backoffice admins creating tenants should be aware this config exists but it is managed by tenant admins in the recruiter webapp Configurations page, not in this backoffice app.
+
+## 13. Architectural Strengths and Risks
 
 Strengths:
 
@@ -262,7 +280,7 @@ Risks / technical debt:
 - `AuthGuard` uses client-side redirect behavior only; no server-side auth gating.
 - Root route (`/`) currently renders an empty `QueryClientProvider` component, which can be simplified or redirected explicitly.
 
-## 12. Extension Guidance
+## 14. Extension Guidance
 
 Preferred extension pattern:
 
