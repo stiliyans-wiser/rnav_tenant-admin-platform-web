@@ -1,4 +1,4 @@
-# tenant-admin-platform-web — Platform/Backoffice Admin UI
+# tenant-admin-platform-web — Recruitment Navigator Platform/Backoffice Admin UI
 
 Next.js 14 app for **platform/backoffice admins** (`BackofficeUser`). Despite the repo name,
 this is **not** the tenant admin UI — it serves platform-level ops (create tenants, global config,
