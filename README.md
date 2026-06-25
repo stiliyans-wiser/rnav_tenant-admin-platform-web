@@ -1,8 +1,23 @@
-# React + TypeScript + Vite
+# Tenant Admin Platform (Backoffice UI)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Serves platform/backoffice admins (`BackofficeUser`).
 
-Currently, two official plugins are available:
+## Local Development
+
+1. Ensure dependencies are installed:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   ./scripts/dev.sh
+   ```
+   This will start the UI on port 3001, connecting to the API at `http://localhost:8000` by default.
+
+3. Access the backoffice at: `http://localhost:3001`
+
+---
+*Original README content follows:*
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
