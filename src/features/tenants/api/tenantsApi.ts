@@ -1,5 +1,6 @@
 import api from '@/features/auth/api/axiosConfig';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
+import { ProviderFeatureFlagAudit } from '@/features/tenants/interfaces/provider-feature-flags.interface';
 
 const url = '/admin/accounts';
 
@@ -20,6 +21,11 @@ export const createTenant = async (tenant: Omit<Tenant, 'id'>): Promise<Tenant> 
 
 export const updateTenant = async (id: string, tenant: Partial<Tenant>): Promise<Tenant> => {
   const response = await api.patch<Tenant>(`${url}/${id}`, tenant);
+  return response.data;
+};
+
+export const getTenantProviderFeatureFlagAudit = async (id: string): Promise<ProviderFeatureFlagAudit[]> => {
+  const response = await api.get<ProviderFeatureFlagAudit[]>(`${url}/${id}/provider-feature-flags/audit`);
   return response.data;
 };
 

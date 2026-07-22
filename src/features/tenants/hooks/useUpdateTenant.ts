@@ -11,6 +11,7 @@ export const useUpdateTenant = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: tenantsConstants.tenantKeys.lists() });
       queryClient.invalidateQueries({ queryKey: tenantsConstants.tenantKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: tenantsConstants.providerFeatureFlagAuditKeys.list(id) });
     },
   });
 };

@@ -8,12 +8,15 @@ import { TenantViewLayout } from '@/features/tenants/components/common/view/Tena
 import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/view/GeneralDetailsView';
 import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/components/common/view/BrandAndThemingView';
 import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/view/AIServicesView';
+import { ProviderFeatureFlagsData, ProviderFeatureFlagsView } from '@/features/tenants/components/common/view/ProviderFeatureFlagsView';
 import { SSOData, SSOView } from '@/features/tenants/components/common/view/SSOView';
 import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/view/DocumentsView';
 import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 import { EditTenant } from '@/features/tenants/components/edit/EditTenant';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
+import { DEFAULT_PROVIDER_FEATURE_FLAGS } from '@/features/tenants/interfaces/provider-feature-flags.interface';
+import { useGetTenantProviderFeatureFlagAudit } from '@/features/tenants/hooks/useGetTenantProviderFeatureFlagAudit';
 
 interface TenantDetailsProps {
   tenant: Tenant;
@@ -23,6 +26,7 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const [currentSectionTitle, setCurrentSectionTitle] = useState<TenantSectionTitlesEnum>(null);
   const [editDrawerOpen, setEditDrawerOpen] = useState<boolean>(false);
   const [defaultValues, setDefaultValues] = useState<any>(null);
+  const { data: providerFeatureFlagAudit, isLoading: isProviderFeatureFlagAuditLoading } = useGetTenantProviderFeatureFlagAudit(tenant.id);
 
   const generalDetails: GeneralDetailsData = {
     company_name: tenant.company_name,
@@ -52,6 +56,16 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
     company_name: tenant.company_name,
     ai_config: { ...tenant.ai_config },
     match_config: tenant.match_config ? { ...tenant.match_config } : { top_k: 50 },
+  };
+
+  const providerFeatureFlags: ProviderFeatureFlagsData = {
+    company_name: tenant.company_name,
+    provider_feature_flags: {
+      ...DEFAULT_PROVIDER_FEATURE_FLAGS,
+      ...tenant.provider_feature_flags,
+    },
+    audit: providerFeatureFlagAudit,
+    auditLoading: isProviderFeatureFlagAuditLoading,
   };
 
   const sso: SSOData = {
@@ -101,6 +115,14 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.AI_SERVICES, aiServices)}
         >
           <AIServicesView data={aiServices} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.PROVIDER_FEATURE_FLAGS}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.PROVIDER_FEATURE_FLAGS, providerFeatureFlags)}
+        >
+          <ProviderFeatureFlagsView data={providerFeatureFlags} />
         </TenantViewLayout>
 
         <TenantViewLayout

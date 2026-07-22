@@ -4,6 +4,7 @@ import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section
 import { GeneralDetailsSection } from '@/features/tenants/components/edit/sections/GeneralDetailsSection';
 import { BrandAndThemingSection } from '@/features/tenants/components/edit/sections/BrandAndThemingSection';
 import { AIServicesSection } from '@/features/tenants/components/edit/sections/AIServicesSection';
+import { ProviderFeatureFlagsSection } from '@/features/tenants/components/edit/sections/ProviderFeatureFlagsSection';
 import { SSOSection } from '@/features/tenants/components/edit/sections/SSOSection';
 import { DocumentsSection } from '@/features/tenants/components/edit/sections/DocumentsSection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
@@ -57,6 +58,12 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
       };
     }
 
+    if (title === TenantSectionTitlesEnum.PROVIDER_FEATURE_FLAGS) {
+      return {
+        provider_feature_flags: getValues('provider_feature_flags'),
+      };
+    }
+
     return getValues();
   };
 
@@ -81,6 +88,8 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
         return <BrandAndThemingSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.AI_SERVICES:
         return <AIServicesSection onSave={onSubmit} onCancel={handleClose} />;
+      case TenantSectionTitlesEnum.PROVIDER_FEATURE_FLAGS:
+        return <ProviderFeatureFlagsSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.SSO:
         return <SSOSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.DOCUMENTS:
