@@ -2,6 +2,7 @@ import { DocumentType } from '@/features/document-types/interfaces/document-type
 import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.interface';
 import { SSOConfig } from '@/features/tenants/interfaces/sso-config.interface';
 import { DocumentsDataSourceEnum } from '@/features/tenants/enums/documents-data-source.enum';
+import { AIConfig } from '@/features/tenants/interfaces/ai-config.interface';
 
 export const parseScopes = (scopesValue: string): any => {
   try {
@@ -64,4 +65,14 @@ export const buildIntegrationsRequestBody = (selectedIntegrations: string[]): st
   }
 
   return selectedIntegrations;
+};
+
+export const buildAIConfigRequestBody = (aiConfig: AIConfig): AIConfig => {
+  const { has_open_ai_key, has_tavily_api_key, ...requestConfig } = aiConfig;
+
+  if (has_open_ai_key && !requestConfig.open_ai_key?.trim()) {
+    requestConfig.open_ai_key = null;
+  }
+
+  return requestConfig;
 };

@@ -54,7 +54,7 @@ export const AIServicesView = ({ data }: AIServicesViewProps) => {
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Open AI key</Typography>
           <Typography variant="subtitle2" sx={{ wordBreak: 'break-all' }}>
-            {data.ai_config.open_ai_key}
+            {data.ai_config.has_open_ai_key ? 'Configured' : 'Not configured'}
           </Typography>
         </Stack>
       </Stack>

@@ -1,7 +1,7 @@
 import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
-import { FormControlLabel, MenuItem, Switch } from '@mui/material';
-import { Controller, useFormContext } from 'react-hook-form';
+import { FormControlLabel, MenuItem, Switch, Typography } from '@mui/material';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { AdminConfig } from '@/features/tenants/interfaces/admin-config.interface';
 import { formFieldNames } from '@/features/tenants/constants/form.constants';
 
@@ -11,6 +11,12 @@ interface AIServicesFormProps {
 
 export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
   const { control } = useFormContext();
+  const hasOpenAiKey = Boolean(
+    useWatch({
+      control,
+      name: 'ai_config.has_open_ai_key',
+    }),
+  );
 
   return (
     <>
@@ -83,9 +89,23 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
       <Controller
         name={formFieldNames.aiConfig.openAiKey}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={hasOpenAiKey ? undefined : { required: 'This field is required' }}
         render={({ field, fieldState }) => (
-          <MuiTextField sx={{ mb: 4 }} label="Open AI key" placeholder="Add key value" field={{ ...field, value: field.value || '' }} fieldState={fieldState} />
+          <>
+            <MuiTextField
+              sx={{ mb: hasOpenAiKey ? 1 : 4 }}
+              label="Open AI key"
+              placeholder={hasOpenAiKey ? 'Configured - leave blank to keep existing key' : 'Add key value'}
+              field={{ ...field, value: field.value || '' }}
+              fieldState={fieldState}
+              required={!hasOpenAiKey}
+            />
+            {hasOpenAiKey ? (
+              <Typography variant="caption" sx={{ display: 'block', mb: 4, color: 'text.secondary' }}>
+                A server-side key is configured. Leave blank to keep/use it, or enter a new key to replace it.
+              </Typography>
+            ) : null}
+          </>
         )}
       />
 
@@ -121,8 +141,8 @@ export const AIServicesForm = ({ adminConfig }: AIServicesFormProps) => {
         rules={{
           required: 'This field is required',
           min: {
-            value: 1,
-            message: 'The value must be at least 1',
+            value: 0,
+            message: 'The value must be at least 0',
           },
           max: {
             value: 100,

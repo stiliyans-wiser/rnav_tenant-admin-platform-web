@@ -6,11 +6,10 @@ import { useStepValidation } from '@/features/tenants/hooks/useStepValidation';
 import { useCreateTenantContext } from '@/features/tenants/contexts/CreateTenantContext';
 import { DocumentsForm } from '@/features/tenants/components/common/forms/DocumentsForm';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
-import { formFieldNames } from '@/features/tenants/constants/form.constants';
 
 export const DocumentsStep = ({ onBack, onNext }: CreateTenantStepProps) => {
   const { documentTypes } = useCreateTenantContext();
-  const { hasError } = useStepValidation([formFieldNames.documents.documentTypes]);
+  const { hasError } = useStepValidation([]);
 
   return (
     <CreateTenantLayout
@@ -20,7 +19,7 @@ export const DocumentsStep = ({ onBack, onNext }: CreateTenantStepProps) => {
       onBack={() => onBack(hasError)}
       onNext={() => onNext(hasError)}
     >
-      <DocumentsForm documentTypes={documentTypes} />
+      <DocumentsForm documentTypes={documentTypes} required={false} />
     </CreateTenantLayout>
   );
 };

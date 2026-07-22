@@ -13,6 +13,7 @@ import {
   Checkbox,
   FormControlLabel,
   InputLabel,
+  Alert,
 } from '@mui/material';
 import { ChevronDown } from '@carbon/icons-react';
 import { MuiSelect } from '@/features/common/components/form-elements/MuiSelect';
@@ -21,9 +22,10 @@ import { formFieldNames } from '@/features/tenants/constants/form.constants';
 
 interface DocumentsFormProps {
   documentTypes: DocumentType[];
+  required?: boolean;
 }
 
-export const DocumentsForm = ({ documentTypes }: DocumentsFormProps) => {
+export const DocumentsForm = ({ documentTypes, required = true }: DocumentsFormProps) => {
   const { control } = useFormContext();
 
   const selectedValues = useWatch({
@@ -57,7 +59,7 @@ export const DocumentsForm = ({ documentTypes }: DocumentsFormProps) => {
       <Controller
         name={formFieldNames.documents.documentTypes}
         control={control}
-        rules={{ required: 'This field is required' }}
+        rules={required ? { required: 'This field is required' } : undefined}
         defaultValue={[]}
         render={({ field, fieldState }) => (
           <MuiSelect
@@ -65,6 +67,7 @@ export const DocumentsForm = ({ documentTypes }: DocumentsFormProps) => {
             label="Document Types"
             placeholder="Select Document Types"
             fieldState={fieldState}
+            required={required}
             multiple={true}
             options={documentTypes?.map(documentType => (
               <MenuItem key={documentType.id} value={JSON.stringify(documentType)}>
@@ -79,6 +82,12 @@ export const DocumentsForm = ({ documentTypes }: DocumentsFormProps) => {
           />
         )}
       />
+
+      {!documentTypes?.length ? (
+        <Alert severity="info" sx={{ mt: 2 }}>
+          No global document types are configured. You can create the tenant now and add document types later from Settings.
+        </Alert>
+      ) : null}
 
       {selectedDocumentTypes?.length > 0 && (
         <Stack spacing={3} sx={{ mt: 3 }}>

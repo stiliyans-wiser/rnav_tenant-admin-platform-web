@@ -17,6 +17,7 @@ import { SuccessStep } from '@/features/tenants/components/create/steps/SuccessS
 import { DocumentGroupsStep } from '@/features/tenants/components/create/steps/DocumentGroupsStep';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import {
+  buildAIConfigRequestBody,
   buildDocumentDataSourcesRequestBody,
   buildIntegrationsRequestBody,
   buildSSOConfigRequestBody,
@@ -129,8 +130,35 @@ export const CreateTenant = () => {
   useEffect(() => {
     if (adminConfig) {
       setAdminConfig(adminConfig);
+      const aiDefaults = adminConfig.ai_defaults;
+      if (aiDefaults) {
+        if (formMethods.getValues('ai_config.open_ai_type') === undefined && aiDefaults.open_ai_type !== undefined) {
+          formMethods.setValue('ai_config.open_ai_type', aiDefaults.open_ai_type);
+        }
+        if (formMethods.getValues('ai_config.open_ai_embedding_model') === undefined && aiDefaults.open_ai_embedding_model !== undefined) {
+          formMethods.setValue('ai_config.open_ai_embedding_model', aiDefaults.open_ai_embedding_model);
+        }
+        if (formMethods.getValues('ai_config.temperature') === undefined && aiDefaults.temperature !== undefined) {
+          formMethods.setValue('ai_config.temperature', aiDefaults.temperature);
+        }
+        if (formMethods.getValues('ai_config.open_ai_endpoint') === undefined && aiDefaults.open_ai_endpoint !== undefined) {
+          formMethods.setValue('ai_config.open_ai_endpoint', aiDefaults.open_ai_endpoint);
+        }
+        if (formMethods.getValues('ai_config.open_ai_version') === undefined && aiDefaults.open_ai_version !== undefined) {
+          formMethods.setValue('ai_config.open_ai_version', aiDefaults.open_ai_version);
+        }
+        if (formMethods.getValues('ai_config.web_search') === undefined && aiDefaults.web_search !== undefined) {
+          formMethods.setValue('ai_config.web_search', aiDefaults.web_search);
+        }
+        if (formMethods.getValues('ai_config.has_open_ai_key') === undefined && aiDefaults.has_open_ai_key !== undefined) {
+          formMethods.setValue('ai_config.has_open_ai_key', aiDefaults.has_open_ai_key);
+        }
+        if (formMethods.getValues('match_config.top_k') === undefined && aiDefaults.top_k !== undefined) {
+          formMethods.setValue('match_config.top_k', aiDefaults.top_k);
+        }
+      }
     }
-  }, [adminConfig]);
+  }, [adminConfig, formMethods, setAdminConfig]);
 
   useEffect(() => {
     if (documentTypes) {
@@ -175,6 +203,7 @@ export const CreateTenant = () => {
       ...formValues,
       integrations: buildIntegrationsRequestBody(formValues.integrations),
       settings: buildThemingRequestBody(formValues.settings),
+      ai_config: buildAIConfigRequestBody(formValues.ai_config),
       sso_config: buildSSOConfigRequestBody(formMethods.getValues('sso_config')),
       document_types: parseDocumentTypes(formMethods.getValues('document_types')),
       document_data_sources: buildDocumentDataSourcesRequestBody(formMethods.getValues('document_data_sources')),

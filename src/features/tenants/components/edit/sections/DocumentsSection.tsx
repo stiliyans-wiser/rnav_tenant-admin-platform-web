@@ -8,11 +8,12 @@ import { formFieldNames } from '@/features/tenants/constants/form.constants';
 
 export const DocumentsSection = ({ onSave, onCancel }: EditTenantSectionProps) => {
   const { data: documentTypes } = useGetDocumentTypes();
-  const { hasError } = useStepValidation([formFieldNames.documents.documentTypes]);
+  const hasDocumentTypeCatalog = Boolean(documentTypes?.length);
+  const { hasError } = useStepValidation(hasDocumentTypeCatalog ? [formFieldNames.documents.documentTypes] : []);
 
   return (
     <EditTenantLayout isSaveButtonDisabled={hasError} onCancel={onCancel} onSave={onSave}>
-      <DocumentsForm documentTypes={documentTypes} />
+      <DocumentsForm documentTypes={documentTypes || []} required={hasDocumentTypeCatalog} />
     </EditTenantLayout>
   );
 };

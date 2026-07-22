@@ -14,6 +14,7 @@ import {
   buildThemingRequestBody,
   parseDocumentTypes,
   buildIntegrationsRequestBody,
+  buildAIConfigRequestBody,
 } from '@/features/tenants/utils/buildRequestBody';
 
 interface EditTenantProps {
@@ -55,6 +56,13 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
       return {
         ...getValues(),
         document_types: parseDocumentTypes(getValues('document_types')),
+      };
+    }
+
+    if (title === TenantSectionTitlesEnum.AI_SERVICES) {
+      return {
+        ...getValues(),
+        ai_config: buildAIConfigRequestBody(getValues('ai_config')),
       };
     }
 
