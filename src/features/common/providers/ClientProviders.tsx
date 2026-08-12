@@ -21,7 +21,7 @@ const ProvidersContent = ({ children }: { children: React.ReactNode }) => {
 
 export const ClientProviders = ({ children }: ClientProvidersProps) => {
   return (
-    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false} refetchWhenOffline={false} basePath="/backoffice/next-api/auth">
+    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false} refetchWhenOffline={false} basePath="/backoffice/api/auth">
       <ProvidersContent>{children}</ProvidersContent>
     </SessionProvider>
   );
