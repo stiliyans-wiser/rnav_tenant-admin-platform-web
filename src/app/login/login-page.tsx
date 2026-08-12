@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
 import { Box, Button, IconButton, InputAdornment, Alert, Typography, Card, CardContent, Stack } from '@mui/material';
@@ -14,6 +15,7 @@ interface LoginCredentials {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isRevealKey, setIsRevealKey] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const loginTitle = 'Login';
@@ -29,6 +31,8 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError('Invalid credentials');
+      } else if (result?.ok) {
+        router.push('/');
       }
     } catch (err) {
       setError('Login failed. Please try again.');
