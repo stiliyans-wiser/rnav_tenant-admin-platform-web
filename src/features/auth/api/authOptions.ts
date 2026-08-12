@@ -1,8 +1,6 @@
 import NextAuth, { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { jwtDecode } from 'jwt-decode';
-import { login } from '@/features/auth/api/authApi';
-import { createFormData } from '@/features/common/utils/formDataUtil';
 
 declare module 'next-auth' {
   interface User {
@@ -44,14 +42,25 @@ const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          const formData = createFormData(credentials);
-          const response = await login(formData);
+          const apiUrl = process.env.INTERNAL_API_URL || process.env.API_BASE_URL || 'http://api:8000';
+          const params = new URLSearchParams();
+          if (credentials?.username) params.append('username', credentials.username);
+          if (credentials?.password) params.append('password', credentials.password);
 
-          if (response?.access_token) {
-            const decodedToken: JwtPayload = jwtDecode(response.access_token);
+          const res = await fetch(`${apiUrl}/backoffice/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString(),
+          });
+
+          if (!res.ok) return null;
+          const data = await res.json();
+
+          if (data?.access_token) {
+            const decodedToken: JwtPayload = jwtDecode(data.access_token);
 
             return {
-              accessToken: response.access_token,
+              accessToken: data.access_token,
               sub: decodedToken.sub,
               name: decodedToken.name,
             } as User;
@@ -59,6 +68,7 @@ const authOptions: NextAuthOptions = {
         } catch (error) {
           console.error('Authorization error:', error);
         }
+        return null;
       },
     }),
   ],
