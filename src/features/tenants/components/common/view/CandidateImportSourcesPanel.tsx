@@ -13,8 +13,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   FormControlLabel,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   Switch,
   TextField,
@@ -104,6 +108,8 @@ function PresetDialog({
   initial?: CandidateProviderConfig | null;
 }) {
   const [name, setName] = useState(initial?.name ?? '');
+  const [authMode, setAuthMode] = useState(initial?.auth_mode ?? 'manual');
+  const [credentialsRef, setCredentialsRef] = useState(initial?.credentials_ref ?? '');
   const [resultsLimit, setResultsLimit] = useState(String(initial?.results_limit ?? 25));
   const [filterKeywords, setFilterKeywords] = useState(
     initial?.filters?.keywords ? (Array.isArray(initial.filters.keywords) ? initial.filters.keywords.join(', ') : initial.filters.keywords) : '',
@@ -123,6 +129,8 @@ function PresetDialog({
 
     onSave({
       name: name.trim() || 'Untitled Preset',
+      auth_mode: authMode,
+      ...(authMode === 'api_key' && credentialsRef.trim() ? { credentials_ref: credentialsRef.trim() } : {}),
       results_limit: Math.max(1, Math.min(100, Number.parseInt(resultsLimit, 10) || 25)),
       filters,
     });
@@ -134,6 +142,24 @@ function PresetDialog({
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           <TextField label="Preset Name" value={name} onChange={e => setName(e.target.value)} size="small" fullWidth autoFocus />
+          <FormControl size="small" fullWidth>
+            <InputLabel>Search Mode</InputLabel>
+            <Select value={authMode} label="Search Mode" onChange={e => setAuthMode(e.target.value)}>
+              <MenuItem value="manual">Manual (paste profiles)</MenuItem>
+              <MenuItem value="api_key">Automated (Bright Data API)</MenuItem>
+            </Select>
+          </FormControl>
+          {authMode === 'api_key' && (
+            <TextField
+              label="Bright Data API Key"
+              value={credentialsRef}
+              onChange={e => setCredentialsRef(e.target.value)}
+              size="small"
+              fullWidth
+              type="password"
+              helperText="Bright Data bearer token for LinkedIn Profiles Scraper"
+            />
+          )}
           <TextField label="Results Limit" type="number" value={resultsLimit} onChange={e => setResultsLimit(e.target.value)} size="small" inputProps={{ min: 1, max: 100 }} />
           <TextField label="Keywords" value={filterKeywords} onChange={e => setFilterKeywords(e.target.value)} size="small" multiline rows={2} helperText="Comma separated" />
           <TextField label="Locations" value={filterLocations} onChange={e => setFilterLocations(e.target.value)} size="small" multiline rows={2} helperText="Comma separated" />
@@ -192,7 +218,6 @@ export const CandidateImportSourcesPanel = ({ tenantId, tenant }: CandidateImpor
       await createMutation.mutateAsync({
         ...data,
         provider_type: 'linkedin',
-        auth_mode: 'cookie',
       });
       setDialogOpen(false);
     } catch (err: any) {
