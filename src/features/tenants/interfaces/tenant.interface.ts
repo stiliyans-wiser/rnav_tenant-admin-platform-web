@@ -7,6 +7,9 @@ import { MatchConfig } from '@/features/tenants/interfaces/match-config.interfac
 import { ProviderFeatureFlags } from '@/features/tenants/interfaces/provider-feature-flags.interface';
 import { ExtractionConfig } from '@/features/tenants/interfaces/extraction-config.interface';
 import { TalentAutomationConfig } from '@/features/tenants/interfaces/talent-automation-config.interface';
+import { AutoReplacementConfig } from '@/features/tenants/interfaces/auto-replacement-config.interface';
+import { ScoringTemplate } from '@/features/tenants/interfaces/scoring-template.interface';
+import { CandidateImportSourceConfig } from '@/features/tenants/interfaces/candidate-provider.interface';
 
 export interface Tenant {
   id?: string;
@@ -23,6 +26,9 @@ export interface Tenant {
   provider_feature_flags?: ProviderFeatureFlags;
   extraction_config?: ExtractionConfig;
   talent_automation_config?: TalentAutomationConfig;
+  auto_replacement_config?: AutoReplacementConfig;
+  scoring_templates?: ScoringTemplate[];
+  candidate_import_sources?: CandidateImportSourceConfig;
 }
 
 export interface TenantForm extends Omit<Tenant, 'document_types' | 'integrations'> {

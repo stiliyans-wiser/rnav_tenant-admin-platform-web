@@ -15,6 +15,11 @@ import { ExtractionData, ExtractionView } from '@/features/tenants/components/co
 import { UIConfigData, UIConfigView } from '@/features/tenants/components/common/view/UIConfigView';
 import { TalentAutomationData, TalentAutomationView } from '@/features/tenants/components/common/view/TalentAutomationView';
 import { MatchingControlsData, MatchingControlsView } from '@/features/tenants/components/common/view/MatchingControlsView';
+import { AutoReplacementData, AutoReplacementView } from '@/features/tenants/components/common/view/AutoReplacementView';
+import { ScoringTemplatesPanel } from '@/features/tenants/components/common/view/ScoringTemplatesPanel';
+import { ConnectorConfigPanel } from '@/features/tenants/components/common/view/ConnectorConfigPanel';
+import { CrawlerSettingsPanel } from '@/features/tenants/components/common/view/CrawlerSettingsPanel';
+import { CandidateImportSourcesPanel } from '@/features/tenants/components/common/view/CandidateImportSourcesPanel';
 import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 import { EditTenant } from '@/features/tenants/components/edit/EditTenant';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
@@ -100,6 +105,11 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const matchingControls: MatchingControlsData = {
     company_name: tenant.company_name,
     match_config: tenant.match_config,
+  };
+
+  const autoReplacement: AutoReplacementData = {
+    company_name: tenant.company_name,
+    auto_replacement_config: tenant.auto_replacement_config,
   };
 
   const openEditDrawer = (sectionTitle: TenantSectionTitlesEnum, data: any) => {
@@ -195,6 +205,42 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.TALENT_AUTOMATION, talentAutomation)}
         >
           <TalentAutomationView data={talentAutomation} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.AUTO_REPLACEMENT}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.AUTO_REPLACEMENT, autoReplacement)}
+        >
+          <AutoReplacementView data={autoReplacement} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.SCORING_TEMPLATES}
+          icon={<SettingsServices size={24} />}
+        >
+          <ScoringTemplatesPanel tenantId={tenant.id!} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.CONNECTOR_SETTINGS}
+          icon={<SettingsServices size={24} />}
+        >
+          <ConnectorConfigPanel tenantId={tenant.id!} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.CLIENT_PIPELINE}
+          icon={<SettingsServices size={24} />}
+        >
+          <CrawlerSettingsPanel tenantId={tenant.id!} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.CANDIDATE_IMPORT_SOURCES}
+          icon={<SettingsServices size={24} />}
+        >
+          <CandidateImportSourcesPanel tenantId={tenant.id!} tenant={tenant} />
         </TenantViewLayout>
       </Stack>
 

@@ -64,6 +64,12 @@ export const formFieldNames = {
     maxRerouteSuggestions: 'talent_automation_config.max_reroute_suggestions',
     interviewPrepQuestionCount: 'talent_automation_config.interview_prep_question_count',
   },
+  autoReplacement: {
+    enabled: 'auto_replacement_config.enabled',
+    minPoolThreshold: 'auto_replacement_config.min_pool_threshold',
+    debounceWindowSeconds: 'auto_replacement_config.debounce_window_seconds',
+    maxReplacementSuggestions: 'auto_replacement_config.max_replacement_suggestions',
+  },
   documents: {
     documentTypes: 'document_types',
     documentDataSources: 'document_data_sources',
