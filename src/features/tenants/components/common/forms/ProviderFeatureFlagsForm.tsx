@@ -11,6 +11,9 @@ const flagKeys = [
   'candidate_provider_configs',
   'job_position_provider_configs',
   'kpmg_provider_flows',
+  'a1_provider_flows',
+  'hlctech_provider_flows',
+  'jobs_bg_provider_flows',
 ] satisfies Array<keyof ProviderFeatureFlags>;
 
 export const ProviderFeatureFlagsForm = () => {
