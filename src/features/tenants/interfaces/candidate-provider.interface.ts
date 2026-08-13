@@ -3,6 +3,7 @@ export interface CandidateProviderConfig {
   name: string;
   provider_type: string;
   auth_mode: string;
+  credentials_ref?: string;
   filters: Record<string, any>;
   results_limit: number;
   is_default: boolean;
