@@ -22,7 +22,7 @@ export const DashboardActionControls = ({ tenants, periodOptions, onFilterChange
   const { control, watch, setValue } = useForm<DashboardFilter>({
     defaultValues: {
       accountId: tenants[0]?.id,
-      timePeriod: periodOptions?.[0],
+      timePeriod: periodOptions?.find(p => p === '1 month') ?? periodOptions?.[0],
       fromDate: null,
       toDate: null,
     },
