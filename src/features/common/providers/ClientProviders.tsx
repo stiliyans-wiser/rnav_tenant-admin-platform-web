@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SessionProvider, useSession } from 'next-auth/react';
 import { setSessionToken } from '@/features/auth/api/axiosConfig';
 import { QueryProvider } from '@/features/common/providers/QueryProvider';
@@ -10,11 +10,18 @@ interface ClientProvidersProps {
 }
 
 const ProvidersContent = ({ children }: { children: React.ReactNode }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [tokenReady, setTokenReady] = useState(false);
 
   useEffect(() => {
+    if (status === 'loading') return;
     setSessionToken(session?.accessToken || null);
-  }, [session]);
+    setTokenReady(true);
+  }, [session, status]);
+
+  if (!tokenReady) {
+    return null;
+  }
 
   return <QueryProvider>{children}</QueryProvider>;
 };
