@@ -2,8 +2,15 @@ import { signOut } from 'next-auth/react';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { url as loginUrl } from '@/features/auth/api/authApi';
 
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return '/api';
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://api:8000';
+};
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: getBaseUrl(),
 });
 
 let sessionToken: string | null = null;
