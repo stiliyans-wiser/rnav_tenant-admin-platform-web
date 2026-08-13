@@ -6,4 +6,8 @@ export enum TenantSectionTitlesEnum {
   SSO = 'SSO',
   DOCUMENTS = 'Documents',
   DOCUMENT_GROUPS = 'Group Types',
+  EXTRACTION = 'Extraction',
+  UI_CONFIG = 'UI Configuration',
+  TALENT_AUTOMATION = 'Talent Automation',
+  MATCHING_CONTROLS = 'Matching Controls',
 }

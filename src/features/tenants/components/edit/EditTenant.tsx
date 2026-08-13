@@ -7,6 +7,10 @@ import { AIServicesSection } from '@/features/tenants/components/edit/sections/A
 import { ProviderFeatureFlagsSection } from '@/features/tenants/components/edit/sections/ProviderFeatureFlagsSection';
 import { SSOSection } from '@/features/tenants/components/edit/sections/SSOSection';
 import { DocumentsSection } from '@/features/tenants/components/edit/sections/DocumentsSection';
+import { ExtractionSection } from '@/features/tenants/components/edit/sections/ExtractionSection';
+import { UIConfigSection } from '@/features/tenants/components/edit/sections/UIConfigSection';
+import { TalentAutomationSection } from '@/features/tenants/components/edit/sections/TalentAutomationSection';
+import { MatchingControlsSection } from '@/features/tenants/components/edit/sections/MatchingControlsSection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import {
@@ -72,6 +76,30 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
       };
     }
 
+    if (title === TenantSectionTitlesEnum.EXTRACTION) {
+      return {
+        extraction_config: getValues('extraction_config'),
+      };
+    }
+
+    if (title === TenantSectionTitlesEnum.UI_CONFIG) {
+      return {
+        match_config: getValues('match_config'),
+      };
+    }
+
+    if (title === TenantSectionTitlesEnum.TALENT_AUTOMATION) {
+      return {
+        talent_automation_config: getValues('talent_automation_config'),
+      };
+    }
+
+    if (title === TenantSectionTitlesEnum.MATCHING_CONTROLS) {
+      return {
+        match_config: getValues('match_config'),
+      };
+    }
+
     return getValues();
   };
 
@@ -102,6 +130,14 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
         return <SSOSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.DOCUMENTS:
         return <DocumentsSection onSave={onSubmit} onCancel={handleClose} />;
+      case TenantSectionTitlesEnum.EXTRACTION:
+        return <ExtractionSection onSave={onSubmit} onCancel={handleClose} />;
+      case TenantSectionTitlesEnum.UI_CONFIG:
+        return <UIConfigSection onSave={onSubmit} onCancel={handleClose} />;
+      case TenantSectionTitlesEnum.TALENT_AUTOMATION:
+        return <TalentAutomationSection onSave={onSubmit} onCancel={handleClose} />;
+      case TenantSectionTitlesEnum.MATCHING_CONTROLS:
+        return <MatchingControlsSection onSave={onSubmit} onCancel={handleClose} />;
       default:
         return <p>No section found!</p>;
     }

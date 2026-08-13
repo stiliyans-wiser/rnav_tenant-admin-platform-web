@@ -5,6 +5,8 @@ import { TenantSettings } from '@/features/tenants/interfaces/tenant-settings.in
 import { ChatStrategyEnum } from '@/features/tenants/enums/chat-strategy.enum';
 import { MatchConfig } from '@/features/tenants/interfaces/match-config.interface';
 import { ProviderFeatureFlags } from '@/features/tenants/interfaces/provider-feature-flags.interface';
+import { ExtractionConfig } from '@/features/tenants/interfaces/extraction-config.interface';
+import { TalentAutomationConfig } from '@/features/tenants/interfaces/talent-automation-config.interface';
 
 export interface Tenant {
   id?: string;
@@ -19,6 +21,8 @@ export interface Tenant {
   chat_strategy: ChatStrategyEnum;
   match_config?: MatchConfig;
   provider_feature_flags?: ProviderFeatureFlags;
+  extraction_config?: ExtractionConfig;
+  talent_automation_config?: TalentAutomationConfig;
 }
 
 export interface TenantForm extends Omit<Tenant, 'document_types' | 'integrations'> {

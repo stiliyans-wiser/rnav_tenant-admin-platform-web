@@ -11,6 +11,10 @@ import { AIServicesData, AIServicesView } from '@/features/tenants/components/co
 import { ProviderFeatureFlagsData, ProviderFeatureFlagsView } from '@/features/tenants/components/common/view/ProviderFeatureFlagsView';
 import { SSOData, SSOView } from '@/features/tenants/components/common/view/SSOView';
 import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/view/DocumentsView';
+import { ExtractionData, ExtractionView } from '@/features/tenants/components/common/view/ExtractionView';
+import { UIConfigData, UIConfigView } from '@/features/tenants/components/common/view/UIConfigView';
+import { TalentAutomationData, TalentAutomationView } from '@/features/tenants/components/common/view/TalentAutomationView';
+import { MatchingControlsData, MatchingControlsView } from '@/features/tenants/components/common/view/MatchingControlsView';
 import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 import { EditTenant } from '@/features/tenants/components/edit/EditTenant';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
@@ -78,6 +82,26 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
     document_types: tenant.document_types?.map((doc: DocumentType) => JSON.stringify(doc)),
   };
 
+  const extraction: ExtractionData = {
+    company_name: tenant.company_name,
+    extraction_config: tenant.extraction_config,
+  };
+
+  const uiConfig: UIConfigData = {
+    company_name: tenant.company_name,
+    match_config: tenant.match_config,
+  };
+
+  const talentAutomation: TalentAutomationData = {
+    company_name: tenant.company_name,
+    talent_automation_config: tenant.talent_automation_config,
+  };
+
+  const matchingControls: MatchingControlsData = {
+    company_name: tenant.company_name,
+    match_config: tenant.match_config,
+  };
+
   const openEditDrawer = (sectionTitle: TenantSectionTitlesEnum, data: any) => {
     setCurrentSectionTitle(sectionTitle);
     setDefaultValues(data);
@@ -139,6 +163,38 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.DOCUMENTS, documentTypes)}
         >
           <DocumentsView data={documentTypes} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.MATCHING_CONTROLS}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.MATCHING_CONTROLS, matchingControls)}
+        >
+          <MatchingControlsView data={matchingControls} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.EXTRACTION}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.EXTRACTION, extraction)}
+        >
+          <ExtractionView data={extraction} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.UI_CONFIG}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.UI_CONFIG, uiConfig)}
+        >
+          <UIConfigView data={uiConfig} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.TALENT_AUTOMATION}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.TALENT_AUTOMATION, talentAutomation)}
+        >
+          <TalentAutomationView data={talentAutomation} />
         </TenantViewLayout>
       </Stack>
 
