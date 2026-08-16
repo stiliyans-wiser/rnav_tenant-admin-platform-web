@@ -67,3 +67,9 @@ export default tseslint.config({
   },
 });
 ```
+
+## Platform Admin Features (2026-08 snapshot)
+
+- **Tenant feature flags** — tenant detail: enable/disable provider flows per tenant (audited).
+- **Provider quota ceilings** — global defaults at `/settings/provider-quotas`; per-tenant override + kill-switch + usage table on tenant detail. Effective cap = min(tenant self-serve cap, platform ceiling).
+- **Connector instances** — per-tenant connector configuration and triggers.
