@@ -15,4 +15,5 @@ export enum TenantSectionTitlesEnum {
   CONNECTOR_SETTINGS = 'Connector Settings',
   CLIENT_PIPELINE = 'Client Pipeline',
   CANDIDATE_IMPORT_SOURCES = 'Candidate Import Sources',
+  PROVIDER_QUOTAS = 'Provider Quotas',
 }

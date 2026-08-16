@@ -36,4 +36,16 @@ export const tenantsConstants = {
     all: ['candidate-providers'] as const,
     list: (tenantId: string) => [...tenantsConstants.candidateProviderKeys.all, tenantId] as const,
   },
+  providerQuotaDefaultKeys: {
+    all: ['provider-quota-defaults'] as const,
+    detail: () => [...tenantsConstants.providerQuotaDefaultKeys.all, 'detail'] as const,
+  },
+  tenantProviderQuotaKeys: {
+    all: ['tenant-provider-quota'] as const,
+    detail: (tenantId: string) => [...tenantsConstants.tenantProviderQuotaKeys.all, tenantId] as const,
+  },
+  tenantProviderUsageKeys: {
+    all: ['tenant-provider-usage'] as const,
+    detail: (tenantId: string) => [...tenantsConstants.tenantProviderUsageKeys.all, tenantId] as const,
+  },
 };

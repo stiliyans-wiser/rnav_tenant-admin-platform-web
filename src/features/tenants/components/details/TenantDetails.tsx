@@ -20,6 +20,7 @@ import { ScoringTemplatesPanel } from '@/features/tenants/components/common/view
 import { ConnectorConfigPanel } from '@/features/tenants/components/common/view/ConnectorConfigPanel';
 import { CrawlerSettingsPanel } from '@/features/tenants/components/common/view/CrawlerSettingsPanel';
 import { CandidateImportSourcesPanel } from '@/features/tenants/components/common/view/CandidateImportSourcesPanel';
+import { ProviderQuotasPanel } from '@/features/tenants/components/common/view/ProviderQuotasPanel';
 import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 import { EditTenant } from '@/features/tenants/components/edit/EditTenant';
 import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
@@ -241,6 +242,13 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           icon={<SettingsServices size={24} />}
         >
           <CandidateImportSourcesPanel tenantId={tenant.id!} tenant={tenant} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.PROVIDER_QUOTAS}
+          icon={<SettingsServices size={24} />}
+        >
+          <ProviderQuotasPanel tenantId={tenant.id!} />
         </TenantViewLayout>
       </Stack>
 
