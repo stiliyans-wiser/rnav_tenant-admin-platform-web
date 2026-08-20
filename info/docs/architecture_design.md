@@ -289,3 +289,51 @@ Preferred extension pattern:
 3. Build form/table/drawer UI from shared components.
 4. Add route page thinly composing feature components.
 5. Keep request body transformers in feature `utils` when backend contracts differ from form state.
+
+## 15. Candidate Delivery Configuration (Recruitment Navigator)
+
+`CandidateDeliverySection` is wired into the tenant edit page (`/tenants/[id]`) as a dedicated read/edit pair. It is recruitment-navigator-specific — other verticals may not expose this section.
+
+### Components
+
+| Component | Role |
+|-----------|------|
+| `CandidateDeliverySection` | Section entry: loads current config, renders view or opens edit drawer |
+| `CandidateDeliveryView` | Read-only summary of all delivery settings |
+| `CandidateDeliveryForm` | `react-hook-form`-based edit form; validated before submit |
+
+### API surface
+
+- Read: `GET /admin/accounts/{id}` — delivery config is a nested field on the account response.
+- Write: `PATCH /admin/accounts/{id}` — section submits the `match_config` / `report_config` sub-objects only.
+
+### Backend mapping
+
+Form fields map to the API's `MatchWeightConfig` and a `ReportConfig` sub-object on Account:
+
+| Form field | API field |
+|-----------|-----------|
+| Shortlist default size | `match_config.shortlist_size` |
+| Candidate limit per job | `match_config.candidate_limit` |
+| Delivery review threshold | `match_config.review_threshold` |
+| Freshness bonus enabled | `match_config.freshness_bonus_enabled` |
+| Freshness bonus points | `match_config.freshness_bonus_points` |
+| Freshness window days | `match_config.freshness_window_days` |
+| Matching cadence hours | `match_config.cadence_hours` |
+| Report delivery enabled | `report_config.enabled` |
+| Report count | `report_config.report_count` |
+| Report period days | `report_config.period_days` |
+| Notification recipients | `report_config.recipients` |
+
+### Interfaces
+
+- `MatchConfig` — `src/features/tenants/interfaces/match-config.interface.ts`
+- `ReportConfig` — `src/features/tenants/interfaces/report-config.interface.ts`
+
+### Extension pattern
+
+Follow section 14 (extension guidance). Add new delivery fields by:
+1. Updating the interface file.
+2. Adding form controls inside `CandidateDeliveryForm`.
+3. Adding display rows inside `CandidateDeliveryView`.
+4. Adjusting the `PATCH` body transformer in the section component.

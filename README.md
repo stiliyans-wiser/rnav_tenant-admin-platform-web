@@ -73,3 +73,4 @@ export default tseslint.config({
 - **Tenant feature flags** — tenant detail: enable/disable provider flows per tenant (audited).
 - **Provider quota ceilings** — global defaults at `/settings/provider-quotas`; per-tenant override + kill-switch + usage table on tenant detail. Effective cap = min(tenant self-serve cap, platform ceiling).
 - **Connector instances** — per-tenant connector configuration and triggers.
+- **Candidate delivery configuration** — per-tenant controls for shortlist sizing, candidate limits, delivery review thresholds, freshness bonus scoring, matching cadence scheduling, and automated report delivery with notification recipients. Surfaced as a dedicated section in the tenant edit page (`/tenants/[id]`). See `info/docs/p1_candidate_delivery_config.md` for field reference.
