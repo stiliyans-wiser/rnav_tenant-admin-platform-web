@@ -12,6 +12,7 @@ import { UIConfigSection } from '@/features/tenants/components/edit/sections/UIC
 import { TalentAutomationSection } from '@/features/tenants/components/edit/sections/TalentAutomationSection';
 import { MatchingControlsSection } from '@/features/tenants/components/edit/sections/MatchingControlsSection';
 import { AutoReplacementSection } from '@/features/tenants/components/edit/sections/AutoReplacementSection';
+import { CandidateDeliverySection } from '@/features/tenants/components/edit/sections/CandidateDeliverySection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import {
@@ -107,6 +108,13 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
       };
     }
 
+    if (title === TenantSectionTitlesEnum.CANDIDATE_DELIVERY) {
+      return {
+        match_config: getValues('match_config'),
+        report_config: getValues('report_config'),
+      };
+    }
+
     return getValues();
   };
 
@@ -147,6 +155,8 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
         return <MatchingControlsSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.AUTO_REPLACEMENT:
         return <AutoReplacementSection onSave={onSubmit} onCancel={handleClose} />;
+      case TenantSectionTitlesEnum.CANDIDATE_DELIVERY:
+        return <CandidateDeliverySection onSave={onSubmit} onCancel={handleClose} />;
       default:
         return <p>No section found!</p>;
     }

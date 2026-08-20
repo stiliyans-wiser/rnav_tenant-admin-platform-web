@@ -16,4 +16,5 @@ export enum TenantSectionTitlesEnum {
   CLIENT_PIPELINE = 'Client Pipeline',
   CANDIDATE_IMPORT_SOURCES = 'Candidate Import Sources',
   PROVIDER_QUOTAS = 'Provider Quotas',
+  CANDIDATE_DELIVERY = 'Candidate Delivery',
 }

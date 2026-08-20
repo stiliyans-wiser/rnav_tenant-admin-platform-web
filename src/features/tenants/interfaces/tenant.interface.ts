@@ -10,6 +10,7 @@ import { TalentAutomationConfig } from '@/features/tenants/interfaces/talent-aut
 import { AutoReplacementConfig } from '@/features/tenants/interfaces/auto-replacement-config.interface';
 import { ScoringTemplate } from '@/features/tenants/interfaces/scoring-template.interface';
 import { CandidateImportSourceConfig } from '@/features/tenants/interfaces/candidate-provider.interface';
+import { ReportConfig } from '@/features/tenants/interfaces/report-config.interface';
 
 export interface Tenant {
   id?: string;
@@ -29,6 +30,7 @@ export interface Tenant {
   auto_replacement_config?: AutoReplacementConfig;
   scoring_templates?: ScoringTemplate[];
   candidate_import_sources?: CandidateImportSourceConfig;
+  report_config?: ReportConfig;
 }
 
 export interface TenantForm extends Omit<Tenant, 'document_types' | 'integrations'> {

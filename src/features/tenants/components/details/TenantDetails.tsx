@@ -16,6 +16,7 @@ import { UIConfigData, UIConfigView } from '@/features/tenants/components/common
 import { TalentAutomationData, TalentAutomationView } from '@/features/tenants/components/common/view/TalentAutomationView';
 import { MatchingControlsData, MatchingControlsView } from '@/features/tenants/components/common/view/MatchingControlsView';
 import { AutoReplacementData, AutoReplacementView } from '@/features/tenants/components/common/view/AutoReplacementView';
+import { CandidateDeliveryData, CandidateDeliveryView } from '@/features/tenants/components/common/view/CandidateDeliveryView';
 import { ScoringTemplatesPanel } from '@/features/tenants/components/common/view/ScoringTemplatesPanel';
 import { ConnectorConfigPanel } from '@/features/tenants/components/common/view/ConnectorConfigPanel';
 import { CrawlerSettingsPanel } from '@/features/tenants/components/common/view/CrawlerSettingsPanel';
@@ -111,6 +112,12 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const autoReplacement: AutoReplacementData = {
     company_name: tenant.company_name,
     auto_replacement_config: tenant.auto_replacement_config,
+  };
+
+  const candidateDelivery: CandidateDeliveryData = {
+    company_name: tenant.company_name,
+    match_config: tenant.match_config,
+    report_config: tenant.report_config,
   };
 
   const openEditDrawer = (sectionTitle: TenantSectionTitlesEnum, data: any) => {
@@ -214,6 +221,14 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.AUTO_REPLACEMENT, autoReplacement)}
         >
           <AutoReplacementView data={autoReplacement} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.CANDIDATE_DELIVERY}
+          icon={<SettingsServices size={24} />}
+          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.CANDIDATE_DELIVERY, candidateDelivery)}
+        >
+          <CandidateDeliveryView data={candidateDelivery} />
         </TenantViewLayout>
 
         <TenantViewLayout

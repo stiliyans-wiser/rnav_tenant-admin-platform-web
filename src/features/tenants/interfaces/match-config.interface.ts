@@ -47,4 +47,15 @@ export interface MatchConfig {
   dynamic_weight_adjustment?: boolean;
   auto_match_on_job_ingest?: boolean;
   auto_match_on_candidate_ingest?: boolean;
+  // --- Shortlist & Candidate Limits ---
+  shortlist_default_size?: number;
+  candidate_limit_per_job?: number;
+  // --- Review & Approval ---
+  delivery_review_threshold?: number;
+  // --- Freshness Scoring ---
+  freshness_bonus_enabled?: boolean;
+  freshness_bonus_points?: number;
+  freshness_window_days?: number;
+  // --- Matching Schedule ---
+  matching_cadence_hours?: number;
 }
