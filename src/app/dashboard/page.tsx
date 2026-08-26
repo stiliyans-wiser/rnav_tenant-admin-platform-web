@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Stack, CircularProgress, Typography } from '@mui/material';
+import { Stack, CircularProgress, Alert, Button } from '@mui/material';
 import { PageContainer } from '@/features/layout/components/page/PageContainer';
 import PageHeader from '@/features/layout/components/page/PageHeader';
 import { Dashboard } from '@/features/dashboard/components/Dashboard';
@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const { data: tenants = [], isLoading: isGettingTenants } = useGetTenants();
   const { data: adminConfig, isLoading: isGettingAdminConfig } = useGetAdminConfig();
 
-  const { data: aiUsageData, isLoading: isGettingAiUsage, error } = useGetAiUsage(filters);
+  const { data: aiUsageData, isLoading: isGettingAiUsage, error, refetch } = useGetAiUsage(filters);
 
   const handleFilterChanged = useCallback((filter: DashboardFilter) => {
     setFilters(filter);
@@ -33,7 +33,18 @@ export default function DashboardPage() {
     }
 
     if (error) {
-      return <Typography color="error">Error loading dashboard</Typography>;
+      const isNetworkError = !(error as { response?: unknown }).response;
+      const errorMessage = isNetworkError
+        ? 'Network error — check your connection and try again.'
+        : 'Server error — the dashboard could not be loaded.';
+      return (
+        <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
+          <Alert severity="error">{errorMessage}</Alert>
+          <Button variant="outlined" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </Stack>
+      );
     }
 
     return <Dashboard data={aiUsageData} />;

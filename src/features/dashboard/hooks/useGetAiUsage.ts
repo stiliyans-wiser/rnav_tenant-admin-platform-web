@@ -8,6 +8,7 @@ export const useGetAiUsage = (filters?: DashboardFilter) => {
     queryKey: aiUsageConstants.aiUsageKeys.list(filters || {}),
     queryFn: () => getAiUsage(filters),
     enabled: filters !== undefined,
-    retry: false,
+    retry: 2,
+    retryDelay: 1000,
   });
 };
