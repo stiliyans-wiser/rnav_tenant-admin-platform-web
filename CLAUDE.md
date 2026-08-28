@@ -25,6 +25,9 @@ Architecture: `info/docs/architecture_design.md`.
 Provider feature flag keys: `src/features/tenants/interfaces/provider-feature-flags.interface.ts` + `flagKeys` in
 `ProviderFeatureFlagsForm.tsx`. Must mirror `ProviderFeatureFlags` in the API (`src/models/mongodb/models.py`).
 New connector in the API ⇒ add key, label, description, and form entry here in the same change set.
+These flags are the platform kill-switch: OFF means the worker skips every scheduled and manual run for that
+tenant even if the tenant's own Connector Settings say "Enable". Flags default OFF for new tenants; the API
+backfills them ON once at startup for never-administered tenants that already had a participating crawler config.
 
 Auth: separate `BackofficeUser` MongoDB collection. Login hits `POST /backoffice/login`.
 **Not** the same as tenant user auth in `core42-pov-webapp/`.
