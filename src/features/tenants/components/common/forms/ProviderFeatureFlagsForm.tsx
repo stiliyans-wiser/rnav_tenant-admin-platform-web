@@ -14,6 +14,17 @@ const flagKeys = [
   'a1_provider_flows',
   'hlctech_provider_flows',
   'jobs_bg_provider_flows',
+  'telus_digital_provider_flows',
+  'concentrix_provider_flows',
+  'avedo_provider_flows',
+  'dormakaba_provider_flows',
+  'gracher_provider_flows',
+  'solaredge_provider_flows',
+  'sutherland_provider_flows',
+  'postbank_provider_flows',
+  'commerzbank_provider_flows',
+  'ringcentral_provider_flows',
+  'cocacola_provider_flows',
 ] satisfies Array<keyof ProviderFeatureFlags>;
 
 export const ProviderFeatureFlagsForm = () => {

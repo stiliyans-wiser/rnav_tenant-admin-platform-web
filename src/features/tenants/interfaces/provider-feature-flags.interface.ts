@@ -6,6 +6,17 @@ export interface ProviderFeatureFlags {
   a1_provider_flows: boolean;
   hlctech_provider_flows: boolean;
   jobs_bg_provider_flows: boolean;
+  telus_digital_provider_flows: boolean;
+  concentrix_provider_flows: boolean;
+  avedo_provider_flows: boolean;
+  dormakaba_provider_flows: boolean;
+  gracher_provider_flows: boolean;
+  solaredge_provider_flows: boolean;
+  sutherland_provider_flows: boolean;
+  postbank_provider_flows: boolean;
+  commerzbank_provider_flows: boolean;
+  ringcentral_provider_flows: boolean;
+  cocacola_provider_flows: boolean;
 }
 
 export interface ProviderFeatureFlagAudit {
@@ -29,6 +40,17 @@ export const DEFAULT_PROVIDER_FEATURE_FLAGS: ProviderFeatureFlags = {
   a1_provider_flows: false,
   hlctech_provider_flows: false,
   jobs_bg_provider_flows: false,
+  telus_digital_provider_flows: false,
+  concentrix_provider_flows: false,
+  avedo_provider_flows: false,
+  dormakaba_provider_flows: false,
+  gracher_provider_flows: false,
+  solaredge_provider_flows: false,
+  sutherland_provider_flows: false,
+  postbank_provider_flows: false,
+  commerzbank_provider_flows: false,
+  ringcentral_provider_flows: false,
+  cocacola_provider_flows: false,
 };
 
 export const providerFeatureFlagLabels: Record<keyof ProviderFeatureFlags, string> = {
@@ -39,6 +61,17 @@ export const providerFeatureFlagLabels: Record<keyof ProviderFeatureFlags, strin
   a1_provider_flows: 'A1 connector flows',
   hlctech_provider_flows: 'HLCTech connector flows',
   jobs_bg_provider_flows: 'Jobs.bg connector flows',
+  telus_digital_provider_flows: 'Telus Digital connector flows',
+  concentrix_provider_flows: 'Concentrix connector flows',
+  avedo_provider_flows: 'Avedo connector flows',
+  dormakaba_provider_flows: 'Dormakaba connector flows',
+  gracher_provider_flows: 'Gracher connector flows',
+  solaredge_provider_flows: 'SolarEdge connector flows',
+  sutherland_provider_flows: 'Sutherland connector flows',
+  postbank_provider_flows: 'Postbank connector flows',
+  commerzbank_provider_flows: 'Commerzbank connector flows',
+  ringcentral_provider_flows: 'RingCentral connector flows',
+  cocacola_provider_flows: 'Coca-Cola connector flows',
 };
 
 export const providerFeatureFlagDescriptions: Record<keyof ProviderFeatureFlags, string> = {
@@ -49,4 +82,15 @@ export const providerFeatureFlagDescriptions: Record<keyof ProviderFeatureFlags,
   a1_provider_flows: 'Enables A1-specific provider and connector workflows for this tenant.',
   hlctech_provider_flows: 'Enables HLCTech-specific provider and connector workflows for this tenant.',
   jobs_bg_provider_flows: 'Enables Jobs.bg-specific provider and connector workflows for this tenant.',
+  telus_digital_provider_flows: 'Enables the Telus Digital careers connector for this tenant.',
+  concentrix_provider_flows: 'Enables the Concentrix careers connector for this tenant.',
+  avedo_provider_flows: 'Enables the Avedo careers connector for this tenant.',
+  dormakaba_provider_flows: 'Enables the Dormakaba careers connector for this tenant.',
+  gracher_provider_flows: 'Enables the Gracher careers connector for this tenant.',
+  solaredge_provider_flows: 'Enables the SolarEdge careers connector for this tenant.',
+  sutherland_provider_flows: 'Enables the Sutherland careers connector for this tenant.',
+  postbank_provider_flows: 'Enables the Postbank careers connector for this tenant.',
+  commerzbank_provider_flows: 'Enables the Commerzbank careers connector for this tenant.',
+  ringcentral_provider_flows: 'Enables the RingCentral (Workday) careers connector for this tenant.',
+  cocacola_provider_flows: 'Enables the Coca-Cola (CCEP) careers connector for this tenant.',
 };
