@@ -19,6 +19,12 @@ Architecture: `info/docs/architecture_design.md`.
 | AI usage analytics dashboard | `/dashboard` |
 | Document type configuration | `/settings/document-types` |
 | Back-office user management | `/settings/users` |
+| Per-tenant provider feature flags (one `<source>_provider_flows` toggle per job connector, audited) | `/tenants/[id]` → Provider feature flags section |
+| Platform provider quota ceilings | `/settings/provider-quotas` |
+
+Provider feature flag keys: `src/features/tenants/interfaces/provider-feature-flags.interface.ts` + `flagKeys` in
+`ProviderFeatureFlagsForm.tsx`. Must mirror `ProviderFeatureFlags` in the API (`src/models/mongodb/models.py`).
+New connector in the API ⇒ add key, label, description, and form entry here in the same change set.
 
 Auth: separate `BackofficeUser` MongoDB collection. Login hits `POST /backoffice/login`.
 **Not** the same as tenant user auth in `core42-pov-webapp/`.

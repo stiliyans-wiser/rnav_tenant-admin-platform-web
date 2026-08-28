@@ -337,3 +337,24 @@ Follow section 14 (extension guidance). Add new delivery fields by:
 2. Adding form controls inside `CandidateDeliveryForm`.
 3. Adding display rows inside `CandidateDeliveryView`.
 4. Adjusting the `PATCH` body transformer in the section component.
+
+## 16. Provider Feature Flags (Recruitment Navigator)
+
+Per-tenant on/off switches for external job connectors and sourcing flows, stored on the API `Account.provider_feature_flags` (`ProviderFeatureFlags` in `core42-pov-api/src/models/mongodb/models.py`). Edited on the tenant detail page (`ProviderFeatureFlagsSection` → `ProviderFeatureFlagsForm`), displayed via `ProviderFeatureFlagsView` with the recent audit trail (`useGetTenantProviderFeatureFlagAudit`).
+
+### Keys
+
+| Group | Keys |
+|---|---|
+| Sourcing / config | `linkedin_candidate_sourcing`, `candidate_provider_configs`, `job_position_provider_configs` |
+| Job connectors (one per `ExternalJobSource`) | `jobs_bg_provider_flows`, `hlctech_provider_flows`, `a1_provider_flows`, `kpmg_provider_flows`, `telus_digital_provider_flows`, `concentrix_provider_flows`, `avedo_provider_flows`, `dormakaba_provider_flows`, `gracher_provider_flows`, `solaredge_provider_flows`, `sutherland_provider_flows`, `postbank_provider_flows`, `commerzbank_provider_flows`, `ringcentral_provider_flows`, `cocacola_provider_flows` |
+
+### Source of truth
+
+- `src/features/tenants/interfaces/provider-feature-flags.interface.ts` — `ProviderFeatureFlags` type, `DEFAULT_PROVIDER_FEATURE_FLAGS`, labels, descriptions. Must mirror the API model field-for-field.
+- `src/features/tenants/components/common/forms/ProviderFeatureFlagsForm.tsx` — `flagKeys` array controls toggle order in the form.
+- `ProviderFeatureFlagsView` derives its chip list from `Object.keys(DEFAULT_PROVIDER_FEATURE_FLAGS)`; no edit needed there.
+
+### Extension pattern
+
+New connector in the API ⇒ in the same change set: add the key to the interface, defaults, labels, descriptions, and `flagKeys`. Typecheck (`tsc --noEmit`) fails if any record misses a key.
