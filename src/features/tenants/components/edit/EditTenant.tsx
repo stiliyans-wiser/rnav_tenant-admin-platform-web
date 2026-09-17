@@ -136,8 +136,15 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
       onSaved?.();
     } catch (error) {
       console.error('Error saving tenant:', error);
-      const detail = (error as AxiosError<{ detail?: string }>).response?.data?.detail;
-      setApiError(detail ?? 'An unexpected error occurred. Please try again.');
+      const fallback = 'An unexpected error occurred. Please try again.';
+      const detail = (error as AxiosError<{ detail?: string | Array<{ msg?: string }> }>).response?.data?.detail;
+      const message =
+        typeof detail === 'string'
+          ? detail
+          : Array.isArray(detail)
+            ? detail.map(d => d.msg ?? JSON.stringify(d)).join('; ')
+            : fallback;
+      setApiError(message);
     }
   };
 
