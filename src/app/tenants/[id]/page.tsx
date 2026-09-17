@@ -6,7 +6,6 @@ import { useGetTenantById } from '@/features/tenants/hooks/useGetTenantById';
 import { TenantDetails } from '@/features/tenants/components/details/TenantDetails';
 import PageHeader from '@/features/layout/components/page/PageHeader';
 import { PageContainer } from '@/features/layout/components/page/PageContainer';
-import { DocumentGroupsView } from '@/features/tenants/components/common/view/DocumentGroupsView';
 
 export default function TenantDetailsPage() {
   const params = useParams();
@@ -28,10 +27,7 @@ export default function TenantDetailsPage() {
     }
 
     return (
-      <Stack gap={2}>
-        <TenantDetails tenant={tenant} />
-        <DocumentGroupsView tenantId={tenant.id} />
-      </Stack>
+      <TenantDetails tenant={tenant} />
     );
   };
 

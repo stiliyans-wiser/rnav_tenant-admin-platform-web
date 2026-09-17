@@ -87,11 +87,6 @@ export const formFieldNames = {
     documentTypes: 'document_types',
     documentDataSources: 'document_data_sources',
   },
-  documentGroups: {
-    name: 'name',
-    description: 'description',
-    metadata: 'metadata',
-  },
   users: {
     email: 'email',
     firstName: 'first_name',

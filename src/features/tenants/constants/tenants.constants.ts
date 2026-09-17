@@ -6,11 +6,6 @@ export const tenantsConstants = {
     details: () => [...tenantsConstants.tenantKeys.all, 'detail'] as const,
     detail: (id: string) => [...tenantsConstants.tenantKeys.details(), id] as const,
   },
-  documentGroupKeys: {
-    all: ['document-groups'] as const,
-    lists: () => [...tenantsConstants.documentGroupKeys.all, 'list'] as const,
-    list: (accountId: string) => [...tenantsConstants.documentGroupKeys.lists(), accountId] as const,
-  },
   providerFeatureFlagAuditKeys: {
     all: ['provider-feature-flag-audit'] as const,
     list: (tenantId: string) => [...tenantsConstants.providerFeatureFlagAuditKeys.all, tenantId] as const,
