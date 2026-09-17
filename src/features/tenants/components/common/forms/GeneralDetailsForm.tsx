@@ -78,7 +78,6 @@ export const GeneralDetailsForm = ({ adminConfig, disabledFields = [] }: General
       <Controller
         name={formFieldNames.generalDetails.domain}
         control={control}
-        disabled={disabledFields.includes(formFieldNames.generalDetails.domain)}
         rules={{ required: 'This field is required' }}
         render={({ field, fieldState }) => (
           <MuiTextField

@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Stack } from '@mui/material';
+import { Alert, Stack } from '@mui/material';
+import type { AxiosError } from 'axios';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import { GeneralDetailsSection } from '@/features/tenants/components/edit/sections/GeneralDetailsSection';
 import { BrandAndThemingSection } from '@/features/tenants/components/edit/sections/BrandAndThemingSection';
@@ -28,11 +30,13 @@ interface EditTenantProps {
   defaultValues: any;
   tenantId: string;
   handleClose: () => void;
+  onSaved?: () => void;
 }
 
-export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: EditTenantProps) => {
+export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSaved }: EditTenantProps) => {
   const formMethods = useForm({ defaultValues, mode: 'onChange' });
   const { getValues } = formMethods;
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const updateTenant = useUpdateTenant();
 
@@ -119,6 +123,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
   };
 
   const onSubmit = async () => {
+    setApiError(null);
     try {
       await updateTenant.mutateAsync({
         id: tenantId,
@@ -126,8 +131,11 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
       });
 
       handleClose();
+      onSaved?.();
     } catch (error) {
-      console.error('Error saving document type:', error);
+      console.error('Error saving tenant:', error);
+      const detail = (error as AxiosError<{ detail?: string }>).response?.data?.detail;
+      setApiError(detail ?? 'An unexpected error occurred. Please try again.');
     }
   };
 
@@ -166,6 +174,11 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose }: Edit
     <Stack sx={{ height: '100%' }}>
       <FormProvider {...formMethods}>
         <Stack component="form" sx={{ flex: 1 }}>
+          {apiError && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setApiError(null)}>
+              {apiError}
+            </Alert>
+          )}
           <Stack sx={{ flex: 1 }}>{getSectionContent()}</Stack>
         </Stack>
       </FormProvider>

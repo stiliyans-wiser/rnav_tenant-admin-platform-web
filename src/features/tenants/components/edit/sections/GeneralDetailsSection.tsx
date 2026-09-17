@@ -17,7 +17,7 @@ export const GeneralDetailsSection = ({ onSave, onCancel }: EditTenantSectionPro
 
   return (
     <EditTenantLayout isSaveButtonDisabled={hasError} onCancel={onCancel} onSave={onSave}>
-      <GeneralDetailsForm adminConfig={adminConfig} disabledFields={[formFieldNames.generalDetails.domain]} />
+      <GeneralDetailsForm adminConfig={adminConfig} />
     </EditTenantLayout>
   );
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Stack } from '@mui/material';
+import { Alert, Snackbar, Stack } from '@mui/material';
 import { AudioConsole, Document, IbmCloudHyperProtectCryptoServices, SettingsServices } from '@carbon/icons-react';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import { TenantViewLayout } from '@/features/tenants/components/common/view/TenantViewLayout';
@@ -33,6 +33,7 @@ interface TenantDetailsProps {
 
 export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const [currentSectionTitle, setCurrentSectionTitle] = useState<TenantSectionTitlesEnum>(null);
+  const [successOpen, setSuccessOpen] = useState(false);
   const [editDrawerOpen, setEditDrawerOpen] = useState<boolean>(false);
   const [defaultValues, setDefaultValues] = useState<any>(null);
   const { data: providerFeatureFlagAudit, isLoading: isProviderFeatureFlagAuditLoading } = useGetTenantProviderFeatureFlagAudit(tenant.id);
@@ -252,8 +253,25 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
       </Stack>
 
       <CustomDrawer open={editDrawerOpen} drawerSxProps={{ width: '40%' }} title={currentSectionTitle} handleClose={handleCloseEditDrawer}>
-        <EditTenant title={currentSectionTitle} tenantId={tenant.id} defaultValues={defaultValues} handleClose={handleCloseEditDrawer} />
+        <EditTenant
+          title={currentSectionTitle}
+          tenantId={tenant.id}
+          defaultValues={defaultValues}
+          handleClose={handleCloseEditDrawer}
+          onSaved={() => setSuccessOpen(true)}
+        />
       </CustomDrawer>
+
+      <Snackbar
+        open={successOpen}
+        autoHideDuration={3000}
+        onClose={() => setSuccessOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" onClose={() => setSuccessOpen(false)}>
+          Tenant updated
+        </Alert>
+      </Snackbar>
     </>
   );
 };
