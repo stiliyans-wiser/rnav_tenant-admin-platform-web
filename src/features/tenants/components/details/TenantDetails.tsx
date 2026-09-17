@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Alert, Snackbar, Stack } from '@mui/material';
-import { AudioConsole, Document, IbmCloudHyperProtectCryptoServices, SettingsServices } from '@carbon/icons-react';
+import { AudioConsole, IbmCloudHyperProtectCryptoServices, SettingsServices } from '@carbon/icons-react';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import { TenantViewLayout } from '@/features/tenants/components/common/view/TenantViewLayout';
 import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/view/GeneralDetailsView';
@@ -10,7 +10,6 @@ import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/com
 import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/view/AIServicesView';
 import { ProviderFeatureFlagsData, ProviderFeatureFlagsView } from '@/features/tenants/components/common/view/ProviderFeatureFlagsView';
 import { SSOData, SSOView } from '@/features/tenants/components/common/view/SSOView';
-import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/view/DocumentsView';
 import { ExtractionData, ExtractionView } from '@/features/tenants/components/common/view/ExtractionView';
 import { UIConfigData, UIConfigView } from '@/features/tenants/components/common/view/UIConfigView';
 import { TalentAutomationData, TalentAutomationView } from '@/features/tenants/components/common/view/TalentAutomationView';
@@ -22,7 +21,6 @@ import { CandidateImportSourcesPanel } from '@/features/tenants/components/commo
 import { ProviderQuotasPanel } from '@/features/tenants/components/common/view/ProviderQuotasPanel';
 import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
 import { EditTenant } from '@/features/tenants/components/edit/EditTenant';
-import { DocumentType } from '@/features/document-types/interfaces/document-type.interface';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import { DEFAULT_PROVIDER_FEATURE_FLAGS } from '@/features/tenants/interfaces/provider-feature-flags.interface';
 import { useGetTenantProviderFeatureFlagAudit } from '@/features/tenants/hooks/useGetTenantProviderFeatureFlagAudit';
@@ -72,11 +70,6 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const sso: SSOData = {
     company_name: tenant.company_name,
     sso_config: { ...tenant.sso_config },
-  };
-
-  const documentTypes: DocumentsData = {
-    company_name: tenant.company_name,
-    document_types: tenant.document_types?.map((doc: DocumentType) => JSON.stringify(doc)),
   };
 
   const extraction: ExtractionData = {
@@ -163,14 +156,6 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.SSO, sso)}
         >
           <SSOView data={sso} />
-        </TenantViewLayout>
-
-        <TenantViewLayout
-          title={TenantSectionTitlesEnum.DOCUMENTS}
-          icon={<Document size={24} />}
-          onEdit={() => openEditDrawer(TenantSectionTitlesEnum.DOCUMENTS, documentTypes)}
-        >
-          <DocumentsView data={documentTypes} />
         </TenantViewLayout>
 
         <TenantViewLayout

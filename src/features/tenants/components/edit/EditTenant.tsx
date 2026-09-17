@@ -8,7 +8,6 @@ import { BrandAndThemingSection } from '@/features/tenants/components/edit/secti
 import { AIServicesSection } from '@/features/tenants/components/edit/sections/AIServicesSection';
 import { ProviderFeatureFlagsSection } from '@/features/tenants/components/edit/sections/ProviderFeatureFlagsSection';
 import { SSOSection } from '@/features/tenants/components/edit/sections/SSOSection';
-import { DocumentsSection } from '@/features/tenants/components/edit/sections/DocumentsSection';
 import { ExtractionSection } from '@/features/tenants/components/edit/sections/ExtractionSection';
 import { UIConfigSection } from '@/features/tenants/components/edit/sections/UIConfigSection';
 import { TalentAutomationSection } from '@/features/tenants/components/edit/sections/TalentAutomationSection';
@@ -20,7 +19,6 @@ import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import {
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
-  parseDocumentTypes,
   buildIntegrationsRequestBody,
   buildAIConfigRequestBody,
 } from '@/features/tenants/utils/buildRequestBody';
@@ -61,13 +59,6 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
       return {
         ...getValues(),
         sso_config: buildSSOConfigRequestBody(getValues('sso_config')),
-      };
-    }
-
-    if (title === TenantSectionTitlesEnum.DOCUMENTS) {
-      return {
-        ...getValues(),
-        document_types: parseDocumentTypes(getValues('document_types')),
       };
     }
 
@@ -160,8 +151,6 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
         return <ProviderFeatureFlagsSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.SSO:
         return <SSOSection onSave={onSubmit} onCancel={handleClose} />;
-      case TenantSectionTitlesEnum.DOCUMENTS:
-        return <DocumentsSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.EXTRACTION:
         return <ExtractionSection onSave={onSubmit} onCancel={handleClose} />;
       case TenantSectionTitlesEnum.UI_CONFIG:
