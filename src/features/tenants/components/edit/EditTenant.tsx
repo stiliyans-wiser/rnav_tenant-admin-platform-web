@@ -43,8 +43,10 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
   const getRequestBody = (): Partial<Tenant> => {
     if (title === TenantSectionTitlesEnum.GENERAL_DETAILS) {
       return {
-        ...getValues(),
-        integrations: buildIntegrationsRequestBody(getValues('integrations')),
+        ...defaultValues,
+        company_name: getValues('company_name'),
+        domain: getValues('domain'),
+        integrations: buildIntegrationsRequestBody(defaultValues.integrations),
       };
     }
 

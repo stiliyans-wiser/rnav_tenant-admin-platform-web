@@ -4,11 +4,10 @@ import { TenantPreviewProps } from '@/features/tenants/interfaces/tenant-preview
 import { useFormContext } from 'react-hook-form';
 import { GeneralDetailsData, GeneralDetailsView } from '@/features/tenants/components/common/view/GeneralDetailsView';
 import { TenantViewLayout } from '@/features/tenants/components/common/view/TenantViewLayout';
-import { AudioConsole, Document, IbmCloudHyperProtectCryptoServices, SettingsServices, VisualRecognition } from '@carbon/icons-react';
+import { AudioConsole, IbmCloudHyperProtectCryptoServices, SettingsServices, VisualRecognition } from '@carbon/icons-react';
 import { BrandAndThemingData, BrandAndThemingView } from '@/features/tenants/components/common/view/BrandAndThemingView';
 import { AIServicesData, AIServicesView } from '@/features/tenants/components/common/view/AIServicesView';
 import { SSOData, SSOView } from '@/features/tenants/components/common/view/SSOView';
-import { DocumentsData, DocumentsView } from '@/features/tenants/components/common/view/DocumentsView';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 
 interface PreviewStepProps extends TenantPreviewProps {
@@ -23,7 +22,6 @@ export const PreviewStep = ({ onBack, onNext, onEdit }: PreviewStepProps) => {
   const brandAndThemingFormValues = getValues() as BrandAndThemingData;
   const aiServicesFormValues = getValues() as AIServicesData;
   const ssoFormValues = getValues() as SSOData;
-  const documentTypes: DocumentsData = getValues() as DocumentsData;
 
   return (
     <Stack gap={2} sx={{ height: '100%' }}>
@@ -58,14 +56,6 @@ export const PreviewStep = ({ onBack, onNext, onEdit }: PreviewStepProps) => {
           onEdit={() => onEdit(TenantSectionTitlesEnum.SSO)}
         >
           <SSOView data={ssoFormValues} />
-        </TenantViewLayout>
-
-        <TenantViewLayout
-          title={TenantSectionTitlesEnum.DOCUMENTS}
-          icon={<Document size={24} />}
-          onEdit={() => onEdit(TenantSectionTitlesEnum.DOCUMENTS)}
-        >
-          <DocumentsView data={documentTypes} />
         </TenantViewLayout>
       </Stack>
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Box, Stack, Step, StepLabel, Stepper } from '@mui/material';
-import { DocumentsStep } from '@/features/tenants/components/create/steps/DocumentsStep';
 import { GeneralDetailsStep } from '@/features/tenants/components/create/steps/GeneralDetailsStep';
 import { BrandAndThemingStep } from '@/features/tenants/components/create/steps/BrandAndThemingStep';
 import { AIServicesStep } from '@/features/tenants/components/create/steps/AIServicesStep';
@@ -14,14 +13,12 @@ import { useCreateTenant } from '@/features/tenants/hooks/useCreateTenant';
 import { Tenant, TenantForm } from '@/features/tenants/interfaces/tenant.interface';
 import { UsersStep } from '@/features/tenants/components/create/steps/UsersStep';
 import { SuccessStep } from '@/features/tenants/components/create/steps/SuccessStep';
-import { DocumentGroupsStep } from '@/features/tenants/components/create/steps/DocumentGroupsStep';
 import { TenantSectionTitlesEnum } from '@/features/tenants/enums/tenant-section-titles.enum';
 import {
   buildAIConfigRequestBody,
-  buildDocumentDataSourcesRequestBody,
-  buildIntegrationsRequestBody,
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
+  buildIntegrationsRequestBody,
   parseDocumentTypes,
 } from '@/features/tenants/utils/buildRequestBody';
 
@@ -30,8 +27,6 @@ enum CreateTenantStepEnum {
   BRAND_THEMING,
   AI_SERVICES,
   SSO,
-  DOCUMENT_GROUPS,
-  DOCUMENTS,
   PREVIEW,
   ADD_USERS,
   SUCCESS,
@@ -61,16 +56,8 @@ const steps: CreateTenantStep[] = [
     title: TenantSectionTitlesEnum.SSO,
   },
   {
-    id: CreateTenantStepEnum.DOCUMENTS,
-    title: TenantSectionTitlesEnum.DOCUMENTS,
-  },
-  {
     id: CreateTenantStepEnum.PREVIEW,
     title: 'Preview & Create tenant',
-  },
-  {
-    id: CreateTenantStepEnum.DOCUMENT_GROUPS,
-    title: TenantSectionTitlesEnum.DOCUMENT_GROUPS,
   },
   {
     id: CreateTenantStepEnum.ADD_USERS,
@@ -98,12 +85,8 @@ const getStepContent = (
       return <AIServicesStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.SSO:
       return <SSOStep onNext={onNext} onBack={onBack} />;
-    case CreateTenantStepEnum.DOCUMENTS:
-      return <DocumentsStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.PREVIEW:
       return <PreviewStep onNext={onNext} onBack={onBack} onEdit={onEdit} />;
-    case CreateTenantStepEnum.DOCUMENT_GROUPS:
-      return <DocumentGroupsStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.ADD_USERS:
       return <UsersStep onNext={onNext} onBack={onBack} />;
     case CreateTenantStepEnum.SUCCESS:
@@ -206,7 +189,6 @@ export const CreateTenant = () => {
       ai_config: buildAIConfigRequestBody(formValues.ai_config),
       sso_config: buildSSOConfigRequestBody(formMethods.getValues('sso_config')),
       document_types: parseDocumentTypes(formMethods.getValues('document_types')),
-      document_data_sources: buildDocumentDataSourcesRequestBody(formMethods.getValues('document_data_sources')),
     };
   };
 

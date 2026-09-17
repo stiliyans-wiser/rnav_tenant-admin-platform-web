@@ -41,15 +41,6 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
   const generalDetails: GeneralDetailsData = {
     company_name: tenant.company_name,
     domain: tenant.domain,
-    integrations: tenant.integrations ? Object.keys(tenant.integrations) : [],
-    settings: {
-      ...tenant.settings,
-      logos: {
-        ...tenant.settings.logos,
-      },
-    },
-    document_data_sources: tenant.document_data_sources,
-    chat_strategy: tenant.chat_strategy,
   };
 
   const brandAndTheming: BrandAndThemingData = {
