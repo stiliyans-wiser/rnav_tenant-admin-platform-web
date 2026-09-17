@@ -32,6 +32,26 @@ interface JwtPayload {
   exp: number;
 }
 
+const DNS_TRANSIENT_CODES = new Set(['EAI_AGAIN', 'ENOTFOUND', 'ECONNRESET', 'UND_ERR_SOCKET']);
+
+async function fetchWithDnsRetry(url: string, init?: RequestInit): Promise<Response> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await fetch(url, init);
+    } catch (err) {
+      const code = err instanceof Error
+        ? (err as Error & { cause?: { code?: string } }).cause?.code
+        : undefined;
+      if (attempt === 0 && code !== undefined && DNS_TRANSIENT_CODES.has(code)) {
+        await new Promise<void>(resolve => setTimeout(resolve, 300));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('fetchWithDnsRetry: unreachable');
+}
+
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -47,7 +67,7 @@ const authOptions: NextAuthOptions = {
           if (credentials?.username) params.append('username', credentials.username);
           if (credentials?.password) params.append('password', credentials.password);
 
-          const res = await fetch(`${apiUrl}/backoffice/login`, {
+          const res = await fetchWithDnsRetry(`${apiUrl}/backoffice/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString(),
