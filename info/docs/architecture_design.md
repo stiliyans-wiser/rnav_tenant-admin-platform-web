@@ -347,7 +347,7 @@ Per-tenant on/off switches for external job connectors and sourcing flows, store
 | Group | Keys |
 |---|---|
 | Sourcing / config | `linkedin_candidate_sourcing`, `candidate_provider_configs`, `job_position_provider_configs` |
-| Job connectors (one per `ExternalJobSource`) | `jobs_bg_provider_flows`, `hlctech_provider_flows`, `a1_provider_flows`, `kpmg_provider_flows`, `telus_digital_provider_flows`, `concentrix_provider_flows`, `avedo_provider_flows`, `dormakaba_provider_flows`, `gracher_provider_flows`, `solaredge_provider_flows`, `sutherland_provider_flows`, `postbank_provider_flows`, `commerzbank_provider_flows`, `ringcentral_provider_flows`, `cocacola_provider_flows` |
+| Job connectors (one per `ExternalJobSource`) | `jobs_bg_provider_flows`, `hlctech_provider_flows`, `a1_provider_flows`, `telus_digital_provider_flows`, `concentrix_provider_flows`, `avedo_provider_flows`, `dormakaba_provider_flows`, `gracher_provider_flows`, `solaredge_provider_flows`, `sutherland_provider_flows`, `postbank_provider_flows`, `commerzbank_provider_flows`, `ringcentral_provider_flows`, `cocacola_provider_flows` |
 
 ### Source of truth
 

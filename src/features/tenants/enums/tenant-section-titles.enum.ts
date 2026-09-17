@@ -12,8 +12,6 @@ export enum TenantSectionTitlesEnum {
   MATCHING_CONTROLS = 'Matching Controls',
   AUTO_REPLACEMENT = 'Auto-Replacement',
   SCORING_TEMPLATES = 'Scoring Templates',
-  CONNECTOR_SETTINGS = 'Connector Settings',
-  CLIENT_PIPELINE = 'Client Pipeline',
   CANDIDATE_IMPORT_SOURCES = 'Candidate Import Sources',
   PROVIDER_QUOTAS = 'Provider Quotas',
   CANDIDATE_DELIVERY = 'Candidate Delivery',

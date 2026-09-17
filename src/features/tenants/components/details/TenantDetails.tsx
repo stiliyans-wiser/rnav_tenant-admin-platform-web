@@ -18,8 +18,6 @@ import { MatchingControlsData, MatchingControlsView } from '@/features/tenants/c
 import { AutoReplacementData, AutoReplacementView } from '@/features/tenants/components/common/view/AutoReplacementView';
 import { CandidateDeliveryData, CandidateDeliveryView } from '@/features/tenants/components/common/view/CandidateDeliveryView';
 import { ScoringTemplatesPanel } from '@/features/tenants/components/common/view/ScoringTemplatesPanel';
-import { ConnectorConfigPanel } from '@/features/tenants/components/common/view/ConnectorConfigPanel';
-import { CrawlerSettingsPanel } from '@/features/tenants/components/common/view/CrawlerSettingsPanel';
 import { CandidateImportSourcesPanel } from '@/features/tenants/components/common/view/CandidateImportSourcesPanel';
 import { ProviderQuotasPanel } from '@/features/tenants/components/common/view/ProviderQuotasPanel';
 import { CustomDrawer } from '@/features/common/components/drawers/CustomDrawer';
@@ -236,20 +234,6 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           icon={<SettingsServices size={24} />}
         >
           <ScoringTemplatesPanel tenantId={tenant.id!} />
-        </TenantViewLayout>
-
-        <TenantViewLayout
-          title={TenantSectionTitlesEnum.CONNECTOR_SETTINGS}
-          icon={<SettingsServices size={24} />}
-        >
-          <ConnectorConfigPanel tenantId={tenant.id!} />
-        </TenantViewLayout>
-
-        <TenantViewLayout
-          title={TenantSectionTitlesEnum.CLIENT_PIPELINE}
-          icon={<SettingsServices size={24} />}
-        >
-          <CrawlerSettingsPanel tenantId={tenant.id!} />
         </TenantViewLayout>
 
         <TenantViewLayout

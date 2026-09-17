@@ -7,6 +7,7 @@ import {
   CreateScoringTemplateIn,
   UpdateScoringTemplateIn,
 } from '@/features/tenants/interfaces/scoring-template.interface';
+import { CandidateProviderConfig } from '@/features/tenants/interfaces/candidate-provider.interface';
 
 const url = '/admin/accounts';
 
@@ -65,89 +66,6 @@ export const updateScoringTemplate = async (
 
 export const deleteScoringTemplate = async (tenantId: string, templateId: string): Promise<void> => {
   await api.delete(`${url}/${tenantId}/scoring-templates/${templateId}`);
-};
-
-// --- Connector Config APIs ---
-
-import {
-  ConnectorConfig,
-  ConnectorConfigUpdate,
-  SyncRecord,
-  SyncSummary,
-  SkipEventsResponse,
-  CrawlerClientConfig,
-} from '@/features/tenants/interfaces/connector-config.interface';
-import { CandidateProviderConfig } from '@/features/tenants/interfaces/candidate-provider.interface';
-
-export const getConnectorConfigs = async (tenantId: string): Promise<ConnectorConfig[]> => {
-  const response = await api.get<ConnectorConfig[]>(`${url}/${tenantId}/connector-configs`);
-  return response.data;
-};
-
-export const updateConnectorConfig = async (
-  tenantId: string,
-  source: string,
-  body: ConnectorConfigUpdate,
-): Promise<ConnectorConfig> => {
-  const response = await api.patch<ConnectorConfig>(`${url}/${tenantId}/connector-configs/${source}`, body);
-  return response.data;
-};
-
-export const triggerConnectorRun = async (
-  tenantId: string,
-  source: string,
-  params?: Record<string, string>,
-): Promise<any> => {
-  const qs = params ? `?${new URLSearchParams(params).toString()}` : '';
-  const response = await api.post(`${url}/${tenantId}/connector-run/${source}${qs}`);
-  return response.data;
-};
-
-export const getConnectorSyncStatus = async (tenantId: string): Promise<SyncRecord[]> => {
-  const response = await api.get<SyncRecord[]>(`${url}/${tenantId}/connector-sync-status`);
-  return response.data;
-};
-
-export const getConnectorSyncSummary = async (tenantId: string, source: string): Promise<SyncSummary> => {
-  const response = await api.get<SyncSummary>(`${url}/${tenantId}/connector-sync-summary/${source}`);
-  return response.data;
-};
-
-export const getConnectorSkipEvents = async (
-  tenantId: string,
-  source: string,
-  params: Record<string, string>,
-): Promise<SkipEventsResponse> => {
-  const response = await api.get<SkipEventsResponse>(
-    `${url}/${tenantId}/connector-skip-events/${source}?${new URLSearchParams(params).toString()}`,
-  );
-  return response.data;
-};
-
-export const getConnectorExpiredCount = async (tenantId: string, source: string): Promise<{ count: number }> => {
-  const response = await api.get<{ count: number }>(`${url}/${tenantId}/connector-expired-count/${source}`);
-  return response.data;
-};
-
-export const cleanupConnectorExpired = async (tenantId: string, source: string): Promise<any> => {
-  const response = await api.post(`${url}/${tenantId}/connector-cleanup-expired/${source}`);
-  return response.data;
-};
-
-// --- Crawler Client Config APIs (pre-existing admin endpoints) ---
-
-export const getCrawlerClientConfigs = async (tenantId: string): Promise<CrawlerClientConfig[]> => {
-  const response = await api.get<CrawlerClientConfig[]>(`${url}/${tenantId}/connectors`);
-  return response.data;
-};
-
-export const updateCrawlerClientConfig = async (
-  tenantId: string,
-  source: string,
-  body: Partial<CrawlerClientConfig>,
-): Promise<CrawlerClientConfig> => {
-  const response = await api.patch<CrawlerClientConfig>(`${url}/${tenantId}/connectors/${source}`, body);
-  return response.data;
 };
 
 // --- Candidate Provider APIs ---
