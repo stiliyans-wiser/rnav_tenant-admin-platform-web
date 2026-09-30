@@ -58,4 +58,6 @@ export interface MatchConfig {
   freshness_window_days?: number;
   // --- Matching Schedule ---
   matching_cadence_hours?: number;
+  // --- Programmatic Scoring ---
+  unverified_skill_credit?: number;
 }

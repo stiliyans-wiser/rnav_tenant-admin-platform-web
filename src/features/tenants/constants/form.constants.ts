@@ -49,6 +49,7 @@ export const formFieldNames = {
     calibrationTopKMultiplier: 'match_config.calibration_top_k_multiplier',
     autoMatchOnJobIngest: 'match_config.auto_match_on_job_ingest',
     autoMatchOnCandidateIngest: 'match_config.auto_match_on_candidate_ingest',
+    unverifiedSkillCredit: 'match_config.unverified_skill_credit',
   },
   extractionConfig: {
     includeReasoning: 'extraction_config.include_reasoning',

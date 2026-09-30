@@ -63,6 +63,33 @@ export const MatchingControlsForm = () => {
         />
       </Stack>
 
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        Programmatic Scoring
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Credit multiplier for skills with no years of experience and no last-used evidence. Lower values penalize
+        unverifiable skills more. 1.0 = full credit, 0.0 = ignore unverified skills entirely. Default: 0.65
+      </Typography>
+
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Controller
+          name={formFieldNames.matchConfig.unverifiedSkillCredit}
+          control={control}
+          defaultValue={0.65}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Unverified Skill Credit"
+              field={{ ...field, value: field.value ?? 0.65 }}
+              fieldState={fieldState}
+              inputProps={{ step: 0.05 }}
+              sx={{ maxWidth: 220 }}
+            />
+          )}
+        />
+      </Stack>
+
       <Typography variant="h6" sx={{ mb: 2 }}>
         Pipeline Settings
       </Typography>
