@@ -8,14 +8,15 @@ export const MatchingControlsForm = () => {
 
   return (
     <>
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ mb: 1 }}>
         Scoring Weights
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Programmatic + LLM + Embedding weights must sum to 1.0.
+        The three weights control how each scoring signal contributes to the final match score.{' '}
+        <strong>Programmatic + LLM Semantic + Embedding must sum to 1.0.</strong>
       </Typography>
 
-      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 1 }}>
         <Controller
           name={formFieldNames.matchConfig.programmaticWeight}
           control={control}
@@ -62,6 +63,27 @@ export const MatchingControlsForm = () => {
           )}
         />
       </Stack>
+
+      <Box sx={{ mb: 3, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+        {[
+          {
+            label: 'Programmatic',
+            desc: 'Rule-based skill overlap scoring using parsed CV data. Fast, deterministic, zero LLM cost. Increase when skill precision matters most.',
+          },
+          {
+            label: 'LLM Semantic',
+            desc: 'GPT-4 evaluation of experience depth, role relevance, and seniority fit. Richest signal, highest cost. Increase for senior or specialist roles.',
+          },
+          {
+            label: 'Embedding',
+            desc: 'Vector similarity from pre-computed CV and job embeddings. Surfaces candidates with similar backgrounds who use different terminology. Increase to broaden recall.',
+          },
+        ].map(({ label, desc }) => (
+          <Typography key={label} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
+            · <strong>{label}</strong>: {desc}
+          </Typography>
+        ))}
+      </Box>
 
       <Typography variant="h6" sx={{ mb: 1 }}>
         Programmatic Scoring
@@ -110,11 +132,14 @@ export const MatchingControlsForm = () => {
         />
       </Stack>
 
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ mb: 1 }}>
         Pipeline Settings
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Controls how many candidates are evaluated, at what score thresholds, and which models run each pipeline stage.
+      </Typography>
 
-      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 1 }}>
         <Controller
           name={formFieldNames.matchConfig.topK}
           control={control}
@@ -162,7 +187,28 @@ export const MatchingControlsForm = () => {
         />
       </Stack>
 
-      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
+      <Box sx={{ mb: 2, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+        {[
+          {
+            label: 'top_k',
+            desc: 'Candidates pulled from the vector index for re-ranking. Higher = more recall, higher cost. Default: 10. Increase to 20–50 for large talent pools or broad roles.',
+          },
+          {
+            label: 'Score threshold',
+            desc: 'Minimum combined match score (0–100) to appear in results. Set 0 to disable. Use 50–70 to surface only high-confidence matches and reduce recruiter noise.',
+          },
+          {
+            label: 'Screening threshold',
+            desc: 'Minimum score for a candidate to pass the fast LLM screening pass and proceed to deep evaluation. Default: 40. Increase to reduce cost on large pipelines; decrease to widen the funnel.',
+          },
+        ].map(({ label, desc }) => (
+          <Typography key={label} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
+            · <strong>{label}</strong>: {desc}
+          </Typography>
+        ))}
+      </Box>
+
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 1 }}>
         <Controller
           name={formFieldNames.matchConfig.screeningModel}
           control={control}
@@ -191,42 +237,81 @@ export const MatchingControlsForm = () => {
         />
       </Stack>
 
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Box sx={{ mb: 3, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+        {[
+          {
+            label: 'Screening model',
+            desc: 'OpenAI model for the fast first-pass screening stage. Lighter models (gpt-4.1-mini) lower cost. Use stronger models only if screening precision is insufficient.',
+          },
+          {
+            label: 'Deep model',
+            desc: 'OpenAI model for full semantic evaluation of shortlisted candidates. Stronger models improve ranking quality at higher cost per match run.',
+          },
+        ].map(({ label, desc }) => (
+          <Typography key={label} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
+            · <strong>{label}</strong>: {desc}
+          </Typography>
+        ))}
+      </Box>
+
+      <Typography variant="h6" sx={{ mb: 1 }}>
         Automation
       </Typography>
-
-      <Controller
-        name={formFieldNames.matchConfig.autoMatchOnJobIngest}
-        control={control}
-        defaultValue={false}
-        render={({ field }) => (
-          <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label="Auto-match on job ingest" />
-        )}
-      />
-      <Controller
-        name={formFieldNames.matchConfig.autoMatchOnCandidateIngest}
-        control={control}
-        defaultValue={false}
-        render={({ field }) => (
-          <FormControlLabel
-            control={<Switch {...field} checked={field.value ?? false} />}
-            label="Auto-match on candidate ingest"
-          />
-        )}
-      />
-
-      <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-        Calibration
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        Trigger matching automatically when new data arrives, without manual intervention.
       </Typography>
 
-      <Controller
-        name={formFieldNames.matchConfig.calibrationMode}
-        control={control}
-        defaultValue={false}
-        render={({ field }) => (
-          <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label="Calibration mode" />
-        )}
-      />
+      <Box sx={{ mb: 0.5 }}>
+        <Controller
+          name={formFieldNames.matchConfig.autoMatchOnJobIngest}
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label="Auto-match on job ingest" />
+          )}
+        />
+        <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5, mb: 1 }}>
+          Run matching automatically when a new job is ingested. Enable for real-time pipelines. Disable to batch-trigger matching manually and control API costs.
+        </Typography>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
+        <Controller
+          name={formFieldNames.matchConfig.autoMatchOnCandidateIngest}
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Switch {...field} checked={field.value ?? false} />}
+              label="Auto-match on candidate ingest"
+            />
+          )}
+        />
+        <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5, mb: 0 }}>
+          Run matching automatically when a new candidate CV is ingested. Enable to keep candidate pools continuously ranked against active jobs.
+        </Typography>
+      </Box>
+
+      <Typography variant="h6" sx={{ mt: 1, mb: 1 }}>
+        Calibration
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        Calibration runs expand the candidate pool beyond normal top_k to audit scoring quality. Results are not shown to recruiters.
+      </Typography>
+
+      <Box sx={{ mb: 0.5 }}>
+        <Controller
+          name={formFieldNames.matchConfig.calibrationMode}
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label="Calibration mode" />
+          )}
+        />
+        <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5, mb: 1 }}>
+          Activate calibration runs for this tenant. Use to tune scoring weights and thresholds before enabling production matching. Disable when weights are stable.
+        </Typography>
+      </Box>
 
       <Controller
         name={formFieldNames.matchConfig.calibrationTopKMultiplier}
@@ -243,31 +328,77 @@ export const MatchingControlsForm = () => {
           />
         )}
       />
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 3 }}>
+        Multiplies top_k during calibration runs. A value of 3 with top_k=10 evaluates 30 candidates. Higher = more thorough audit at higher API cost. Default: 3.
+      </Typography>
 
-      <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+      <Typography variant="h6" sx={{ mt: 1, mb: 1 }}>
         Screening Filters
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Hard filters applied before scoring. Candidates that fail an enabled filter are excluded entirely, regardless of score. Enable filters only when the job requirement is reliable and consistently extracted.
       </Typography>
 
       {[
-        { name: 'match_config.filter_seniority', label: 'Filter by seniority' },
-        { name: 'match_config.filter_min_experience', label: 'Filter by min experience' },
-        { name: 'match_config.filter_location', label: 'Filter by location' },
-        { name: 'match_config.filter_industry', label: 'Filter by industry' },
-        { name: 'match_config.filter_mandatory_skills', label: 'Filter by mandatory skills' },
-        { name: 'match_config.filter_technology_ancestry', label: 'Filter by technology ancestry' },
-        { name: 'match_config.filter_embedding_similarity', label: 'Filter by embedding similarity' },
-        { name: 'match_config.filter_career_trajectory', label: 'Filter by career trajectory' },
-        { name: 'match_config.filter_company_dna', label: 'Filter by company DNA' },
+        {
+          name: 'match_config.filter_seniority',
+          label: 'Filter by seniority',
+          description: 'Exclude candidates whose detected seniority level (junior / mid / senior) does not match the job requirement. Only enable when job seniority is consistently specified.',
+        },
+        {
+          name: 'match_config.filter_min_experience',
+          label: 'Filter by min experience',
+          description: 'Exclude candidates who do not meet the minimum total years of experience required by the job. Requires reliable experience extraction from CVs.',
+        },
+        {
+          name: 'match_config.filter_location',
+          label: 'Filter by location',
+          description: 'Exclude candidates outside the job\'s required location or region. Use for on-site or location-constrained roles; disable for remote-friendly positions.',
+        },
+        {
+          name: 'match_config.filter_industry',
+          label: 'Filter by industry',
+          description: 'Exclude candidates with no detected experience in the job\'s required industry. Useful for specialist sectors; may over-filter in cross-industry roles.',
+        },
+        {
+          name: 'match_config.filter_mandatory_skills',
+          label: 'Filter by mandatory skills',
+          description: 'Exclude candidates missing any skill the job marks as mandatory. Hard filter — use with care on sparse CVs where candidates may have the skill but not list it explicitly.',
+        },
+        {
+          name: 'match_config.filter_technology_ancestry',
+          label: 'Filter by technology ancestry',
+          description: 'Exclude candidates who lack the technology family required by the job (e.g. filtering for .NET excludes pure Java candidates). Useful for platform-specific roles.',
+        },
+        {
+          name: 'match_config.filter_embedding_similarity',
+          label: 'Filter by embedding similarity',
+          description: 'Exclude candidates whose vector similarity to the job falls below a minimum threshold. Prevents semantically unrelated profiles from passing to scoring even with keyword matches.',
+        },
+        {
+          name: 'match_config.filter_career_trajectory',
+          label: 'Filter by career trajectory',
+          description: 'Exclude candidates whose career progression signals a structural mismatch — declining seniority, unexplained gaps, or repeated unrelated pivots.',
+        },
+        {
+          name: 'match_config.filter_company_dna',
+          label: 'Filter by company DNA',
+          description: 'Exclude candidates whose company background (startup vs. enterprise scale, industry sector) does not align with the hiring company\'s profile and culture signals.',
+        },
       ].map(filter => (
-        <Controller
-          key={filter.name}
-          name={filter.name}
-          control={control}
-          defaultValue={false}
-          render={({ field }) => (
-            <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label={filter.label} />
-          )}
-        />
+        <Box key={filter.name} sx={{ mb: 1.5 }}>
+          <Controller
+            name={filter.name}
+            control={control}
+            defaultValue={false}
+            render={({ field }) => (
+              <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label={filter.label} />
+            )}
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5 }}>
+            {filter.description}
+          </Typography>
+        </Box>
       ))}
     </>
   );
