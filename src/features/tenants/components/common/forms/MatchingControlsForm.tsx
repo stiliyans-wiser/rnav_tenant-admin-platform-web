@@ -133,6 +133,126 @@ export const MatchingControlsForm = () => {
       </Stack>
 
       <Typography variant="h6" sx={{ mb: 1 }}>
+        Embedding Weights
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        Blends four vector types when computing the embedding similarity component of the match score. All four weights
+        must sum to 1.0. Applies only when the Embedding scoring weight above is &gt; 0.
+      </Typography>
+      <Box sx={{ mb: 2, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+        {[
+          {
+            label: 'Full Text (default 0.35)',
+            desc: 'Overall CV-to-job text similarity. Broadest signal — captures the whole document. Higher = favors candidates with strong overall content match.',
+          },
+          {
+            label: 'Skills (default 0.30)',
+            desc: 'Skills-focused embedding. Isolates technical competency overlap. Higher = emphasizes skill alignment over career narrative.',
+          },
+          {
+            label: 'Experience (default 0.20)',
+            desc: 'Work history and seniority embedding. Captures career trajectory and role level alignment. Higher = values career path match.',
+          },
+          {
+            label: 'Bio (default 0.15)',
+            desc: 'Candidate bio/summary embedding. Captures career narrative and cultural fit signals from the profile header. Higher = favors profile overview match.',
+          },
+        ].map(({ label, desc }) => (
+          <Typography key={label} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
+            · <strong>{label}</strong>: {desc}
+          </Typography>
+        ))}
+      </Box>
+
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        <Controller
+          name={formFieldNames.matchConfig.embeddingWeightFullText}
+          control={control}
+          defaultValue={0.35}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Full Text"
+              field={{ ...field, value: field.value ?? 0.35 }}
+              fieldState={fieldState}
+              inputProps={{ step: 0.05 }}
+              sx={{ maxWidth: 140 }}
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.embeddingWeightSkills}
+          control={control}
+          defaultValue={0.3}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Skills"
+              field={{ ...field, value: field.value ?? 0.3 }}
+              fieldState={fieldState}
+              inputProps={{ step: 0.05 }}
+              sx={{ maxWidth: 140 }}
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.embeddingWeightExperience}
+          control={control}
+          defaultValue={0.2}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Experience"
+              field={{ ...field, value: field.value ?? 0.2 }}
+              fieldState={fieldState}
+              inputProps={{ step: 0.05 }}
+              sx={{ maxWidth: 140 }}
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.embeddingWeightBio}
+          control={control}
+          defaultValue={0.15}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Bio"
+              field={{ ...field, value: field.value ?? 0.15 }}
+              fieldState={fieldState}
+              inputProps={{ step: 0.05 }}
+              sx={{ maxWidth: 140 }}
+            />
+          )}
+        />
+      </Stack>
+
+      <Box sx={{ mb: 1, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+        <Typography variant="body2" color="text.secondary">
+          <strong>Multi-vector shortlist</strong>: When ON, uses the union of all four embedding vectors to build the
+          initial candidate pool — broader and more diverse results. When OFF, only the full-text vector is used —
+          faster but may miss candidates who score well on skills or experience vectors alone. Default:{' '}
+          <strong>ON</strong>.
+        </Typography>
+      </Box>
+      <Controller
+        name={formFieldNames.matchConfig.useMultiVectorShortlist}
+        control={control}
+        defaultValue={true}
+        render={({ field }) => (
+          <FormControlLabel
+            control={<Switch {...field} checked={field.value ?? true} />}
+            label="Multi-vector shortlist"
+            sx={{ mb: 3 }}
+          />
+        )}
+      />
+
+      <Typography variant="h6" sx={{ mb: 1 }}>
         Pipeline Settings
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -152,6 +272,21 @@ export const MatchingControlsForm = () => {
               field={{ ...field, value: field.value ?? 10 }}
               fieldState={fieldState}
               sx={{ maxWidth: 140 }}
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.flashrankTopK}
+          control={control}
+          defaultValue={5}
+          rules={{ min: { value: 1, message: 'Min 1' }, max: { value: 100, message: 'Max 100' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="FlashRank top_k"
+              field={{ ...field, value: field.value ?? 5 }}
+              fieldState={fieldState}
+              sx={{ maxWidth: 160 }}
             />
           )}
         />
@@ -191,7 +326,11 @@ export const MatchingControlsForm = () => {
         {[
           {
             label: 'top_k',
-            desc: 'Candidates pulled from the vector index for re-ranking. Higher = more recall, higher cost. Default: 10. Increase to 20–50 for large talent pools or broad roles.',
+            desc: 'Candidates pulled from the vector index and passed to FlashRank reranking. Higher = broader initial pool, higher cost. Default: 10. Increase to 20–50 for large talent pools or broad roles.',
+          },
+          {
+            label: 'FlashRank top_k',
+            desc: 'Candidates kept after FlashRank cross-encoder reranking and passed to embedding and AI scoring. Controls funnel width at the reranking stage. Default: 5. Typical range: 5–20.',
           },
           {
             label: 'Score threshold',

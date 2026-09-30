@@ -50,6 +50,12 @@ export const formFieldNames = {
     autoMatchOnJobIngest: 'match_config.auto_match_on_job_ingest',
     autoMatchOnCandidateIngest: 'match_config.auto_match_on_candidate_ingest',
     unverifiedSkillCredit: 'match_config.unverified_skill_credit',
+    flashrankTopK: 'match_config.flashrank_top_k',
+    useMultiVectorShortlist: 'match_config.use_multi_vector_shortlist',
+    embeddingWeightFullText: 'match_config.embedding_weight_full_text',
+    embeddingWeightSkills: 'match_config.embedding_weight_skills',
+    embeddingWeightExperience: 'match_config.embedding_weight_experience',
+    embeddingWeightBio: 'match_config.embedding_weight_bio',
   },
   extractionConfig: {
     includeReasoning: 'extraction_config.include_reasoning',
