@@ -1,4 +1,4 @@
-import { FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { formFieldNames } from '@/features/tenants/constants/form.constants';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
@@ -66,9 +66,29 @@ export const MatchingControlsForm = () => {
       <Typography variant="h6" sx={{ mb: 1 }}>
         Programmatic Scoring
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        Multiplier applied to skills listed on a CV that have <strong>no supporting evidence</strong> — no years of
+        experience stated and no "last used" date. Default: <strong>0.65</strong>.
+      </Typography>
+      <Box sx={{ mb: 1, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+          <strong>Impact by value:</strong>
+        </Typography>
+        {[
+          { value: '1.0', label: 'Full credit for all mentioned skills regardless of evidence — higher recall, more noise, weaker ranking signal.' },
+          { value: '0.65 (default)', label: 'Skills without proof count at 65%. Balances trust vs. noise for general-purpose matching.' },
+          { value: '0.3–0.5', label: 'Strict — only skills with explicit years or dates contribute meaningfully. Fewer matches, higher precision.' },
+          { value: '0.0', label: 'Zero credit for unverified skills — only dated/evidenced skills count. May miss valid candidates who omit dates.' },
+        ].map(({ value, label }) => (
+          <Typography key={value} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
+            · <strong>{value}</strong>: {label}
+          </Typography>
+        ))}
+      </Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Credit multiplier for skills with no years of experience and no last-used evidence. Lower values penalize
-        unverifiable skills more. 1.0 = full credit, 0.0 = ignore unverified skills entirely. Default: 0.65
+        <strong>When to adjust:</strong> Increase toward 1.0 when CVs in your market rarely include years per skill
+        (e.g. junior roles, certain regions). Decrease toward 0.3–0.5 when you want only candidates with
+        proven, dated skill experience. Keep default for general-purpose matching.
       </Typography>
 
       <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
