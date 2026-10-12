@@ -17,6 +17,10 @@ const settingsNavRoutes: NavItemRoute[] = [
     href: '/settings/provider-quotas',
     label: 'Provider quotas',
   },
+  {
+    href: '/settings/active-sessions',
+    label: 'Active sessions',
+  },
 ];
 
 export const SettingsNavbar = () => {
