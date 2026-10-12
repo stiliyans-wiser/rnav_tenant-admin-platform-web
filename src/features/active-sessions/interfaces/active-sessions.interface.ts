@@ -1,6 +1,4 @@
-// Types derived from plan PLAN_228 API contract for GET /backoffice/sessions.
-// The API lands in parallel on branch feat/228-sessions in core42-pov-api.
-// Assumptions noted at the end of this file.
+// Types for GET /backoffice/sessions — authoritative contract confirmed by API engineer.
 
 export interface ActiveSessionUser {
   user_id: string;
@@ -12,24 +10,17 @@ export interface ActiveSessionUser {
 }
 
 export interface TenantSessionSummary {
-  tenant_id: string;
-  tenant_name: string;
-  active_user_count: number;
-  session_count: number;
-  last_activity: string | null; // ISO-8601 UTC, null if no active sessions
+  account_id: string;
+  company_name: string;
+  active_users: number;
+  total_sessions: number;
+  // No tenant-level last_activity in the API response.
+  // The table computes it client-side as max(users[*].last_activity).
   users: ActiveSessionUser[];
 }
 
 export interface PlatformSessionsResponse {
   tenants: TenantSessionSummary[];
   total_active_users: number;
-  total_sessions: number;
+  total_active_sessions: number;
 }
-
-/*
- * Contract assumptions (to be confirmed against the final API implementation):
- * - tenant_name is the human-readable account name from the Account MongoDB document.
- * - last_activity on TenantSessionSummary is the maximum last_activity across all users in that tenant.
- * - Tenants with zero active sessions are omitted from the tenants array (not included with count 0).
- * - users array inside each tenant contains only users with at least one active session.
- */

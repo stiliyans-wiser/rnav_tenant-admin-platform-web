@@ -27,6 +27,16 @@ function formatActivity(iso: string | null): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleString();
 }
 
+// API does not return a tenant-level last_activity; compute it from the users list.
+function maxLastActivity(tenant: TenantSessionSummary): string | null {
+  if (tenant.users.length === 0) return null;
+  const timestamps = tenant.users
+    .map(u => new Date(u.last_activity).getTime())
+    .filter(t => !Number.isNaN(t));
+  if (timestamps.length === 0) return null;
+  return new Date(Math.max(...timestamps)).toISOString();
+}
+
 interface TenantRowProps {
   tenant: TenantSessionSummary;
 }
@@ -46,10 +56,10 @@ function TenantRow({ tenant }: TenantRowProps) {
             </Tooltip>
           )}
         </TableCell>
-        <TableCell>{tenant.tenant_name}</TableCell>
-        <TableCell align="right">{tenant.active_user_count}</TableCell>
-        <TableCell align="right">{tenant.session_count}</TableCell>
-        <TableCell>{formatActivity(tenant.last_activity)}</TableCell>
+        <TableCell>{tenant.company_name}</TableCell>
+        <TableCell align="right">{tenant.active_users}</TableCell>
+        <TableCell align="right">{tenant.total_sessions}</TableCell>
+        <TableCell>{formatActivity(maxLastActivity(tenant))}</TableCell>
       </TableRow>
 
       {tenant.users.length > 0 && (
@@ -121,7 +131,7 @@ export function PlatformSessionsTable({ data, isLoading, isError }: PlatformSess
 
   const tenants = data?.tenants ?? [];
   const totalUsers = data?.total_active_users ?? 0;
-  const totalSessions = data?.total_sessions ?? 0;
+  const totalSessions = data?.total_active_sessions ?? 0;
 
   return (
     <TableContainer component={Paper}>
@@ -150,7 +160,7 @@ export function PlatformSessionsTable({ data, isLoading, isError }: PlatformSess
                   </TableCell>
                 </TableRow>
               ) : (
-                tenants.map(tenant => <TenantRow key={tenant.tenant_id} tenant={tenant} />)
+                tenants.map(tenant => <TenantRow key={tenant.account_id} tenant={tenant} />)
               )}
             </TableBody>
 
