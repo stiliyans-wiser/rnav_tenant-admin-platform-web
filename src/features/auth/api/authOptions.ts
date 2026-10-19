@@ -52,6 +52,23 @@ async function fetchWithDnsRetry(url: string, init?: RequestInit): Promise<Respo
   throw new Error('fetchWithDnsRetry: unreachable');
 }
 
+type IncomingHeaders = Record<string, string | string[] | undefined> | undefined;
+
+function headerValue(headers: IncomingHeaders, name: string): string | undefined {
+  const value = headers?.[name];
+  const first = Array.isArray(value) ? value[0] : value;
+  return first?.trim() || undefined;
+}
+
+export function buildClientForwardHeaders(headers: IncomingHeaders): Record<string, string> {
+  const result: Record<string, string> = {};
+  const ip = headerValue(headers, 'x-real-ip') || headerValue(headers, 'x-forwarded-for')?.split(',').pop()?.trim();
+  if (ip) result['X-Forwarded-For'] = ip;
+  const userAgent = headerValue(headers, 'user-agent');
+  if (userAgent) result['X-Client-User-Agent'] = userAgent;
+  return result;
+}
+
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -60,7 +77,7 @@ const authOptions: NextAuthOptions = {
         username: {},
         password: {},
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         try {
           const apiUrl = process.env.INTERNAL_API_URL || process.env.API_BASE_URL || 'http://api:8000';
           const params = new URLSearchParams();
@@ -69,7 +86,7 @@ const authOptions: NextAuthOptions = {
 
           const res = await fetchWithDnsRetry(`${apiUrl}/backoffice/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', ...buildClientForwardHeaders(req?.headers) },
             body: params.toString(),
           });
 
