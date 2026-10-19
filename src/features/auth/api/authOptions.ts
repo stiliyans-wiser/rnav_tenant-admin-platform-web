@@ -7,6 +7,7 @@ declare module 'next-auth' {
     accessToken: string;
     sub: string;
     name: string;
+    sessionId?: string;
   }
 
   interface Session {
@@ -21,6 +22,7 @@ declare module 'next-auth' {
     accessToken: string;
     sub: string;
     name: string;
+    sessionId?: string;
   }
 }
 
@@ -69,6 +71,29 @@ export function buildClientForwardHeaders(headers: IncomingHeaders): Record<stri
   return result;
 }
 
+export async function recordBackofficeLogout(
+  jwt: object | null,
+  headers: IncomingHeaders,
+): Promise<void> {
+  const token = jwt as { accessToken?: unknown; sessionId?: unknown } | null;
+  if (typeof token?.accessToken !== 'string' || typeof token?.sessionId !== 'string') return;
+  try {
+    const apiUrl = process.env.INTERNAL_API_URL || process.env.API_BASE_URL || 'http://api:8000';
+    await fetchWithDnsRetry(`${apiUrl}/backoffice/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token.accessToken}`,
+        ...buildClientForwardHeaders(headers),
+      },
+      body: JSON.stringify({ session_id: token.sessionId }),
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch (error) {
+    console.error('Backoffice logout call failed:', error);
+  }
+}
+
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -100,6 +125,7 @@ const authOptions: NextAuthOptions = {
               accessToken: data.access_token,
               sub: decodedToken.sub,
               name: decodedToken.name,
+              sessionId: data.session_id,
             } as User;
           }
         } catch (error) {
@@ -121,6 +147,7 @@ const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.sub = user.sub;
         token.name = user.name;
+        token.sessionId = user.sessionId;
       }
 
       return token;
