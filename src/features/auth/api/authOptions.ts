@@ -18,6 +18,9 @@ declare module 'next-auth' {
     };
   }
 
+}
+
+declare module 'next-auth/jwt' {
   interface JWT {
     accessToken: string;
     sub: string;
@@ -76,10 +79,14 @@ export async function recordBackofficeLogout(
   headers: IncomingHeaders,
 ): Promise<void> {
   const token = jwt as { accessToken?: unknown; sessionId?: unknown } | null;
-  if (typeof token?.accessToken !== 'string' || typeof token?.sessionId !== 'string') return;
+  if (typeof token?.accessToken !== 'string') return;
+  if (typeof token?.sessionId !== 'string') {
+    console.warn('Backoffice logout not recorded: session_id missing from session token');
+    return;
+  }
   try {
     const apiUrl = process.env.INTERNAL_API_URL || process.env.API_BASE_URL || 'http://api:8000';
-    await fetchWithDnsRetry(`${apiUrl}/backoffice/logout`, {
+    const res = await fetchWithDnsRetry(`${apiUrl}/backoffice/logout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -89,6 +96,9 @@ export async function recordBackofficeLogout(
       body: JSON.stringify({ session_id: token.sessionId }),
       signal: AbortSignal.timeout(3000),
     });
+    if (res.status === 401) {
+      console.warn('Backoffice logout not recorded: API rejected the access token (401)');
+    }
   } catch (error) {
     console.error('Backoffice logout call failed:', error);
   }
