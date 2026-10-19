@@ -41,7 +41,7 @@ export const CandidateDeliveryView = ({ data }: CandidateDeliveryViewProps) => {
     <Stack gap={3}>
       <Stack gap={1}>
         <Typography variant="caption" color="text.secondary">
-          Shortlist &amp; Limits
+          Shortlist
         </Typography>
         <Stack direction="row" gap={3}>
           <Stack gap={1} sx={{ flex: 1 }}>
@@ -49,8 +49,8 @@ export const CandidateDeliveryView = ({ data }: CandidateDeliveryViewProps) => {
             <Typography variant="subtitle2">{mc.shortlist_default_size ?? 3}</Typography>
           </Stack>
           <Stack gap={1} sx={{ flex: 1 }}>
-            <Typography variant="caption">Max Candidates Per Position</Typography>
-            <Typography variant="subtitle2">{mc.candidate_limit_per_job ?? 20}</Typography>
+            <Typography variant="caption">Shortlist Limit</Typography>
+            <Typography variant="subtitle2">{mc.shortlist_limit ?? 20}</Typography>
           </Stack>
           <Stack gap={1} sx={{ flex: 1 }}>
             <Typography variant="caption">Delivery Review Threshold</Typography>

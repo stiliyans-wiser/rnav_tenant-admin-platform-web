@@ -47,7 +47,7 @@ export interface MatchConfig {
   auto_match_on_candidate_ingest?: boolean;
   // --- Shortlist & Candidate Limits ---
   shortlist_default_size?: number;
-  candidate_limit_per_job?: number;
+  shortlist_limit?: number;
   // --- Review & Approval ---
   delivery_review_threshold?: number;
   // --- Freshness Scoring ---

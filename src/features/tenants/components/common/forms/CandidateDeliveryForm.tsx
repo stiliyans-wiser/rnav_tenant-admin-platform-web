@@ -39,9 +39,9 @@ export const CandidateDeliveryForm = () => {
 
   return (
     <>
-      {/* Shortlist & Candidate Limits */}
+      {/* Shortlist */}
       <Typography variant="h6" sx={{ mb: 2 }}>
-        Shortlist &amp; Candidate Limits
+        Shortlist
       </Typography>
 
       <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
@@ -59,27 +59,27 @@ export const CandidateDeliveryForm = () => {
               onChange={e => field.onChange(parseInt(e.target.value, 10))}
               inputProps={{ min: 1, max: 20 }}
               size="small"
-              helperText={fieldState.error?.message ?? 'Candidates shown per shortlist (1–20)'}
+              helperText={fieldState.error?.message ?? 'Default number of candidates in a shortlist (1–20)'}
               error={Boolean(fieldState.error)}
               sx={{ maxWidth: 200 }}
             />
           )}
         />
         <Controller
-          name={formFieldNames.candidateDelivery.candidateLimitPerJob}
+          name={formFieldNames.candidateDelivery.shortlistLimit}
           control={control}
           defaultValue={20}
           rules={{ min: { value: 1, message: 'Min 1' }, max: { value: 200, message: 'Max 200' } }}
           render={({ field, fieldState }) => (
             <TextField
               {...field}
-              label="Max Candidates Per Position"
+              label="Shortlist Limit"
               type="number"
               value={field.value ?? 20}
               onChange={e => field.onChange(parseInt(e.target.value, 10))}
               inputProps={{ min: 1, max: 200 }}
               size="small"
-              helperText={fieldState.error?.message ?? 'Hard cap per job (1–200)'}
+              helperText={fieldState.error?.message ?? 'Upper cap on shortlist size (1–200). Applies only to the Shortlist feature (currently hidden in the recruiter app).'}
               error={Boolean(fieldState.error)}
               sx={{ maxWidth: 220 }}
             />
