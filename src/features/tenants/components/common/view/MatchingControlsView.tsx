@@ -120,7 +120,6 @@ export const MatchingControlsView = ({ data }: MatchingControlsViewProps) => {
           { label: 'Industry', val: cfg?.filter_industry },
           { label: 'Mandatory skills', val: cfg?.filter_mandatory_skills },
           { label: 'Tech ancestry', val: cfg?.filter_technology_ancestry },
-          { label: 'Embedding similarity', val: cfg?.filter_embedding_similarity },
           { label: 'Career trajectory', val: cfg?.filter_career_trajectory },
           { label: 'Company DNA', val: cfg?.filter_company_dna },
         ].map(f => (

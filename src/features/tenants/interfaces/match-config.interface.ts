@@ -16,8 +16,6 @@ export interface MatchConfig {
   filter_industry?: boolean;
   filter_mandatory_skills?: boolean;
   filter_technology_ancestry?: boolean;
-  filter_embedding_similarity?: boolean;
-  embedding_similarity_min?: number;
   filter_career_trajectory?: boolean;
   filter_company_dna?: boolean;
   dynamic_score_cliff_enabled?: boolean;

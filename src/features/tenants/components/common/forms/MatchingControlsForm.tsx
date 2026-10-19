@@ -510,11 +510,6 @@ export const MatchingControlsForm = () => {
           description: 'Exclude candidates who lack the technology family required by the job (e.g. filtering for .NET excludes pure Java candidates). Useful for platform-specific roles.',
         },
         {
-          name: 'match_config.filter_embedding_similarity',
-          label: 'Filter by embedding similarity',
-          description: 'Exclude candidates whose vector similarity to the job falls below a minimum threshold. Prevents semantically unrelated profiles from passing to scoring even with keyword matches.',
-        },
-        {
           name: 'match_config.filter_career_trajectory',
           label: 'Filter by career trajectory',
           description: 'Exclude candidates whose career progression signals a structural mismatch — declining seniority, unexplained gaps, or repeated unrelated pivots.',
