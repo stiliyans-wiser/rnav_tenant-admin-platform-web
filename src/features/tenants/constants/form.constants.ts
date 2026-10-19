@@ -79,7 +79,7 @@ export const formFieldNames = {
   },
   candidateDelivery: {
     shortlistDefaultSize: 'match_config.shortlist_default_size',
-    candidateLimitPerJob: 'match_config.candidate_limit_per_job',
+    shortlistLimit: 'match_config.shortlist_limit',
     deliveryReviewThreshold: 'match_config.delivery_review_threshold',
     freshnessBonusEnabled: 'match_config.freshness_bonus_enabled',
     freshnessBonusPoints: 'match_config.freshness_bonus_points',
