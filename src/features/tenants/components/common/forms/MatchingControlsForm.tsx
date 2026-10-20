@@ -291,6 +291,21 @@ export const MatchingControlsForm = () => {
           )}
         />
         <Controller
+          name={formFieldNames.matchConfig.llmProgrammaticGuaranteeK}
+          control={control}
+          defaultValue={10}
+          rules={{ min: { value: 0, message: 'Min 0 (0 disables)' }, max: { value: 100, message: 'Max 100' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="LLM programmatic guarantee k"
+              field={{ ...field, value: field.value ?? 10 }}
+              fieldState={fieldState}
+              sx={{ maxWidth: 220 }}
+            />
+          )}
+        />
+        <Controller
           name={formFieldNames.matchConfig.scoreThreshold}
           control={control}
           defaultValue={0}

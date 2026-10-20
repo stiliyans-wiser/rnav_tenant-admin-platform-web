@@ -26,6 +26,7 @@ export interface MatchConfig {
   screening_threshold?: number;
   flashrank_prefilter_enabled?: boolean;
   flashrank_top_k?: number;
+  llm_programmatic_guarantee_k?: number;
   flashrank_pool_multiplier?: number;
   time_decay_enabled?: boolean;
   time_decay_half_life_years?: number;
