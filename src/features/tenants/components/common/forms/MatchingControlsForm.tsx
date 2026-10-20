@@ -294,7 +294,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.llmProgrammaticGuaranteeK}
           control={control}
           defaultValue={10}
-          rules={{ min: { value: 0, message: 'Min 0 (0 disables)' }, max: { value: 100, message: 'Max 100' } }}
+          rules={{ min: { value: 0, message: 'Min 0 (0 disables)' }, max: { value: 40, message: 'Max 40' } }}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
