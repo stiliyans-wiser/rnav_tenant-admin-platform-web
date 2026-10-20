@@ -1,5 +1,7 @@
 export type EmbeddingStoreVersion = 'v1' | 'v2';
 
+export type EscoMode = 'off' | 'shadow' | 'on';
+
 export type ValueSource = 'stored' | 'default';
 
 export type OntologyFieldName =
@@ -9,6 +11,7 @@ export type OntologyFieldName =
   | 'static_aliases_enabled'
   | 'language_guard_enabled'
   | 'esco_resolution_enabled'
+  | 'esco_mode'
   | 'store_version'
   | 'dual_write';
 
@@ -38,6 +41,7 @@ export interface MatchingOntology {
   static_aliases_enabled: boolean;
   language_guard_enabled: boolean;
   esco_resolution_enabled: boolean;
+  esco_mode: EscoMode;
   esco_global_enabled: boolean;
   store_version: EmbeddingStoreVersion;
   dual_write: boolean;
@@ -54,7 +58,7 @@ export interface MatchingOntologyPatch {
   reset_blocked_hubs?: boolean;
   static_aliases_enabled?: boolean;
   language_guard_enabled?: boolean;
-  esco_resolution_enabled?: boolean;
+  esco_mode?: EscoMode;
   store_version?: EmbeddingStoreVersion;
   dual_write?: boolean;
   force?: boolean;
@@ -67,7 +71,7 @@ export interface MatchingOntologyForm {
   blockedHubsText: string;
   staticAliasesEnabled: boolean;
   languageGuardEnabled: boolean;
-  escoResolutionEnabled: boolean;
+  escoMode: EscoMode;
   storeVersion: EmbeddingStoreVersion;
   dualWrite: boolean;
 }

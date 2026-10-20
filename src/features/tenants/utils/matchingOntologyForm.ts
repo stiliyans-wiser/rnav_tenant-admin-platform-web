@@ -1,4 +1,5 @@
 import type {
+  EscoMode,
   FieldChange,
   MatchingOntology,
   MatchingOntologyForm,
@@ -12,6 +13,12 @@ export const MAX_BLOCKED_HUBS = 200;
 export const MAX_BLOCKED_HUB_LENGTH = 100;
 
 export type SwitchGroup = 'skill_graph' | 'esco' | 'embedding_store';
+
+export const ESCO_MODE_LABEL: Record<EscoMode, string> = {
+  off: 'Off',
+  shadow: 'Shadow (diagnostics only)',
+  on: 'On (scores applied)',
+};
 
 const onOff = (value: boolean): string => (value ? 'On' : 'Off');
 
@@ -45,7 +52,7 @@ export const toForm = (data: MatchingOntology): MatchingOntologyForm => ({
   blockedHubsText: data.blocked_hubs.join('\n'),
   staticAliasesEnabled: data.static_aliases_enabled,
   languageGuardEnabled: data.language_guard_enabled,
-  escoResolutionEnabled: data.esco_resolution_enabled,
+  escoMode: data.esco_mode,
   storeVersion: data.store_version,
   dualWrite: data.dual_write,
 });
@@ -97,9 +104,7 @@ export const buildPatch = (
     if (form.languageGuardEnabled !== original.language_guard_enabled) {
       patch.language_guard_enabled = form.languageGuardEnabled;
     }
-    if (form.escoResolutionEnabled !== original.esco_resolution_enabled) {
-      patch.esco_resolution_enabled = form.escoResolutionEnabled;
-    }
+    if (form.escoMode !== original.esco_mode) patch.esco_mode = form.escoMode;
   } else {
     if (form.storeVersion !== original.store_version) patch.store_version = form.storeVersion;
     if (form.dualWrite !== original.dual_write) patch.dual_write = form.dualWrite;
@@ -126,7 +131,7 @@ export const describeChanges = (original: MatchingOntology, form: MatchingOntolo
   } else if (group === 'esco') {
     push('Static aliases', onOff(original.static_aliases_enabled), onOff(form.staticAliasesEnabled));
     push('Language guard', onOff(original.language_guard_enabled), onOff(form.languageGuardEnabled));
-    push('ESCO job-title resolution', onOff(original.esco_resolution_enabled), onOff(form.escoResolutionEnabled));
+    push('ESCO job-title scoring', ESCO_MODE_LABEL[original.esco_mode], ESCO_MODE_LABEL[form.escoMode]);
   } else {
     push('Embedding store read version', original.store_version, form.storeVersion);
     push('Dual-write', onOff(original.dual_write), onOff(form.dualWrite));

@@ -25,11 +25,13 @@ import {
 import { useGetMatchingOntology, useUpdateMatchingOntology } from '@/features/tenants/hooks/useMatchingOntology';
 import {
   EmbeddingStoreVersion,
+  EscoMode,
   FieldChange,
   MatchingOntologyForm,
   ValueSource,
 } from '@/features/tenants/interfaces/matching-ontology.interface';
 import {
+  ESCO_MODE_LABEL,
   MAX_HOPS_MAX,
   MAX_HOPS_MIN,
   SwitchGroup,
@@ -350,14 +352,27 @@ export const MatchingOntologyPanel = ({ tenantId, tenantName }: MatchingOntology
             onChange={languageGuardEnabled => update({ languageGuardEnabled })}
             disabled={busy}
           />
-          <ToggleRow
-            label="ESCO job-title resolution"
-            source={data.sources.esco_resolution_enabled}
-            description="Run the ESCO occupation resolver for this tenant (shadow diagnostics). Only takes effect while the global ESCO flag is on."
-            checked={form.escoResolutionEnabled}
-            onChange={escoResolutionEnabled => update({ escoResolutionEnabled })}
-            disabled={busy}
-          />
+          <Stack gap={0.5}>
+            <TextField
+              select
+              label="ESCO job-title scoring"
+              size="small"
+              value={form.escoMode}
+              onChange={e => update({ escoMode: e.target.value as EscoMode })}
+              helperText="Off: no ESCO work. Shadow: diagnostics only, scores unchanged. On: the ESCO occupation tier replaces the title-family penalty when both titles resolve (scores only, never drops candidates)."
+              sx={{ width: 320 }}
+              disabled={busy}
+            >
+              {(Object.keys(ESCO_MODE_LABEL) as EscoMode[]).map(mode => (
+                <MenuItem key={mode} value={mode}>
+                  {ESCO_MODE_LABEL[mode]}
+                </MenuItem>
+              ))}
+            </TextField>
+            <Box>
+              <SourceChip source={data.sources.esco_mode} />
+            </Box>
+          </Stack>
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography variant="body2" color="text.secondary">
               Global ESCO_ENABLED (platform setting, read-only):
@@ -369,9 +384,9 @@ export const MatchingOntologyPanel = ({ tenantId, tenantName }: MatchingOntology
               variant="outlined"
             />
           </Stack>
-          {!data.esco_global_enabled && form.escoResolutionEnabled && (
+          {!data.esco_global_enabled && form.escoMode !== 'off' && (
             <Alert severity="info">
-              Global ESCO is off, so job-title resolution has no effect for any tenant until it is enabled on the platform.
+              Global ESCO is off, so ESCO job-title scoring has no effect for any tenant until it is enabled on the platform.
             </Alert>
           )}
           <Box>

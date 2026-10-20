@@ -21,6 +21,7 @@ const base = (): MatchingOntology => ({
   static_aliases_enabled: false,
   language_guard_enabled: false,
   esco_resolution_enabled: false,
+  esco_mode: 'off',
   esco_global_enabled: true,
   store_version: 'v1',
   dual_write: false,
@@ -31,6 +32,7 @@ const base = (): MatchingOntology => ({
     static_aliases_enabled: 'default',
     language_guard_enabled: 'default',
     esco_resolution_enabled: 'default',
+    esco_mode: 'default',
     store_version: 'default',
     dual_write: 'default',
   },
@@ -87,12 +89,21 @@ test('returning to default hubs sends reset_blocked_hubs only when custom list w
 
 test('esco patch maps each toggle', () => {
   const data = base();
-  const form = { ...toForm(data), staticAliasesEnabled: true, languageGuardEnabled: true, escoResolutionEnabled: true };
+  const form = { ...toForm(data), staticAliasesEnabled: true, languageGuardEnabled: true, escoMode: 'on' as const };
   assert.deepEqual(buildPatch(data, form, 'esco'), {
     static_aliases_enabled: true,
     language_guard_enabled: true,
-    esco_resolution_enabled: true,
+    esco_mode: 'on',
   });
+});
+
+test('esco mode patch only sends the mode and only when it changed', () => {
+  const data = { ...base(), esco_mode: 'shadow' as const };
+  assert.deepEqual(buildPatch(data, toForm(data), 'esco'), {});
+  assert.deepEqual(buildPatch(data, { ...toForm(data), escoMode: 'off' }, 'esco'), { esco_mode: 'off' });
+  assert.deepEqual(describeChanges(data, { ...toForm(data), escoMode: 'on' }, 'esco'), [
+    { label: 'ESCO job-title scoring', from: 'Shadow (diagnostics only)', to: 'On (scores applied)' },
+  ]);
 });
 
 test('embedding patch sets force only when flipping to v2 with force', () => {
