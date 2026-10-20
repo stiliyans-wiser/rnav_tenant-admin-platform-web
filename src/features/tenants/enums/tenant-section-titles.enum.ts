@@ -9,6 +9,7 @@ export enum TenantSectionTitlesEnum {
   TALENT_AUTOMATION = 'Talent Automation',
   MATCHING_CONTROLS = 'Matching Controls',
   AUTO_REPLACEMENT = 'Auto-Replacement',
+  MATCHING_ONTOLOGY = 'Matching Ontology',
   SCORING_TEMPLATES = 'Scoring Templates',
   CANDIDATE_IMPORT_SOURCES = 'Candidate Import Sources',
   PROVIDER_QUOTAS = 'Provider Quotas',

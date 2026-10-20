@@ -16,6 +16,7 @@ import { TalentAutomationData, TalentAutomationView } from '@/features/tenants/c
 import { MatchingControlsData, MatchingControlsView } from '@/features/tenants/components/common/view/MatchingControlsView';
 import { AutoReplacementData, AutoReplacementView } from '@/features/tenants/components/common/view/AutoReplacementView';
 import { CandidateDeliveryData, CandidateDeliveryView } from '@/features/tenants/components/common/view/CandidateDeliveryView';
+import { MatchingOntologyPanel } from '@/features/tenants/components/common/view/MatchingOntologyPanel';
 import { ScoringTemplatesPanel } from '@/features/tenants/components/common/view/ScoringTemplatesPanel';
 import { CandidateImportSourcesPanel } from '@/features/tenants/components/common/view/CandidateImportSourcesPanel';
 import { ProviderQuotasPanel } from '@/features/tenants/components/common/view/ProviderQuotasPanel';
@@ -204,6 +205,13 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.CANDIDATE_DELIVERY, candidateDelivery)}
         >
           <CandidateDeliveryView data={candidateDelivery} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.MATCHING_ONTOLOGY}
+          icon={<SettingsServices size={24} />}
+        >
+          <MatchingOntologyPanel tenantId={tenant.id!} tenantName={tenant.company_name} />
         </TenantViewLayout>
 
         <TenantViewLayout

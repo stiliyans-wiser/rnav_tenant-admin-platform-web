@@ -10,6 +10,10 @@ export const tenantsConstants = {
     all: ['provider-feature-flag-audit'] as const,
     list: (tenantId: string) => [...tenantsConstants.providerFeatureFlagAuditKeys.all, tenantId] as const,
   },
+  matchingOntologyKeys: {
+    all: ['matching-ontology'] as const,
+    detail: (tenantId: string) => [...tenantsConstants.matchingOntologyKeys.all, tenantId] as const,
+  },
   scoringTemplateKeys: {
     all: ['scoring-templates'] as const,
     list: (tenantId: string) => [...tenantsConstants.scoringTemplateKeys.all, tenantId] as const,
