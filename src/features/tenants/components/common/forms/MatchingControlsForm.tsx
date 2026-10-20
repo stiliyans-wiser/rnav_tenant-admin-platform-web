@@ -298,10 +298,11 @@ export const MatchingControlsForm = () => {
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
-              label="LLM programmatic guarantee k"
+              label="Guaranteed top candidates for AI scoring"
+              helperText="After every candidate gets a rule-based score (skills, experience, title), FlashRank pre-filter picks who goes to AI scoring, reading only a short CV snippet, so it can drop strong candidates. This always adds the N best by rule-based score to AI scoring, on top of FlashRank's picks. 10 recommended, 0 = off, max 40. Cost ≈ $0.02 per extra candidate on first run."
               field={{ ...field, value: field.value ?? 10 }}
               fieldState={fieldState}
-              sx={{ maxWidth: 220 }}
+              sx={{ maxWidth: 480 }}
             />
           )}
         />

@@ -20,6 +20,7 @@ export const MuiTextField = ({
   multiline = false,
   rows,
   slotProps = {},
+  helperText,
 }: MuiTextFieldProps) => {
   return (
     <>
@@ -38,7 +39,7 @@ export const MuiTextField = ({
         placeholder={placeholder}
         slotProps={slotProps}
         error={!!fieldState.error && fieldState.isTouched}
-        helperText={fieldState.error?.message && fieldState.isTouched ? fieldState.error.message : ''}
+        helperText={fieldState.error?.message && fieldState.isTouched ? fieldState.error.message : (helperText ?? '')}
         multiline={multiline}
         rows={rows}
       />
