@@ -11,7 +11,7 @@ const stored = {
 };
 
 test('keeps stored weights and drops bio', () => {
-  const out = withEmbeddingWeights({ ...stored, embedding_weight_bio: 0.2, top_k: 7 });
+  const out = withEmbeddingWeights<Record<string, unknown>>({ ...stored, embedding_weight_bio: 0.2, top_k: 7 });
   assert.equal(out.embedding_weight_full_text, 0.3);
   assert.equal(out.embedding_weight_companies, 0.1);
   assert.equal(out.top_k, 7);
@@ -19,7 +19,7 @@ test('keeps stored weights and drops bio', () => {
 });
 
 test('fills only missing weights with API defaults', () => {
-  const out = withEmbeddingWeights({ embedding_weight_full_text: 0.4, embedding_weight_skills: 0.25 });
+  const out = withEmbeddingWeights<Record<string, unknown>>({ embedding_weight_full_text: 0.4, embedding_weight_skills: 0.25 });
   assert.equal(out.embedding_weight_full_text, 0.4);
   assert.equal(out.embedding_weight_experience, 0.15);
   assert.equal(out.embedding_weight_positions, 0.2);
