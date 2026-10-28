@@ -39,3 +39,8 @@ test('blocks a save whose weights do not sum to 1.0', () => {
 test('blocks out-of-range weights', () => {
   assert.match(embeddingWeightsError({ ...stored, embedding_weight_skills: 1.5 }) ?? '', /between 0 and 1/);
 });
+
+test('uses the API tolerance of 0.01 so API-accepted configs are not blocked', () => {
+  assert.equal(embeddingWeightsError({ ...stored, embedding_weight_companies: 0.105 }), null);
+  assert.notEqual(embeddingWeightsError({ ...stored, embedding_weight_companies: 0.12 }), null);
+});

@@ -120,11 +120,3 @@ export const EMBEDDING_WEIGHT_DEFAULTS = {
   positions: 0.2,
   companies: 0,
 } as const;
-
-export const EMBEDDING_WEIGHTS_SUM_TOLERANCE = 0.001;
-
-export const embeddingWeightsSum = (values: Array<number | string | null | undefined>, defaults: readonly number[]): number =>
-  values.reduce<number>((total, value, index) => {
-    const parsed = value === null || value === undefined || value === '' ? defaults[index] : Number(value);
-    return total + (Number.isFinite(parsed) ? parsed : defaults[index]);
-  }, 0);

@@ -1,4 +1,6 @@
-import { EMBEDDING_WEIGHT_DEFAULTS, EMBEDDING_WEIGHTS_SUM_TOLERANCE } from '../constants/form.constants.ts';
+import { EMBEDDING_WEIGHT_DEFAULTS } from '../constants/form.constants.ts';
+
+const EMBEDDING_WEIGHTS_SUM_TOLERANCE = 0.01;
 
 const EMBEDDING_WEIGHT_KEYS = {
   embedding_weight_full_text: EMBEDDING_WEIGHT_DEFAULTS.fullText,

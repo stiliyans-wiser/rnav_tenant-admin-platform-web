@@ -1,30 +1,25 @@
 import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
-import {
-  EMBEDDING_WEIGHT_DEFAULTS,
-  EMBEDDING_WEIGHTS_SUM_TOLERANCE,
-  embeddingWeightsSum,
-  formFieldNames,
-} from '@/features/tenants/constants/form.constants';
+import { EMBEDDING_WEIGHT_DEFAULTS, formFieldNames } from '@/features/tenants/constants/form.constants';
+import { embeddingWeightsError } from '@/features/tenants/utils/embeddingWeights';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
 export const MatchingControlsForm = () => {
   const { control, getValues } = useFormContext();
 
-  const validateEmbeddingWeightsSum = () => {
-    const names = [
-      formFieldNames.matchConfig.embeddingWeightFullText,
-      formFieldNames.matchConfig.embeddingWeightSkills,
-      formFieldNames.matchConfig.embeddingWeightExperience,
-      formFieldNames.matchConfig.embeddingWeightPositions,
-      formFieldNames.matchConfig.embeddingWeightCompanies,
-    ];
-    const sum = embeddingWeightsSum(
-      names.map(name => getValues(name)),
-      Object.values(EMBEDDING_WEIGHT_DEFAULTS),
-    );
-    return Math.abs(sum - 1) <= EMBEDDING_WEIGHTS_SUM_TOLERANCE || `Embedding weights must sum to 1.0 (current sum: ${sum.toFixed(2)})`;
-  };
+  const embeddingWeightNames = [
+    formFieldNames.matchConfig.embeddingWeightFullText,
+    formFieldNames.matchConfig.embeddingWeightSkills,
+    formFieldNames.matchConfig.embeddingWeightExperience,
+    formFieldNames.matchConfig.embeddingWeightPositions,
+    formFieldNames.matchConfig.embeddingWeightCompanies,
+  ];
+  const embeddingWeightRules = (name: string) => ({
+    min: { value: 0, message: 'Min 0' },
+    max: { value: 1, message: 'Max 1' },
+    validate: () => embeddingWeightsError(getValues('match_config')) ?? true,
+    deps: embeddingWeightNames.filter(other => other !== name),
+  });
 
   return (
     <>
@@ -193,7 +188,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.embeddingWeightFullText}
           control={control}
           defaultValue={EMBEDDING_WEIGHT_DEFAULTS.fullText}
-          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' }, validate: validateEmbeddingWeightsSum }}
+          rules={embeddingWeightRules(formFieldNames.matchConfig.embeddingWeightFullText)}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
@@ -209,7 +204,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.embeddingWeightSkills}
           control={control}
           defaultValue={EMBEDDING_WEIGHT_DEFAULTS.skills}
-          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          rules={embeddingWeightRules(formFieldNames.matchConfig.embeddingWeightSkills)}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
@@ -225,7 +220,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.embeddingWeightExperience}
           control={control}
           defaultValue={EMBEDDING_WEIGHT_DEFAULTS.experience}
-          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          rules={embeddingWeightRules(formFieldNames.matchConfig.embeddingWeightExperience)}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
@@ -241,7 +236,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.embeddingWeightPositions}
           control={control}
           defaultValue={EMBEDDING_WEIGHT_DEFAULTS.positions}
-          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          rules={embeddingWeightRules(formFieldNames.matchConfig.embeddingWeightPositions)}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
@@ -257,7 +252,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.embeddingWeightCompanies}
           control={control}
           defaultValue={EMBEDDING_WEIGHT_DEFAULTS.companies}
-          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          rules={embeddingWeightRules(formFieldNames.matchConfig.embeddingWeightCompanies)}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
