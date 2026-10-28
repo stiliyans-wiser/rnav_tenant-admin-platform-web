@@ -114,9 +114,17 @@ export const CUSTOM_THEME_REQUIRED_VALIDATION = {
 };
 
 export const EMBEDDING_WEIGHT_DEFAULTS = {
-  fullText: 0.35,
+  fullText: 0.4,
   skills: 0.25,
   experience: 0.15,
   positions: 0.2,
-  companies: 0.05,
+  companies: 0,
 } as const;
+
+export const EMBEDDING_WEIGHTS_SUM_TOLERANCE = 0.01;
+
+export const embeddingWeightsSum = (values: Array<number | string | null | undefined>, defaults: readonly number[]): number =>
+  values.reduce<number>((total, value, index) => {
+    const parsed = value === null || value === undefined || value === '' ? defaults[index] : Number(value);
+    return total + (Number.isFinite(parsed) ? parsed : defaults[index]);
+  }, 0);

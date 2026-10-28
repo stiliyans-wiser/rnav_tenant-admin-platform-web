@@ -1,10 +1,30 @@
 import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
-import { EMBEDDING_WEIGHT_DEFAULTS, formFieldNames } from '@/features/tenants/constants/form.constants';
+import {
+  EMBEDDING_WEIGHT_DEFAULTS,
+  EMBEDDING_WEIGHTS_SUM_TOLERANCE,
+  embeddingWeightsSum,
+  formFieldNames,
+} from '@/features/tenants/constants/form.constants';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
 export const MatchingControlsForm = () => {
-  const { control } = useFormContext();
+  const { control, getValues } = useFormContext();
+
+  const validateEmbeddingWeightsSum = () => {
+    const names = [
+      formFieldNames.matchConfig.embeddingWeightFullText,
+      formFieldNames.matchConfig.embeddingWeightSkills,
+      formFieldNames.matchConfig.embeddingWeightExperience,
+      formFieldNames.matchConfig.embeddingWeightPositions,
+      formFieldNames.matchConfig.embeddingWeightCompanies,
+    ];
+    const sum = embeddingWeightsSum(
+      names.map(name => getValues(name)),
+      Object.values(EMBEDDING_WEIGHT_DEFAULTS),
+    );
+    return Math.abs(sum - 1) <= EMBEDDING_WEIGHTS_SUM_TOLERANCE || `Embedding weights must sum to 1.0 (current sum: ${sum.toFixed(2)})`;
+  };
 
   return (
     <>
@@ -142,7 +162,7 @@ export const MatchingControlsForm = () => {
       <Box sx={{ mb: 2, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
         {[
           {
-            label: 'Full Text (default 0.35)',
+            label: 'Full Text (default 0.40)',
             desc: 'Overall CV-to-job text similarity. Broadest signal — captures the whole document. Higher = favors candidates with strong overall content match.',
           },
           {
@@ -158,7 +178,7 @@ export const MatchingControlsForm = () => {
             desc: 'Recent job titles and roles embedding. Higher = favors candidates whose recent roles match the job title.',
           },
           {
-            label: 'Companies (default 0.05)',
+            label: 'Companies (default 0.00)',
             desc: 'Employer and industry embedding. Higher = favors candidates from similar companies.',
           },
         ].map(({ label, desc }) => (
@@ -173,7 +193,7 @@ export const MatchingControlsForm = () => {
           name={formFieldNames.matchConfig.embeddingWeightFullText}
           control={control}
           defaultValue={EMBEDDING_WEIGHT_DEFAULTS.fullText}
-          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' }, validate: validateEmbeddingWeightsSum }}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
