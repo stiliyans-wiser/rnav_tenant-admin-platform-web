@@ -16,6 +16,7 @@ import { AutoReplacementSection } from '@/features/tenants/components/edit/secti
 import { CandidateDeliverySection } from '@/features/tenants/components/edit/sections/CandidateDeliverySection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
+import { embeddingWeightsError, withEmbeddingWeights } from '@/features/tenants/utils/embeddingWeights';
 import {
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
@@ -30,6 +31,12 @@ interface EditTenantProps {
   handleClose: () => void;
   onSaved?: () => void;
 }
+
+const SECTIONS_SAVING_MATCH_CONFIG = [
+  TenantSectionTitlesEnum.UI_CONFIG,
+  TenantSectionTitlesEnum.MATCHING_CONTROLS,
+  TenantSectionTitlesEnum.CANDIDATE_DELIVERY,
+];
 
 export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSaved }: EditTenantProps) => {
   const formMethods = useForm({ defaultValues, mode: 'onChange' });
@@ -83,7 +90,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.UI_CONFIG) {
       return {
-        match_config: getValues('match_config'),
+        match_config: withEmbeddingWeights(getValues('match_config')),
       };
     }
 
@@ -95,7 +102,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.MATCHING_CONTROLS) {
       return {
-        match_config: getValues('match_config'),
+        match_config: withEmbeddingWeights(getValues('match_config')),
       };
     }
 
@@ -107,7 +114,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.CANDIDATE_DELIVERY) {
       return {
-        match_config: getValues('match_config'),
+        match_config: withEmbeddingWeights(getValues('match_config')),
         report_config: getValues('report_config'),
       };
     }
@@ -117,6 +124,13 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
   const onSubmit = async () => {
     setApiError(null);
+    if (SECTIONS_SAVING_MATCH_CONFIG.includes(title)) {
+      const weightsError = embeddingWeightsError(getValues('match_config'));
+      if (weightsError) {
+        setApiError(weightsError);
+        return;
+      }
+    }
     try {
       await updateTenant.mutateAsync({
         id: tenantId,

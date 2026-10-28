@@ -121,7 +121,7 @@ export const EMBEDDING_WEIGHT_DEFAULTS = {
   companies: 0,
 } as const;
 
-export const EMBEDDING_WEIGHTS_SUM_TOLERANCE = 0.01;
+export const EMBEDDING_WEIGHTS_SUM_TOLERANCE = 0.001;
 
 export const embeddingWeightsSum = (values: Array<number | string | null | undefined>, defaults: readonly number[]): number =>
   values.reduce<number>((total, value, index) => {
