@@ -56,7 +56,8 @@ export const formFieldNames = {
     embeddingWeightFullText: 'match_config.embedding_weight_full_text',
     embeddingWeightSkills: 'match_config.embedding_weight_skills',
     embeddingWeightExperience: 'match_config.embedding_weight_experience',
-    embeddingWeightBio: 'match_config.embedding_weight_bio',
+    embeddingWeightPositions: 'match_config.embedding_weight_positions',
+    embeddingWeightCompanies: 'match_config.embedding_weight_companies',
   },
   extractionConfig: {
     includeReasoning: 'extraction_config.include_reasoning',
@@ -111,3 +112,11 @@ export const CUSTOM_THEME_REQUIRED_VALIDATION = {
   [formFieldNames.settings.defaultThemeMode]: true,
   [formFieldNames.settings.themeColor]: true,
 };
+
+export const EMBEDDING_WEIGHT_DEFAULTS = {
+  fullText: 0.35,
+  skills: 0.25,
+  experience: 0.15,
+  positions: 0.2,
+  companies: 0.05,
+} as const;

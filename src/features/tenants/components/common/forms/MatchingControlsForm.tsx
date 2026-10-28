@@ -1,6 +1,6 @@
 import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
-import { formFieldNames } from '@/features/tenants/constants/form.constants';
+import { EMBEDDING_WEIGHT_DEFAULTS, formFieldNames } from '@/features/tenants/constants/form.constants';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
 export const MatchingControlsForm = () => {
@@ -136,7 +136,7 @@ export const MatchingControlsForm = () => {
         Embedding Weights
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        Blends four vector types when computing the embedding similarity component of the match score. All four weights
+        Blends five vector types when computing the embedding similarity component of the match score. All five weights
         must sum to 1.0. Applies only when the Embedding scoring weight above is &gt; 0.
       </Typography>
       <Box sx={{ mb: 2, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
@@ -146,16 +146,20 @@ export const MatchingControlsForm = () => {
             desc: 'Overall CV-to-job text similarity. Broadest signal — captures the whole document. Higher = favors candidates with strong overall content match.',
           },
           {
-            label: 'Skills (default 0.30)',
+            label: 'Skills (default 0.25)',
             desc: 'Skills-focused embedding. Isolates technical competency overlap. Higher = emphasizes skill alignment over career narrative.',
           },
           {
-            label: 'Experience (default 0.20)',
+            label: 'Experience (default 0.15)',
             desc: 'Work history and seniority embedding. Captures career trajectory and role level alignment. Higher = values career path match.',
           },
           {
-            label: 'Bio (default 0.15)',
-            desc: 'Candidate bio/summary embedding. Captures career narrative and cultural fit signals from the profile header. Higher = favors profile overview match.',
+            label: 'Positions (default 0.20)',
+            desc: 'Recent job titles and roles embedding. Higher = favors candidates whose recent roles match the job title.',
+          },
+          {
+            label: 'Companies (default 0.05)',
+            desc: 'Employer and industry embedding. Higher = favors candidates from similar companies.',
           },
         ].map(({ label, desc }) => (
           <Typography key={label} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
@@ -168,13 +172,13 @@ export const MatchingControlsForm = () => {
         <Controller
           name={formFieldNames.matchConfig.embeddingWeightFullText}
           control={control}
-          defaultValue={0.35}
+          defaultValue={EMBEDDING_WEIGHT_DEFAULTS.fullText}
           rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
               label="Full Text"
-              field={{ ...field, value: field.value ?? 0.35 }}
+              field={{ ...field, value: field.value ?? EMBEDDING_WEIGHT_DEFAULTS.fullText }}
               fieldState={fieldState}
               inputProps={{ step: 0.05 }}
               sx={{ maxWidth: 140 }}
@@ -184,13 +188,13 @@ export const MatchingControlsForm = () => {
         <Controller
           name={formFieldNames.matchConfig.embeddingWeightSkills}
           control={control}
-          defaultValue={0.3}
+          defaultValue={EMBEDDING_WEIGHT_DEFAULTS.skills}
           rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
               label="Skills"
-              field={{ ...field, value: field.value ?? 0.3 }}
+              field={{ ...field, value: field.value ?? EMBEDDING_WEIGHT_DEFAULTS.skills }}
               fieldState={fieldState}
               inputProps={{ step: 0.05 }}
               sx={{ maxWidth: 140 }}
@@ -200,13 +204,13 @@ export const MatchingControlsForm = () => {
         <Controller
           name={formFieldNames.matchConfig.embeddingWeightExperience}
           control={control}
-          defaultValue={0.2}
+          defaultValue={EMBEDDING_WEIGHT_DEFAULTS.experience}
           rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
               label="Experience"
-              field={{ ...field, value: field.value ?? 0.2 }}
+              field={{ ...field, value: field.value ?? EMBEDDING_WEIGHT_DEFAULTS.experience }}
               fieldState={fieldState}
               inputProps={{ step: 0.05 }}
               sx={{ maxWidth: 140 }}
@@ -214,15 +218,31 @@ export const MatchingControlsForm = () => {
           )}
         />
         <Controller
-          name={formFieldNames.matchConfig.embeddingWeightBio}
+          name={formFieldNames.matchConfig.embeddingWeightPositions}
           control={control}
-          defaultValue={0.15}
+          defaultValue={EMBEDDING_WEIGHT_DEFAULTS.positions}
           rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
           render={({ field, fieldState }) => (
             <MuiTextField
               type="number"
-              label="Bio"
-              field={{ ...field, value: field.value ?? 0.15 }}
+              label="Positions"
+              field={{ ...field, value: field.value ?? EMBEDDING_WEIGHT_DEFAULTS.positions }}
+              fieldState={fieldState}
+              inputProps={{ step: 0.05 }}
+              sx={{ maxWidth: 140 }}
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.embeddingWeightCompanies}
+          control={control}
+          defaultValue={EMBEDDING_WEIGHT_DEFAULTS.companies}
+          rules={{ min: { value: 0, message: 'Min 0' }, max: { value: 1, message: 'Max 1' } }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Companies"
+              field={{ ...field, value: field.value ?? EMBEDDING_WEIGHT_DEFAULTS.companies }}
               fieldState={fieldState}
               inputProps={{ step: 0.05 }}
               sx={{ maxWidth: 140 }}
@@ -233,7 +253,7 @@ export const MatchingControlsForm = () => {
 
       <Box sx={{ mb: 1, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Multi-vector shortlist</strong>: When ON, uses the union of all four embedding vectors to build the
+          <strong>Multi-vector shortlist</strong>: When ON, uses the union of all five embedding vectors to build the
           initial candidate pool — broader and more diverse results. When OFF, only the full-text vector is used —
           faster but may miss candidates who score well on skills or experience vectors alone. Default:{' '}
           <strong>ON</strong>.

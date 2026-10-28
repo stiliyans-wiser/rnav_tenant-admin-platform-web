@@ -34,7 +34,8 @@ export interface MatchConfig {
   embedding_weight_full_text?: number;
   embedding_weight_skills?: number;
   embedding_weight_experience?: number;
-  embedding_weight_bio?: number;
+  embedding_weight_positions?: number;
+  embedding_weight_companies?: number;
   llm_cache_enabled?: boolean;
   llm_cache_ttl_seconds?: number;
   extraction_strategy?: string;
