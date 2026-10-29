@@ -22,6 +22,12 @@ export const tenantsConstants = {
     all: ['decision-reasons-availability'] as const,
     detail: (tenantId: string) => [...tenantsConstants.decisionReasonsKeys.all, tenantId] as const,
   },
+  decisionReviewKeys: {
+    all: ['decision-review'] as const,
+    list: (tenantId: string, filters: unknown, page: number, pageSize: number) =>
+      [...tenantsConstants.decisionReviewKeys.all, tenantId, 'list', filters, page, pageSize] as const,
+    detail: (tenantId: string, eventId: string) => [...tenantsConstants.decisionReviewKeys.all, tenantId, 'detail', eventId] as const,
+  },
   scoringTemplateKeys: {
     all: ['scoring-templates'] as const,
     list: (tenantId: string) => [...tenantsConstants.scoringTemplateKeys.all, tenantId] as const,

@@ -18,6 +18,7 @@ import { AutoReplacementData, AutoReplacementView } from '@/features/tenants/com
 import { CandidateDeliveryData, CandidateDeliveryView } from '@/features/tenants/components/common/view/CandidateDeliveryView';
 import { MatchingOntologyPanel } from '@/features/tenants/components/common/view/MatchingOntologyPanel';
 import { DecisionReasonsPanel } from '@/features/tenants/components/common/view/DecisionReasonsPanel';
+import { DecisionReviewPanel } from '@/features/tenants/components/common/view/DecisionReviewPanel';
 import { ScoringTemplatesPanel } from '@/features/tenants/components/common/view/ScoringTemplatesPanel';
 import { CandidateImportSourcesPanel } from '@/features/tenants/components/common/view/CandidateImportSourcesPanel';
 import { ProviderQuotasPanel } from '@/features/tenants/components/common/view/ProviderQuotasPanel';
@@ -220,6 +221,13 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           icon={<SettingsServices size={24} />}
         >
           <DecisionReasonsPanel tenantId={tenant.id!} />
+        </TenantViewLayout>
+
+        <TenantViewLayout
+          title={TenantSectionTitlesEnum.DECISION_REVIEW}
+          icon={<SettingsServices size={24} />}
+        >
+          <DecisionReviewPanel tenantId={tenant.id!} />
         </TenantViewLayout>
 
         <TenantViewLayout

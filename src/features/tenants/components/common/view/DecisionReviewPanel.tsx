@@ -1,0 +1,314 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  FormControlLabel,
+  MenuItem,
+  Snackbar,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { useExportDecisionReview, useGetDecisionReviewList } from '@/features/tenants/hooks/useDecisionReview';
+import { DecisionReviewDrawer } from '@/features/tenants/components/common/view/DecisionReviewDrawer';
+import { DecisionReviewExportFormat, DecisionReviewFilters, DecisionReviewSort } from '@/features/tenants/interfaces/decision-review.interface';
+import {
+  DEFAULT_FILTERS,
+  DEFAULT_PAGE_SIZE,
+  REVIEW_PAGE_SIZES,
+  STATUS_OPTIONS,
+  attentionLabel,
+  driftView,
+  exportNotice,
+  formatScore,
+  formatScoreTransition,
+  isConflict,
+  mapReviewError,
+  statusLabel,
+  validateFilters,
+} from '@/features/tenants/utils/decisionReview';
+
+interface DecisionReviewPanelProps {
+  tenantId: string;
+}
+
+type Notice = { severity: 'success' | 'warning' | 'error'; text: string };
+
+const SORT_OPTIONS: { id: DecisionReviewSort; label: string }[] = [
+  { id: 'attention', label: 'Needs attention first' },
+  { id: 'newest', label: 'Newest first' },
+  { id: 'oldest', label: 'Oldest first' },
+];
+
+const saveBlob = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
+export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
+  const [draft, setDraft] = useState<DecisionReviewFilters>(DEFAULT_FILTERS);
+  const [applied, setApplied] = useState<DecisionReviewFilters>(DEFAULT_FILTERS);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
+
+  const validation = useMemo(() => validateFilters(draft), [draft]);
+  const list = useGetDecisionReviewList(tenantId, applied, page, pageSize, true);
+  const exporter = useExportDecisionReview(tenantId);
+  const listError = list.isError ? mapReviewError(list.error) : null;
+
+  useEffect(() => {
+    setPage(0);
+    setApplied(DEFAULT_FILTERS);
+    setDraft(DEFAULT_FILTERS);
+  }, [tenantId]);
+
+  const update = (patch: Partial<DecisionReviewFilters>) => setDraft(prev => ({ ...prev, ...patch }));
+
+  const apply = () => {
+    if (validation) return;
+    setPage(0);
+    setApplied(draft);
+  };
+
+  const reset = () => {
+    setDraft(DEFAULT_FILTERS);
+    setApplied(DEFAULT_FILTERS);
+    setPage(0);
+  };
+
+  const runExport = async (format: DecisionReviewExportFormat) => {
+    if (validation) return;
+    try {
+      const result = await exporter.mutateAsync({ filters: applied, format });
+      saveBlob(result.blob, result.filename);
+      setNotice(exportNotice(result.headers));
+    } catch (error) {
+      setNotice({ severity: 'error', text: mapReviewError(error).message });
+    }
+  };
+
+  const data = list.data;
+  const total = data?.total ?? 0;
+  const highScore = data?.high_score;
+
+  return (
+    <Stack gap={2}>
+      <Typography variant="caption" color="text.secondary">
+        Read-only review of recruiter decisions for this tenant. Access is logged. The export contains candidate names and notes.
+      </Typography>
+
+      <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-start" component="form" onSubmit={e => { e.preventDefault(); apply(); }}>
+        <TextField
+          select
+          size="small"
+          label="Statuses"
+          sx={{ minWidth: 200 }}
+          value={draft.statuses}
+          onChange={e => update({ statuses: typeof e.target.value === 'string' ? e.target.value.split(',') : (e.target.value as string[]) })}
+          slotProps={{
+            select: { multiple: true, renderValue: v => (v as string[]).map(statusLabel).join(', ') },
+          }}
+        >
+          {STATUS_OPTIONS.map(s => (
+            <MenuItem key={s.id} value={s.id}>
+              <Checkbox checked={draft.statuses.includes(s.id)} size="small" />
+              {s.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField size="small" type="date" label="From" value={draft.dateFrom} onChange={e => update({ dateFrom: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
+        <TextField size="small" type="date" label="To" value={draft.dateTo} onChange={e => update({ dateTo: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
+        <TextField size="small" label="Reason code" value={draft.reasonCode} onChange={e => update({ reasonCode: e.target.value })} sx={{ width: 170 }} />
+        <TextField size="small" label="Recruiter (email or id)" value={draft.recruiter} onChange={e => update({ recruiter: e.target.value })} sx={{ width: 200 }} />
+        <TextField size="small" label="Job id" value={draft.jobId} onChange={e => update({ jobId: e.target.value })} sx={{ width: 280 }} />
+        <TextField size="small" label="Score min" value={draft.scoreMin} onChange={e => update({ scoreMin: e.target.value })} sx={{ width: 100 }} />
+        <TextField size="small" label="Score max" value={draft.scoreMax} onChange={e => update({ scoreMax: e.target.value })} sx={{ width: 100 }} />
+        <TextField select size="small" label="Sort" value={draft.sort} onChange={e => update({ sort: e.target.value as DecisionReviewSort })} sx={{ minWidth: 180 }}>
+          {SORT_OPTIONS.map(s => (
+            <MenuItem key={s.id} value={s.id}>
+              {s.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <FormControlLabel
+          control={<Checkbox size="small" checked={draft.needsAttention} onChange={(_, v) => update({ needsAttention: v })} />}
+          label="Needs attention only"
+        />
+        <FormControlLabel
+          control={<Checkbox size="small" checked={draft.includeCascade} onChange={(_, v) => update({ includeCascade: v })} />}
+          label="Include cascade events"
+        />
+        <Stack direction="row" gap={1}>
+          <Button type="submit" variant="contained" disabled={!!validation || list.isFetching}>
+            Apply filters
+          </Button>
+          <Button variant="outlined" onClick={reset}>
+            Reset
+          </Button>
+        </Stack>
+      </Stack>
+      {validation && (
+        <Typography variant="caption" color="error" role="alert">
+          {validation}
+        </Typography>
+      )}
+
+      <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
+        <Typography variant="body2" aria-live="polite">
+          {list.isLoading ? 'Loading decisions...' : listError ? '' : `${total} decision${total === 1 ? '' : 's'}`}
+        </Typography>
+        {list.isFetching && !list.isLoading && <CircularProgress size={14} aria-label="Refreshing" />}
+        <Box flexGrow={1} />
+        <Button variant="outlined" size="small" disabled={exporter.isPending || !total} onClick={() => runExport('xlsx')}>
+          {exporter.isPending ? 'Exporting...' : 'Export XLSX'}
+        </Button>
+        <Button variant="outlined" size="small" disabled={exporter.isPending || !total} onClick={() => runExport('csv')}>
+          Export CSV
+        </Button>
+      </Stack>
+
+      {listError && (
+        <Alert
+          severity={isConflict(listError) ? 'warning' : 'error'}
+          action={
+            <Button color="inherit" size="small" onClick={() => list.refetch()}>
+              Retry
+            </Button>
+          }
+        >
+          {listError.message}
+        </Alert>
+      )}
+
+      {!listError && list.isLoading && <CircularProgress size={20} aria-label="Loading decisions" />}
+
+      {!listError && data && data.items.length === 0 && (
+        <Alert severity="info">No decisions match these filters.</Alert>
+      )}
+
+      {!listError && data && data.items.length > 0 && (
+        <>
+          <TableContainer sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
+            <Table size="small" aria-label="Decision review">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Candidate</TableCell>
+                  <TableCell>Job</TableCell>
+                  <TableCell>Decision</TableCell>
+                  <TableCell>Score then → now</TableCell>
+                  <TableCell>Reason</TableCell>
+                  <TableCell>Attention</TableCell>
+                  <TableCell>Recruiter</TableCell>
+                  <TableCell>Date</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.items.map(row => {
+                  const drift = driftView(row.snapshot_drift);
+                  return (
+                    <TableRow
+                      key={row.event_id}
+                      hover
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Open decision for ${row.candidate_name || 'candidate'}`}
+                      onClick={() => setSelected(row.event_id)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelected(row.event_id);
+                        }
+                      }}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <TableCell>
+                        <Typography variant="body2">{row.candidate_name || '-'}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {row.candidate_current_title}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>{row.job_title || '-'}</TableCell>
+                      <TableCell>
+                        <Chip size="small" label={statusLabel(row.to_status)} />
+                        {row.is_cascade && <Chip size="small" variant="outlined" label="Cascade" sx={{ ml: 0.5 }} />}
+                      </TableCell>
+                      <TableCell>
+                        {row.snapshot_state === 'none' || row.snapshot_overall_score === null
+                          ? formatScoreTransition(null, row.current_overall_score)
+                          : formatScoreTransition(row.snapshot_overall_score, row.current_overall_score)}
+                        {row.snapshot_drift && (
+                          <Chip size="small" color="warning" label="Drift" title={drift.text} sx={{ ml: 0.5 }} />
+                        )}
+                        {row.score_source === 'current' && row.snapshot_overall_score === null && row.decision_score !== null && (
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            no snapshot
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>{row.reason_label || row.event_reason || '-'}</TableCell>
+                      <TableCell>
+                        {row.attention ? (
+                          <Chip
+                            size="small"
+                            color="warning"
+                            label={attentionLabel(row.attention)}
+                            title={highScore !== undefined ? `Score ${formatScore(row.decision_score)}` : undefined}
+                          />
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell>{row.actor_email || '-'}</TableCell>
+                      <TableCell>{new Date(row.occurred_at).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={total}
+            page={page}
+            rowsPerPage={pageSize}
+            rowsPerPageOptions={REVIEW_PAGE_SIZES}
+            onPageChange={(_, p) => setPage(p)}
+            onRowsPerPageChange={e => {
+              setPageSize(Number(e.target.value));
+              setPage(0);
+            }}
+          />
+        </>
+      )}
+
+      <DecisionReviewDrawer tenantId={tenantId} eventId={selected} onClose={() => setSelected(null)} />
+
+      <Snackbar open={notice !== null} autoHideDuration={10000} onClose={() => setNotice(null)}>
+        <Alert severity={notice?.severity ?? 'error'} onClose={() => setNotice(null)}>
+          {notice?.text}
+        </Alert>
+      </Snackbar>
+    </Stack>
+  );
+};

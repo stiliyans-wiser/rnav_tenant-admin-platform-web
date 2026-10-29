@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test src/features/tenants/utils/matchingOntologyForm.test.ts src/features/tenants/constants/form.constants.test.ts src/features/tenants/utils/embeddingWeights.test.ts src/features/tenants/utils/optimisticToggle.test.ts src/features/tenants/utils/decisionReasonsAvailability.test.ts",
+    "test": "node --test src/features/tenants/utils/matchingOntologyForm.test.ts src/features/tenants/constants/form.constants.test.ts src/features/tenants/utils/embeddingWeights.test.ts src/features/tenants/utils/optimisticToggle.test.ts src/features/tenants/utils/decisionReasonsAvailability.test.ts src/features/tenants/utils/decisionReview.test.ts",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },

@@ -11,6 +11,7 @@ export enum TenantSectionTitlesEnum {
   AUTO_REPLACEMENT = 'Auto-Replacement',
   MATCHING_ONTOLOGY = 'Matching Ontology',
   DECISION_REASONS = 'Decision Reasons',
+  DECISION_REVIEW = 'Decision Review',
   SCORING_TEMPLATES = 'Scoring Templates',
   CANDIDATE_IMPORT_SOURCES = 'Candidate Import Sources',
   PROVIDER_QUOTAS = 'Provider Quotas',
