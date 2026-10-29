@@ -18,6 +18,10 @@ export const tenantsConstants = {
     all: ['auto-match-availability'] as const,
     detail: (tenantId: string) => [...tenantsConstants.autoMatchAvailabilityKeys.all, tenantId] as const,
   },
+  decisionReasonsKeys: {
+    all: ['decision-reasons-availability'] as const,
+    detail: (tenantId: string) => [...tenantsConstants.decisionReasonsKeys.all, tenantId] as const,
+  },
   scoringTemplateKeys: {
     all: ['scoring-templates'] as const,
     list: (tenantId: string) => [...tenantsConstants.scoringTemplateKeys.all, tenantId] as const,
