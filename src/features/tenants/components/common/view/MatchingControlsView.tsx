@@ -1,5 +1,22 @@
-import { IconButton, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Snackbar,
+  Stack,
+  Switch,
+  Typography,
+} from '@mui/material';
 import { CheckmarkFilled, Misuse } from '@carbon/icons-react';
+import { updateAutoMatchAvailability } from '@/features/tenants/api/autoMatchAvailabilityApi';
+import { useGetAutoMatchAvailability } from '@/features/tenants/hooks/useAutoMatchAvailability';
+import { runOptimisticToggle } from '@/features/tenants/utils/optimisticToggle';
 import { MatchConfig } from '@/features/tenants/interfaces/match-config.interface';
 
 export interface MatchingControlsData {
@@ -9,6 +26,7 @@ export interface MatchingControlsData {
 
 interface MatchingControlsViewProps {
   data: MatchingControlsData;
+  tenantId: string;
 }
 
 const BoolIcon = ({ value }: { value: boolean }) =>
@@ -22,8 +40,32 @@ const BoolIcon = ({ value }: { value: boolean }) =>
     </IconButton>
   );
 
-export const MatchingControlsView = ({ data }: MatchingControlsViewProps) => {
+export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewProps) => {
   const cfg = data.match_config;
+  const { data: availability, isLoading, isError } = useGetAutoMatchAvailability(tenantId);
+  const [available, setAvailable] = useState(false);
+  const [pending, setPending] = useState<boolean | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+
+  useEffect(() => {
+    if (availability) setAvailable(availability.available);
+  }, [availability]);
+
+  const confirmToggle = async () => {
+    if (pending === null) return;
+    const next = pending;
+    setPending(null);
+    setSaving(true);
+    const ok = await runOptimisticToggle({
+      previous: available,
+      next,
+      apply: setAvailable,
+      request: async value => (await updateAutoMatchAvailability(tenantId, value)).available,
+    });
+    setSaving(false);
+    setSaveFailed(!ok);
+  };
 
   return (
     <Stack gap={4}>
@@ -107,6 +149,51 @@ export const MatchingControlsView = ({ data }: MatchingControlsViewProps) => {
           <Typography variant="subtitle2">{cfg?.calibration_top_k_multiplier ?? 3}</Typography>
         </Stack>
       </Stack>
+
+      <Stack gap={0.5}>
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Switch
+            checked={available}
+            disabled={isLoading || isError || saving}
+            onChange={(_, value) => setPending(value)}
+            inputProps={{ 'aria-label': 'Auto-match on job edit' }}
+          />
+          <Typography variant="caption">Auto-match on job edit</Typography>
+        </Stack>
+        <Typography variant="caption" color="text.secondary">
+          Lets this tenant's admin turn on automatic matching after a job edit. Off = the tenant can't use it.
+        </Typography>
+        {isError && (
+          <Typography variant="caption" color="error">
+            Could not load the current value.
+          </Typography>
+        )}
+      </Stack>
+
+      <Dialog open={pending !== null} onClose={() => setPending(null)}>
+        <DialogTitle>{pending ? 'Make auto-match on job edit available?' : 'Make auto-match on job edit unavailable?'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {pending
+              ? "This tenant's admin will be able to turn on automatic matching after a job edit."
+              : 'This tenant can no longer use automatic matching after a job edit, even if its admin switched it on.'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={() => setPending(null)}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={confirmToggle}>
+            Continue
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={saveFailed} autoHideDuration={6000} onClose={() => setSaveFailed(false)}>
+        <Alert severity="error" onClose={() => setSaveFailed(false)}>
+          Could not save. The previous value was restored.
+        </Alert>
+      </Snackbar>
 
       <Typography variant="overline" color="text.secondary">
         Screening Filters

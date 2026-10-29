@@ -14,6 +14,10 @@ export const tenantsConstants = {
     all: ['matching-ontology'] as const,
     detail: (tenantId: string) => [...tenantsConstants.matchingOntologyKeys.all, tenantId] as const,
   },
+  autoMatchAvailabilityKeys: {
+    all: ['auto-match-availability'] as const,
+    detail: (tenantId: string) => [...tenantsConstants.autoMatchAvailabilityKeys.all, tenantId] as const,
+  },
   scoringTemplateKeys: {
     all: ['scoring-templates'] as const,
     list: (tenantId: string) => [...tenantsConstants.scoringTemplateKeys.all, tenantId] as const,

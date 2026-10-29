@@ -164,7 +164,7 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           icon={<SettingsServices size={24} />}
           onEdit={() => openEditDrawer(TenantSectionTitlesEnum.MATCHING_CONTROLS, matchingControls)}
         >
-          <MatchingControlsView data={matchingControls} />
+          <MatchingControlsView data={matchingControls} tenantId={tenant.id} />
         </TenantViewLayout>
 
         <TenantViewLayout
