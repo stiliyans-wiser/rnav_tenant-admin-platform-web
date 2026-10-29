@@ -38,12 +38,19 @@ export const makeDefaultFilters = (now: Date = new Date()): DecisionReviewFilter
   dateFrom: defaultDateFrom(now),
 });
 
-export const filtersEqual = (a: DecisionReviewFilters, b: DecisionReviewFilters): boolean =>
-  JSON.stringify(buildFilterParams(a)) === JSON.stringify(buildFilterParams(b));
+const canonical = (f: DecisionReviewFilters): string => {
+  const params = buildFilterParams(f);
+  if (typeof params.statuses === 'string') params.statuses = params.statuses.split(',').sort().join(',');
+  return JSON.stringify(Object.entries(params).sort(([x], [y]) => (x < y ? -1 : 1)));
+};
+
+export const filtersEqual = (a: DecisionReviewFilters, b: DecisionReviewFilters): boolean => canonical(a) === canonical(b);
 
 export const describeFilters = (f: DecisionReviewFilters): string => {
-  const parts = [f.statuses.map(statusLabel).join(', ') || 'no status'];
-  if (f.dateFrom || f.dateTo) parts.push(`${f.dateFrom || '...'} to ${f.dateTo || 'today'}`);
+  const parts = [effectiveStatuses(f).map(statusLabel).join(', ') || 'no status'];
+  if (f.dateFrom && f.dateTo) parts.push(`${f.dateFrom} to ${f.dateTo} UTC`);
+  else if (f.dateFrom) parts.push(`from ${f.dateFrom} onward (UTC)`);
+  else if (f.dateTo) parts.push(`until ${f.dateTo} (UTC)`);
   else parts.push('all dates');
   if (f.reasonCode.trim()) parts.push(`reason ${f.reasonCode.trim()}`);
   if (f.recruiter.trim()) parts.push(`recruiter ${f.recruiter.trim()}`);
@@ -56,9 +63,14 @@ export const describeFilters = (f: DecisionReviewFilters): string => {
 
 const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
+export const ATTENTION_EXTRA_STATUSES = ['approved', 'send_to_client'];
+
+export const effectiveStatuses = (filters: DecisionReviewFilters): string[] =>
+  filters.needsAttention ? Array.from(new Set([...filters.statuses, ...ATTENTION_EXTRA_STATUSES])) : filters.statuses;
+
 export const buildFilterParams = (filters: DecisionReviewFilters): DecisionReviewQueryParams => {
   const params: DecisionReviewQueryParams = { sort: filters.sort };
-  if (filters.statuses.length) params.statuses = filters.statuses.join(',');
+  if (filters.statuses.length) params.statuses = effectiveStatuses(filters).join(',');
   if (filters.dateFrom) params.date_from = filters.dateFrom;
   if (filters.dateTo) params.date_to = filters.dateTo;
   if (filters.reasonCode.trim()) params.reason_code = filters.reasonCode.trim();
@@ -184,6 +196,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   account_not_found: 'This tenant no longer exists.',
   decision_event_not_found: 'This decision was not found. It may belong to another tenant.',
   tenant_db_unavailable: "This tenant has no database configured, so there is nothing to review.",
+  export_busy: 'Another export is running, try again shortly.',
+  invalid_attention_thresholds: 'The attention thresholds are invalid: the low score is above the high score.',
   decision_events_unavailable: 'This tenant database has no decision history yet. A deploy or migration is needed.',
 };
 
@@ -230,3 +244,31 @@ export const withParsedErrorBody = async <E>(error: E): Promise<E> => {
 };
 
 export const EXPORT_URL_REVOKE_DELAY_MS = 1000;
+
+export const BLANK = '\u2014';
+
+export const orBlank = (value: string | null | undefined): string => (value && value.trim() ? value : BLANK);
+
+export const formatUtcDate = (iso: string): string => {
+  const time = Date.parse(iso);
+  return Number.isNaN(time) ? BLANK : new Date(time).toISOString().slice(0, 10);
+};
+
+export interface ThenView {
+  text: string;
+  marker: string;
+  tooltip: string;
+}
+
+export const thenView = (row: {
+  score_source: string;
+  decision_score: number | null;
+  snapshot_overall_score: number | null;
+  snapshot_state: string;
+}): ThenView => {
+  if (row.score_source === 'snapshot' && row.decision_score !== null) return { text: formatScore(row.decision_score), marker: '', tooltip: 'Score frozen at decision time' };
+  if (row.score_source === 'current' && row.decision_score !== null) {
+    return { text: formatScore(row.decision_score), marker: '(current)', tooltip: 'No snapshot was stored; this is the current score, not the score at decision time' };
+  }
+  return { text: BLANK, marker: '', tooltip: 'No score at decision time' };
+};

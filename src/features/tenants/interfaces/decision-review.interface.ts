@@ -20,6 +20,7 @@ export interface DecisionReviewRow {
   candidate_id: string;
   candidate_name: string;
   candidate_current_title: string;
+  candidate_purged: boolean;
   attention: string;
   decision_score: number | null;
   score_source: 'snapshot' | 'current' | 'none';
@@ -105,6 +106,7 @@ export interface DecisionReviewSnapshot {
   drift?: boolean;
   client_seen?: { overall_score?: number; run_number?: number } | null;
   missing?: boolean;
+  redacted?: boolean;
   error?: unknown;
   truncated?: boolean;
   skill_evidence?: { matched?: DecisionReviewSkillItem[]; missing?: DecisionReviewSkillItem[] };

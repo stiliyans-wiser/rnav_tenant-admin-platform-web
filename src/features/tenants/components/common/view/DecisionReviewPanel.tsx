@@ -36,7 +36,9 @@ import {
   filtersEqual,
   exportNotice,
   formatScore,
-  formatScoreTransition,
+  formatUtcDate,
+  orBlank,
+  thenView,
   isConflict,
   makeDefaultFilters,
   mapReviewError,
@@ -136,8 +138,8 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
             </MenuItem>
           ))}
         </TextField>
-        <TextField size="small" type="date" label="From" value={draft.dateFrom} onChange={e => update({ dateFrom: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
-        <TextField size="small" type="date" label="To" value={draft.dateTo} onChange={e => update({ dateTo: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
+        <TextField size="small" type="date" label="From (UTC)" value={draft.dateFrom} onChange={e => update({ dateFrom: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
+        <TextField size="small" type="date" label="To (UTC)" value={draft.dateTo} onChange={e => update({ dateTo: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
         <TextField size="small" label="Reason code" value={draft.reasonCode} onChange={e => update({ reasonCode: e.target.value })} sx={{ width: 170 }} />
         <TextField size="small" label="Recruiter (email or id)" value={draft.recruiter} onChange={e => update({ recruiter: e.target.value })} sx={{ width: 200 }} />
         <TextField size="small" label="Job id" value={draft.jobId} onChange={e => update({ jobId: e.target.value })} sx={{ width: 280 }} />
@@ -223,19 +225,20 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
                   <TableCell>Reason</TableCell>
                   <TableCell>Attention</TableCell>
                   <TableCell>Recruiter</TableCell>
-                  <TableCell>Date</TableCell>
+                  <TableCell>Date (UTC)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data.items.map(row => {
                   const drift = driftView(row.snapshot_drift);
+                  const then = thenView(row);
                   return (
                     <TableRow
                       key={row.event_id}
                       hover
                       tabIndex={0}
                       role="button"
-                      aria-label={`Open decision for ${row.candidate_name || 'candidate'}`}
+                      aria-label={`Open decision for ${row.candidate_purged ? 'a deleted candidate' : row.candidate_name || 'candidate'}`}
                       onClick={() => setSelected(row.event_id)}
                       onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -246,30 +249,29 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
                       sx={{ cursor: 'pointer' }}
                     >
                       <TableCell>
-                        <Typography variant="body2">{row.candidate_name || '-'}</Typography>
+                        <Typography variant="body2">{orBlank(row.candidate_name)}</Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {row.candidate_current_title}
+                          {orBlank(row.candidate_current_title)}
                         </Typography>
+                        {row.candidate_purged && <Chip size="small" variant="outlined" label="Candidate deleted" sx={{ ml: 0.5 }} />}
                       </TableCell>
-                      <TableCell>{row.job_title || '-'}</TableCell>
+                      <TableCell>{orBlank(row.job_title)}</TableCell>
                       <TableCell>
                         <Chip size="small" label={statusLabel(row.to_status)} />
                         {row.is_cascade && <Chip size="small" variant="outlined" label="Cascade" sx={{ ml: 0.5 }} />}
                       </TableCell>
                       <TableCell>
-                        {row.snapshot_state === 'none' || row.snapshot_overall_score === null
-                          ? formatScoreTransition(null, row.current_overall_score)
-                          : formatScoreTransition(row.snapshot_overall_score, row.current_overall_score)}
+                        <span title={then.tooltip}>
+                          {then.text}
+                          {then.marker && ` ${then.marker}`}
+                        </span>
+                        {' \u2192 '}
+                        {formatScore(row.current_overall_score)}
                         {row.snapshot_drift && (
                           <Chip size="small" color="warning" label="Drift" title={drift.text} sx={{ ml: 0.5 }} />
                         )}
-                        {row.score_source === 'current' && row.snapshot_overall_score === null && row.decision_score !== null && (
-                          <Typography variant="caption" color="text.secondary" display="block">
-                            no snapshot
-                          </Typography>
-                        )}
                       </TableCell>
-                      <TableCell>{row.reason_label || row.event_reason || '-'}</TableCell>
+                      <TableCell>{orBlank(row.reason_label || row.event_reason)}</TableCell>
                       <TableCell>
                         {row.attention ? (
                           <Chip
@@ -282,8 +284,8 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
                           '-'
                         )}
                       </TableCell>
-                      <TableCell>{row.actor_email || '-'}</TableCell>
-                      <TableCell>{new Date(row.occurred_at).toLocaleDateString()}</TableCell>
+                      <TableCell>{orBlank(row.actor_email)}</TableCell>
+                      <TableCell>{formatUtcDate(row.occurred_at)}</TableCell>
                     </TableRow>
                   );
                 })}

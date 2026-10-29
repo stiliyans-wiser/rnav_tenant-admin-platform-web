@@ -4,7 +4,7 @@ import { Alert, Box, Button, Chip, CircularProgress, Divider, Drawer, IconButton
 import { Close } from '@carbon/icons-react';
 import { useGetDecisionReviewDetail } from '@/features/tenants/hooks/useDecisionReview';
 import { DecisionReviewNote } from '@/features/tenants/interfaces/decision-review.interface';
-import { attentionLabel, driftView, formatDelta, formatScore, mapReviewError, noteMatchLabel, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
+import { attentionLabel, driftView, formatDelta, formatScore, mapReviewError, noteMatchLabel, orBlank, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
 
 interface DecisionReviewDrawerProps {
   tenantId: string;
@@ -93,24 +93,25 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
         {data && drift && (
           <>
             <Stack gap={1}>
-              <Typography variant="subtitle1">{data.event.candidate_name || 'Unknown candidate'}</Typography>
+              <Typography variant="subtitle1">{orBlank(data.event.candidate_name)}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {data.event.candidate_current_title || '-'} · {data.event.job_title || 'Global decision (no job)'}
+                {orBlank(data.event.candidate_current_title)} · {data.event.job_title || 'Global decision (no job)'}
                 {data.event.job_client ? ` · ${data.event.job_client}` : ''}
               </Typography>
               <Stack direction="row" gap={1} flexWrap="wrap">
                 <Chip size="small" label={`${statusLabel(data.event.from_status)} → ${statusLabel(data.event.to_status)}`} />
                 {data.event.attention && <Chip size="small" color="warning" label={attentionLabel(data.event.attention)} />}
                 {data.event.is_cascade && <Chip size="small" variant="outlined" label="Cascade" />}
+                {data.event.candidate_purged && <Chip size="small" variant="outlined" label="Candidate deleted" />}
               </Stack>
             </Stack>
 
             <Stack direction="row" gap={3} flexWrap="wrap">
-              <Field label="Reason">{data.event.reason_label || data.event.event_reason || '-'}</Field>
-              <Field label="Recruiter">{data.event.actor_email || '-'}</Field>
+              <Field label="Reason">{orBlank(data.event.reason_label || data.event.event_reason)}</Field>
+              <Field label="Recruiter">{orBlank(data.event.actor_email)}</Field>
               <Field label="Decided">{formatDate(data.event.occurred_at)}</Field>
             </Stack>
-            {data.event.event_note && <Field label="Decision note">{data.event.event_note}</Field>}
+            {(data.event.event_note || data.event.candidate_purged) && <Field label="Decision note">{orBlank(data.event.event_note)}</Field>}
 
             <Divider />
 
@@ -118,7 +119,9 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
               <Typography variant="subtitle2">Snapshot vs now</Typography>
               {!snapAvailable && (
                 <Alert severity="info">
-                  {snap?.missing
+                  {snap?.redacted
+                    ? 'Snapshot details were redacted because the candidate was deleted.'
+                    : snap?.missing
                     ? 'No match row existed when this decision was made, so no score snapshot was stored.'
                     : snap?.error
                     ? 'The score snapshot could not be recorded for this decision.'
@@ -150,7 +153,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
                     </>
                   ) : (
                     <Typography variant="body2" color="text.secondary">
-                      No current match row.
+                      {data.event.candidate_purged ? 'Not available (candidate deleted).' : 'No current match row.'}
                     </Typography>
                   )}
                 </Stack>
@@ -167,7 +170,11 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
                 {drift.text}
               </Alert>
               {snap?.truncated && <Typography variant="caption">Snapshot was shortened to fit the size limit.</Typography>}
-              {snap?.explanation_summary && <Field label="Explanation at decision time">{snap.explanation_summary}</Field>}
+              {snap?.redacted ? (
+                <Field label="Explanation at decision time">Redacted (candidate deleted)</Field>
+              ) : (
+                snap?.explanation_summary && <Field label="Explanation at decision time">{snap.explanation_summary}</Field>
+              )}
               {data.current?.explanation_summary && <Field label="Explanation now">{data.current.explanation_summary}</Field>}
             </Stack>
 

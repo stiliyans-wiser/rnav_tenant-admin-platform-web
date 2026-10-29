@@ -7,6 +7,10 @@ import {
   filtersEqual,
   makeDefaultFilters,
   thumbsChipColor,
+  thenView,
+  orBlank,
+  formatUtcDate,
+  effectiveStatuses,
   withParsedErrorBody,
   EXPORT_MAX_ROWS,
   attentionLabel,
@@ -57,7 +61,7 @@ test('list params carry every filter and the page offset', () => {
   );
   assert.deepEqual(params, {
     sort: 'newest',
-    statuses: 'excluded',
+    statuses: 'excluded,approved,send_to_client',
     date_from: '2026-10-01',
     date_to: '2026-10-29',
     reason_code: 'seniority_too_low',
@@ -172,9 +176,12 @@ test('default range is the last 30 days', () => {
 test('filtersEqual ignores irrelevant whitespace and detects edits; describeFilters lists what is applied', () => {
   assert.equal(filtersEqual(DEFAULT_FILTERS, { ...DEFAULT_FILTERS, reasonCode: '  ' }), true);
   assert.equal(filtersEqual(DEFAULT_FILTERS, { ...DEFAULT_FILTERS, reasonCode: 'x' }), false);
+  assert.equal(filtersEqual(DEFAULT_FILTERS, { ...DEFAULT_FILTERS, statuses: ['dropped', 'excluded', 'on_hold'] }), true);
+  assert.equal(filtersEqual(DEFAULT_FILTERS, { ...DEFAULT_FILTERS, statuses: ['excluded'] }), false);
   const text = describeFilters({ ...DEFAULT_FILTERS, needsAttention: true, scoreMin: '70' });
   assert.match(text, /Excluded, On hold, Dropped/);
-  assert.match(text, /2026-09-29 to today/);
+  assert.match(text, /from 2026-09-29 onward \(UTC\)/);
+  assert.match(text, /Approved, Sent to client/);
   assert.match(text, /score 70-100/);
   assert.match(text, /needs attention only/);
   assert.match(describeFilters({ ...DEFAULT_FILTERS, dateFrom: '' }), /all dates/);
@@ -207,4 +214,47 @@ test('blob 422 keeps the server message; unparsable blob and non-blob bodies are
   assert.match(mapReviewError(plain).message, /no database/);
   const network = new Error('x');
   assert.equal(await withParsedErrorBody(network), network);
+});
+
+test('needs attention adds approved statuses once, without touching the form statuses', () => {
+  const f = { ...DEFAULT_FILTERS, needsAttention: true };
+  assert.deepEqual(effectiveStatuses(f), ['excluded', 'on_hold', 'dropped', 'approved', 'send_to_client']);
+  assert.equal(buildListParams(f, 0, 50).statuses, 'excluded,on_hold,dropped,approved,send_to_client');
+  assert.deepEqual(effectiveStatuses({ ...f, statuses: ['approved'] }), ['approved', 'send_to_client']);
+  assert.deepEqual(f.statuses, ['excluded', 'on_hold', 'dropped']);
+  assert.equal(effectiveStatuses(DEFAULT_FILTERS).length, 3);
+});
+
+test('describeFilters handles only-to and both dates', () => {
+  assert.match(describeFilters({ ...DEFAULT_FILTERS, dateFrom: '', dateTo: '2026-10-01' }), /until 2026-10-01/);
+  assert.match(describeFilters({ ...DEFAULT_FILTERS, dateTo: '2026-10-30' }), /2026-09-29 to 2026-10-30 UTC/);
+});
+
+test('then score view uses score_source', () => {
+  const base = { snapshot_state: 'ok', snapshot_overall_score: 91, decision_score: 91, score_source: 'snapshot' };
+  assert.deepEqual(thenView(base), { text: '91', marker: '', tooltip: 'Score frozen at decision time' });
+  const legacy = thenView({ ...base, snapshot_state: 'none', snapshot_overall_score: null, decision_score: 62, score_source: 'current' });
+  assert.equal(legacy.text, '62');
+  assert.equal(legacy.marker, '(current)');
+  const none = thenView({ ...base, snapshot_state: 'missing', snapshot_overall_score: null, decision_score: null, score_source: 'none' });
+  assert.equal(none.text, '\u2014');
+  assert.equal(none.tooltip, 'No score at decision time');
+  assert.equal(thenView({ ...base, decision_score: null }).text, '\u2014');
+});
+
+test('blank and redacted texts render as an em dash; UTC dates', () => {
+  assert.equal(orBlank(''), '\u2014');
+  assert.equal(orBlank('  '), '\u2014');
+  assert.equal(orBlank(null), '\u2014');
+  assert.equal(orBlank('Ann'), 'Ann');
+  assert.equal(formatUtcDate('2026-10-29T23:30:00+00:00'), '2026-10-29');
+  assert.equal(formatUtcDate('2026-10-29T23:30:00-05:00'), '2026-10-30');
+  assert.equal(formatUtcDate('bad'), '\u2014');
+});
+
+test('new error codes map: export busy, attention thresholds, date_to out of range', () => {
+  const busy = mapReviewError(apiError(429, { code: 'export_busy', message: 'x' }));
+  assert.equal(busy.message, 'Another export is running, try again shortly.');
+  assert.match(mapReviewError(apiError(422, { code: 'invalid_attention_thresholds', message: 'x' })).message, /low score is above/);
+  assert.match(mapReviewError(apiError(422, { code: 'invalid_date_range', message: 'date_to is out of range' })).message, /date_to is out of range/);
 });
