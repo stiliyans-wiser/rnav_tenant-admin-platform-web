@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -26,16 +26,19 @@ import { useExportDecisionReview, useGetDecisionReviewList } from '@/features/te
 import { DecisionReviewDrawer } from '@/features/tenants/components/common/view/DecisionReviewDrawer';
 import { DecisionReviewExportFormat, DecisionReviewFilters, DecisionReviewSort } from '@/features/tenants/interfaces/decision-review.interface';
 import {
-  DEFAULT_FILTERS,
   DEFAULT_PAGE_SIZE,
+  EXPORT_URL_REVOKE_DELAY_MS,
   REVIEW_PAGE_SIZES,
   STATUS_OPTIONS,
   attentionLabel,
+  describeFilters,
   driftView,
+  filtersEqual,
   exportNotice,
   formatScore,
   formatScoreTransition,
   isConflict,
+  makeDefaultFilters,
   mapReviewError,
   statusLabel,
   validateFilters,
@@ -61,27 +64,22 @@ const saveBlob = (blob: Blob, filename: string) => {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), EXPORT_URL_REVOKE_DELAY_MS);
 };
 
 export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
-  const [draft, setDraft] = useState<DecisionReviewFilters>(DEFAULT_FILTERS);
-  const [applied, setApplied] = useState<DecisionReviewFilters>(DEFAULT_FILTERS);
+  const [initial] = useState(() => makeDefaultFilters());
+  const [draft, setDraft] = useState<DecisionReviewFilters>(initial);
+  const [applied, setApplied] = useState<DecisionReviewFilters>(initial);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [selected, setSelected] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
 
   const validation = useMemo(() => validateFilters(draft), [draft]);
-  const list = useGetDecisionReviewList(tenantId, applied, page, pageSize, true);
+  const list = useGetDecisionReviewList(tenantId, applied, page, pageSize);
   const exporter = useExportDecisionReview(tenantId);
   const listError = list.isError ? mapReviewError(list.error) : null;
-
-  useEffect(() => {
-    setPage(0);
-    setApplied(DEFAULT_FILTERS);
-    setDraft(DEFAULT_FILTERS);
-  }, [tenantId]);
 
   const update = (patch: Partial<DecisionReviewFilters>) => setDraft(prev => ({ ...prev, ...patch }));
 
@@ -92,13 +90,15 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
   };
 
   const reset = () => {
-    setDraft(DEFAULT_FILTERS);
-    setApplied(DEFAULT_FILTERS);
+    const defaults = makeDefaultFilters();
+    setDraft(defaults);
+    setApplied(defaults);
     setPage(0);
   };
 
+  const pendingEdits = !filtersEqual(draft, applied);
+
   const runExport = async (format: DecisionReviewExportFormat) => {
-    if (validation) return;
     try {
       const result = await exporter.mutateAsync({ filters: applied, format });
       saveBlob(result.blob, result.filename);
@@ -110,7 +110,6 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
 
   const data = list.data;
   const total = data?.total ?? 0;
-  const highScore = data?.high_score;
 
   return (
     <Stack gap={2}>
@@ -180,13 +179,17 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
         </Typography>
         {list.isFetching && !list.isLoading && <CircularProgress size={14} aria-label="Refreshing" />}
         <Box flexGrow={1} />
-        <Button variant="outlined" size="small" disabled={exporter.isPending || !total} onClick={() => runExport('xlsx')}>
+        <Button variant="outlined" size="small" disabled={exporter.isPending || !total || pendingEdits} onClick={() => runExport('xlsx')}>
           {exporter.isPending ? 'Exporting...' : 'Export XLSX'}
         </Button>
-        <Button variant="outlined" size="small" disabled={exporter.isPending || !total} onClick={() => runExport('csv')}>
+        <Button variant="outlined" size="small" disabled={exporter.isPending || !total || pendingEdits} onClick={() => runExport('csv')}>
           Export CSV
         </Button>
       </Stack>
+
+      <Typography variant="caption" color="text.secondary">
+        Export uses the applied filters: {describeFilters(applied)}.{pendingEdits ? ' You have unapplied edits. Apply them to export.' : ''}
+      </Typography>
 
       {listError && (
         <Alert
@@ -273,7 +276,7 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
                             size="small"
                             color="warning"
                             label={attentionLabel(row.attention)}
-                            title={highScore !== undefined ? `Score ${formatScore(row.decision_score)}` : undefined}
+                            title={`Score ${formatScore(row.decision_score)}`}
                           />
                         ) : (
                           '-'

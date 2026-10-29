@@ -12,7 +12,13 @@ export const STATUS_OPTIONS: { id: string; label: string }[] = [
   { id: 'send_to_client', label: 'Sent to client' },
 ];
 
-export const DEFAULT_FILTERS: DecisionReviewFilters = {
+export const DEFAULT_RANGE_DAYS = 30;
+
+const isoDay = (date: Date): string => date.toISOString().slice(0, 10);
+
+export const defaultDateFrom = (now: Date = new Date()): string => isoDay(new Date(now.getTime() - DEFAULT_RANGE_DAYS * 86400000));
+
+const BASE_FILTERS: DecisionReviewFilters = {
   statuses: ['excluded', 'on_hold', 'dropped'],
   dateFrom: '',
   dateTo: '',
@@ -24,6 +30,28 @@ export const DEFAULT_FILTERS: DecisionReviewFilters = {
   includeCascade: false,
   needsAttention: false,
   sort: 'attention',
+};
+
+export const makeDefaultFilters = (now: Date = new Date()): DecisionReviewFilters => ({
+  ...BASE_FILTERS,
+  statuses: [...BASE_FILTERS.statuses],
+  dateFrom: defaultDateFrom(now),
+});
+
+export const filtersEqual = (a: DecisionReviewFilters, b: DecisionReviewFilters): boolean =>
+  JSON.stringify(buildFilterParams(a)) === JSON.stringify(buildFilterParams(b));
+
+export const describeFilters = (f: DecisionReviewFilters): string => {
+  const parts = [f.statuses.map(statusLabel).join(', ') || 'no status'];
+  if (f.dateFrom || f.dateTo) parts.push(`${f.dateFrom || '...'} to ${f.dateTo || 'today'}`);
+  else parts.push('all dates');
+  if (f.reasonCode.trim()) parts.push(`reason ${f.reasonCode.trim()}`);
+  if (f.recruiter.trim()) parts.push(`recruiter ${f.recruiter.trim()}`);
+  if (f.jobId.trim()) parts.push('one job');
+  if (parseScore(f.scoreMin) !== null || parseScore(f.scoreMax) !== null) parts.push(`score ${f.scoreMin.trim() || '0'}-${f.scoreMax.trim() || '100'}`);
+  if (f.needsAttention) parts.push('needs attention only');
+  if (f.includeCascade) parts.push('with cascade events');
+  return parts.join(' · ');
 };
 
 const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -183,3 +211,22 @@ export const mapReviewError = (error: unknown): ReviewError => {
 };
 
 export const isConflict = (error: ReviewError): boolean => error.status === 409;
+
+export type ThumbsColor = 'success' | 'error' | 'default';
+
+export const thumbsChipColor = (feedbackType: string): ThumbsColor =>
+  feedbackType === 'thumbs_up' ? 'success' : feedbackType === 'thumbs_down' ? 'error' : 'default';
+
+export const withParsedErrorBody = async <E>(error: E): Promise<E> => {
+  const response = (error as { response?: { data?: unknown } } | null)?.response;
+  const data = response?.data as { text?: () => Promise<string> } | undefined;
+  if (!response || !data || typeof data.text !== 'function') return error;
+  try {
+    response.data = JSON.parse(await data.text());
+  } catch {
+    response.data = undefined;
+  }
+  return error;
+};
+
+export const EXPORT_URL_REVOKE_DELAY_MS = 1000;

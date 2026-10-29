@@ -227,7 +227,7 @@ export const TenantDetails = ({ tenant }: TenantDetailsProps) => {
           title={TenantSectionTitlesEnum.DECISION_REVIEW}
           icon={<SettingsServices size={24} />}
         >
-          <DecisionReviewPanel tenantId={tenant.id!} />
+          <DecisionReviewPanel key={tenant.id} tenantId={tenant.id!} />
         </TenantViewLayout>
 
         <TenantViewLayout

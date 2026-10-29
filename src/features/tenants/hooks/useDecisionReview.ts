@@ -3,11 +3,11 @@ import { tenantsConstants } from '@/features/tenants/constants/tenants.constants
 import { exportDecisionReview, getDecisionReviewDetail, getDecisionReviewList } from '@/features/tenants/api/decisionReviewApi';
 import { DecisionReviewExportFormat, DecisionReviewFilters } from '@/features/tenants/interfaces/decision-review.interface';
 
-export const useGetDecisionReviewList = (tenantId: string, filters: DecisionReviewFilters, page: number, pageSize: number, enabled: boolean) =>
+export const useGetDecisionReviewList = (tenantId: string, filters: DecisionReviewFilters, page: number, pageSize: number) =>
   useQuery({
     queryKey: tenantsConstants.decisionReviewKeys.list(tenantId, filters, page, pageSize),
     queryFn: () => getDecisionReviewList(tenantId, filters, page, pageSize),
-    enabled: !!tenantId && enabled,
+    enabled: !!tenantId,
     placeholderData: keepPreviousData,
     retry: false,
   });

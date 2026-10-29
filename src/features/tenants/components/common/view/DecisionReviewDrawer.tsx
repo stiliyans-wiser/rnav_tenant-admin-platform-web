@@ -4,13 +4,15 @@ import { Alert, Box, Button, Chip, CircularProgress, Divider, Drawer, IconButton
 import { Close } from '@carbon/icons-react';
 import { useGetDecisionReviewDetail } from '@/features/tenants/hooks/useDecisionReview';
 import { DecisionReviewNote } from '@/features/tenants/interfaces/decision-review.interface';
-import { attentionLabel, driftView, formatDelta, formatScore, mapReviewError, noteMatchLabel, statusLabel } from '@/features/tenants/utils/decisionReview';
+import { attentionLabel, driftView, formatDelta, formatScore, mapReviewError, noteMatchLabel, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
 
 interface DecisionReviewDrawerProps {
   tenantId: string;
   eventId: string | null;
   onClose: () => void;
 }
+
+const WRAP_SX = { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } as const;
 
 const formatDate = (iso: string) => (iso ? new Date(iso).toLocaleString() : '-');
 
@@ -19,7 +21,7 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
     <Typography variant="caption" color="text.secondary">
       {label}
     </Typography>
-    <Typography variant="body2" component="div">
+    <Typography variant="body2" component="div" sx={WRAP_SX}>
       {children}
     </Typography>
   </Stack>
@@ -47,7 +49,7 @@ const Notes = ({ title, notes, emptyText }: { title: string; notes: DecisionRevi
             {formatDate(n.created_at)} {n.author_email ? `· ${n.author_email}` : ''}
           </Typography>
         </Stack>
-        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+        <Typography variant="body2" sx={WRAP_SX}>
           {n.content}
         </Typography>
       </Box>
@@ -65,7 +67,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
 
   return (
     <Drawer anchor="right" open={eventId !== null} onClose={onClose} PaperProps={{ sx: { width: { xs: '100%', sm: 560 } } }}>
-      <Stack p={3} gap={2.5} role="region" aria-label="Decision details">
+      <Stack p={3} gap={2.5} sx={{ minWidth: 0 }} role="region" aria-label="Decision details">
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6">Decision details</Typography>
           <IconButton aria-label="Close decision details" onClick={onClose}>
@@ -183,14 +185,14 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
               )}
               {data.thumbs.map((t, i) => (
                 <Stack key={`${t.created_at}-${i}`} direction="row" gap={1} alignItems="baseline" flexWrap="wrap">
-                  <Chip size="small" color={t.feedback_type === 'thumbs_up' || t.feedback_type === 'up' ? 'success' : 'error'} label={t.feedback_type.replace(/_/g, ' ')} />
+                  <Chip size="small" color={thumbsChipColor(t.feedback_type)} label={t.feedback_type.replace(/_/g, ' ')} />
                   <Typography variant="caption" color="text.secondary">
                     {formatDate(t.created_at)} · {t.recruiter_email || 'unknown'}
                     {t.overall_score != null ? ` · score ${formatScore(t.overall_score)}` : ''}
                     {t.run_number != null ? ` · run ${t.run_number}` : ''}
                     {t.status_event_id === data.event.event_id ? ' · linked to this decision' : ''}
                   </Typography>
-                  {t.explanation && <Typography variant="body2">{t.explanation}</Typography>}
+                  {t.explanation && <Typography variant="body2" sx={WRAP_SX}>{t.explanation}</Typography>}
                 </Stack>
               ))}
             </Stack>

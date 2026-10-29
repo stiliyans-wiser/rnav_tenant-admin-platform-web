@@ -6,7 +6,7 @@ import {
   DecisionReviewFilters,
   DecisionReviewList,
 } from '@/features/tenants/interfaces/decision-review.interface';
-import { buildExportParams, buildListParams, exportFilename, parseExportHeaders, type ExportHeaders } from '@/features/tenants/utils/decisionReview';
+import { buildExportParams, buildListParams, exportFilename, parseExportHeaders, withParsedErrorBody, type ExportHeaders } from '@/features/tenants/utils/decisionReview';
 
 const path = (accountId: string) => `/backoffice/accounts/${accountId}/decision-review`;
 
@@ -30,10 +30,14 @@ export const exportDecisionReview = async (
   filters: DecisionReviewFilters,
   format: DecisionReviewExportFormat,
 ): Promise<DecisionReviewExportResult & { headers: ExportHeaders }> => {
-  const response = await api.get<Blob>(`${path(accountId)}/export`, {
-    params: buildExportParams(filters, format),
-    responseType: 'blob',
-  });
+  const response = await api
+    .get<Blob>(`${path(accountId)}/export`, {
+      params: buildExportParams(filters, format),
+      responseType: 'blob',
+    })
+    .catch(async error => {
+      throw await withParsedErrorBody(error);
+    });
   return {
     blob: response.data,
     filename: exportFilename(response.headers?.['content-disposition'], format),

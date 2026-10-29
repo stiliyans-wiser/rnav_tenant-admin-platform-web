@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
-  DEFAULT_FILTERS,
+  DEFAULT_RANGE_DAYS,
+  defaultDateFrom,
+  describeFilters,
+  filtersEqual,
+  makeDefaultFilters,
+  thumbsChipColor,
+  withParsedErrorBody,
   EXPORT_MAX_ROWS,
   attentionLabel,
   buildExportParams,
@@ -18,10 +24,13 @@ import {
   validateFilters,
 } from './decisionReview.ts';
 
+const DEFAULT_FILTERS = { ...makeDefaultFilters(new Date('2026-10-29T12:00:00Z')) };
+
 test('default filters send only the default statuses and attention sort', () => {
   assert.deepEqual(buildListParams(DEFAULT_FILTERS, 0, 50), {
     sort: 'attention',
     statuses: 'excluded,on_hold,dropped',
+    date_from: '2026-09-29',
     limit: 50,
     offset: 0,
   });
@@ -152,4 +161,50 @@ test('error mapping for 422, 403, network and unknown shapes', () => {
   assert.match(mapReviewError(new Error('boom')).message, /Could not reach/);
   assert.match(mapReviewError(apiError(500, 'Internal')).message, /Internal/);
   assert.equal(mapReviewError(apiError(500, undefined)).message, 'Request failed. Try again.');
+});
+
+test('default range is the last 30 days', () => {
+  assert.equal(DEFAULT_RANGE_DAYS, 30);
+  assert.equal(defaultDateFrom(new Date('2026-10-29T23:59:00Z')), '2026-09-29');
+  assert.equal(makeDefaultFilters(new Date('2026-10-29T00:00:00Z')).dateFrom, '2026-09-29');
+});
+
+test('filtersEqual ignores irrelevant whitespace and detects edits; describeFilters lists what is applied', () => {
+  assert.equal(filtersEqual(DEFAULT_FILTERS, { ...DEFAULT_FILTERS, reasonCode: '  ' }), true);
+  assert.equal(filtersEqual(DEFAULT_FILTERS, { ...DEFAULT_FILTERS, reasonCode: 'x' }), false);
+  const text = describeFilters({ ...DEFAULT_FILTERS, needsAttention: true, scoreMin: '70' });
+  assert.match(text, /Excluded, On hold, Dropped/);
+  assert.match(text, /2026-09-29 to today/);
+  assert.match(text, /score 70-100/);
+  assert.match(text, /needs attention only/);
+  assert.match(describeFilters({ ...DEFAULT_FILTERS, dateFrom: '' }), /all dates/);
+});
+
+test('thumbs chip colors: up green, down red, skip and unknown neutral', () => {
+  assert.equal(thumbsChipColor('thumbs_up'), 'success');
+  assert.equal(thumbsChipColor('thumbs_down'), 'error');
+  assert.equal(thumbsChipColor('skip'), 'default');
+  assert.equal(thumbsChipColor('up'), 'default');
+});
+
+test('a blob error body is parsed so the real code and message are mapped', async () => {
+  const blob = new Blob([JSON.stringify({ detail: { code: 'decision_events_unavailable', message: 'x' } })]);
+  const error = await withParsedErrorBody({ response: { status: 409, data: blob } });
+  const mapped = mapReviewError(error);
+  assert.equal(mapped.code, 'decision_events_unavailable');
+  assert.match(mapped.message, /no decision history/);
+});
+
+test('blob 422 keeps the server message; unparsable blob and non-blob bodies are safe', async () => {
+  const unprocessable = await withParsedErrorBody({
+    response: { status: 422, data: new Blob([JSON.stringify({ detail: { code: 'invalid_date_range', message: 'date_from is after date_to' } })]) },
+  });
+  assert.match(mapReviewError(unprocessable).message, /after date_to/);
+  const garbage = await withParsedErrorBody({ response: { status: 500, data: new Blob(['<html>']) } });
+  assert.equal(mapReviewError(garbage).message, 'Request failed. Try again.');
+  const plain = { response: { status: 409, data: { detail: { code: 'tenant_db_unavailable' } } } };
+  assert.equal(await withParsedErrorBody(plain), plain);
+  assert.match(mapReviewError(plain).message, /no database/);
+  const network = new Error('x');
+  assert.equal(await withParsedErrorBody(network), network);
 });
