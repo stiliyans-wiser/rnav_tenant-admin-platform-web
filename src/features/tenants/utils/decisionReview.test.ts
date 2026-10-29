@@ -11,6 +11,7 @@ import {
   orBlank,
   formatUtcDate,
   effectiveStatuses,
+  formatUtcDateTime,
   withParsedErrorBody,
   EXPORT_MAX_ROWS,
   attentionLabel,
@@ -219,8 +220,9 @@ test('blob 422 keeps the server message; unparsable blob and non-blob bodies are
 test('needs attention adds approved statuses once, without touching the form statuses', () => {
   const f = { ...DEFAULT_FILTERS, needsAttention: true };
   assert.deepEqual(effectiveStatuses(f), ['excluded', 'on_hold', 'dropped', 'approved', 'send_to_client']);
+  assert.deepEqual(effectiveStatuses({ ...f, statuses: ['dropped'] }), ['dropped', 'excluded', 'approved', 'send_to_client']);
   assert.equal(buildListParams(f, 0, 50).statuses, 'excluded,on_hold,dropped,approved,send_to_client');
-  assert.deepEqual(effectiveStatuses({ ...f, statuses: ['approved'] }), ['approved', 'send_to_client']);
+  assert.deepEqual(effectiveStatuses({ ...f, statuses: ['approved'] }), ['approved', 'excluded', 'send_to_client']);
   assert.deepEqual(f.statuses, ['excluded', 'on_hold', 'dropped']);
   assert.equal(effectiveStatuses(DEFAULT_FILTERS).length, 3);
 });
@@ -257,4 +259,13 @@ test('new error codes map: export busy, attention thresholds, date_to out of ran
   assert.equal(busy.message, 'Another export is running, try again shortly.');
   assert.match(mapReviewError(apiError(422, { code: 'invalid_attention_thresholds', message: 'x' })).message, /low score is above/);
   assert.match(mapReviewError(apiError(422, { code: 'invalid_date_range', message: 'date_to is out of range' })).message, /date_to is out of range/);
+});
+
+test('date-time is shown in UTC with a suffix, for any offset', () => {
+  assert.equal(formatUtcDateTime('2026-10-29T23:30:00+00:00'), '2026-10-29 23:30 UTC');
+  assert.equal(formatUtcDateTime('2026-10-29T23:30:00-05:00'), '2026-10-30 04:30 UTC');
+  assert.equal(formatUtcDateTime('2026-10-29T01:05:09Z'), '2026-10-29 01:05 UTC');
+  assert.equal(formatUtcDateTime(''), '\u2014');
+  assert.equal(formatUtcDateTime(undefined), '\u2014');
+  assert.equal(formatUtcDateTime('bad'), '\u2014');
 });

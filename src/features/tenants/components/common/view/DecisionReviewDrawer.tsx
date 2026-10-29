@@ -4,7 +4,7 @@ import { Alert, Box, Button, Chip, CircularProgress, Divider, Drawer, IconButton
 import { Close } from '@carbon/icons-react';
 import { useGetDecisionReviewDetail } from '@/features/tenants/hooks/useDecisionReview';
 import { DecisionReviewNote } from '@/features/tenants/interfaces/decision-review.interface';
-import { attentionLabel, driftView, formatDelta, formatScore, mapReviewError, noteMatchLabel, orBlank, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
+import { attentionLabel, driftView, formatDelta, formatScore, formatUtcDateTime, mapReviewError, noteMatchLabel, orBlank, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
 
 interface DecisionReviewDrawerProps {
   tenantId: string;
@@ -13,8 +13,6 @@ interface DecisionReviewDrawerProps {
 }
 
 const WRAP_SX = { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } as const;
-
-const formatDate = (iso: string) => (iso ? new Date(iso).toLocaleString() : '-');
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <Stack gap={0.25}>
@@ -46,7 +44,7 @@ const Notes = ({ title, notes, emptyText }: { title: string; notes: DecisionRevi
             title={n.match === 'job' ? 'Written for this job' : 'Matched by time window around the decision'}
           />
           <Typography variant="caption" color="text.secondary">
-            {formatDate(n.created_at)} {n.author_email ? `· ${n.author_email}` : ''}
+            {formatUtcDateTime(n.created_at)} {n.author_email ? `· ${n.author_email}` : ''}
           </Typography>
         </Stack>
         <Typography variant="body2" sx={WRAP_SX}>
@@ -109,7 +107,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
             <Stack direction="row" gap={3} flexWrap="wrap">
               <Field label="Reason">{orBlank(data.event.reason_label || data.event.event_reason)}</Field>
               <Field label="Recruiter">{orBlank(data.event.actor_email)}</Field>
-              <Field label="Decided">{formatDate(data.event.occurred_at)}</Field>
+              <Field label="Decided">{formatUtcDateTime(data.event.occurred_at)}</Field>
             </Stack>
             {(data.event.event_note || data.event.candidate_purged) && <Field label="Decision note">{orBlank(data.event.event_note)}</Field>}
 
@@ -119,12 +117,12 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
               <Typography variant="subtitle2">Snapshot vs now</Typography>
               {!snapAvailable && (
                 <Alert severity="info">
-                  {snap?.redacted
-                    ? 'Snapshot details were redacted because the candidate was deleted.'
-                    : snap?.missing
+                  {snap?.missing
                     ? 'No match row existed when this decision was made, so no score snapshot was stored.'
                     : snap?.error
                     ? 'The score snapshot could not be recorded for this decision.'
+                    : snap?.redacted
+                    ? 'Snapshot details were redacted because the candidate was deleted.'
                     : 'No score snapshot was stored for this decision (recorded before decision reasons were enabled).'}
                 </Alert>
               )}
@@ -194,7 +192,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
                 <Stack key={`${t.created_at}-${i}`} direction="row" gap={1} alignItems="baseline" flexWrap="wrap">
                   <Chip size="small" color={thumbsChipColor(t.feedback_type)} label={t.feedback_type.replace(/_/g, ' ')} />
                   <Typography variant="caption" color="text.secondary">
-                    {formatDate(t.created_at)} · {t.recruiter_email || 'unknown'}
+                    {formatUtcDateTime(t.created_at)} · {t.recruiter_email || 'unknown'}
                     {t.overall_score != null ? ` · score ${formatScore(t.overall_score)}` : ''}
                     {t.run_number != null ? ` · run ${t.run_number}` : ''}
                     {t.status_event_id === data.event.event_id ? ' · linked to this decision' : ''}

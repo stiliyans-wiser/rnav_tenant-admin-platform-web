@@ -63,7 +63,7 @@ export const describeFilters = (f: DecisionReviewFilters): string => {
 
 const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
-export const ATTENTION_EXTRA_STATUSES = ['approved', 'send_to_client'];
+export const ATTENTION_EXTRA_STATUSES = ['excluded', 'approved', 'send_to_client'];
 
 export const effectiveStatuses = (filters: DecisionReviewFilters): string[] =>
   filters.needsAttention ? Array.from(new Set([...filters.statuses, ...ATTENTION_EXTRA_STATUSES])) : filters.statuses;
@@ -271,4 +271,9 @@ export const thenView = (row: {
     return { text: formatScore(row.decision_score), marker: '(current)', tooltip: 'No snapshot was stored; this is the current score, not the score at decision time' };
   }
   return { text: BLANK, marker: '', tooltip: 'No score at decision time' };
+};
+
+export const formatUtcDateTime = (iso: string | null | undefined): string => {
+  const time = iso ? Date.parse(iso) : NaN;
+  return Number.isNaN(time) ? BLANK : `${new Date(time).toISOString().slice(0, 16).replace('T', ' ')} UTC`;
 };
