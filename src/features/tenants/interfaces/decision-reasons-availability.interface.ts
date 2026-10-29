@@ -5,6 +5,7 @@ export interface DecisionReasonsAvailability {
   reason_count: number;
   schema_healthy: boolean;
   schema_missing_columns: string[];
+  schema_probe_failed?: boolean;
 }
 
 export interface DecisionReasonsAvailabilityPatch {

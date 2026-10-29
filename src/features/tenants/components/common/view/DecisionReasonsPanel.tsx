@@ -18,11 +18,13 @@ import {
 } from '@mui/material';
 import { useGetDecisionReasonsAvailability, useUpdateDecisionReasonsAvailability } from '@/features/tenants/hooks/useDecisionReasonsAvailability';
 import {
+  ENABLE_EFFECT_TEXT,
   RESET_CONFIRM_TEXT,
   RESET_CONFIRM_TITLE,
   runAvailabilityToggle,
   runConfirmedReset,
   schemaNotReadyMessage,
+  withServerDetail,
 } from '@/features/tenants/utils/decisionReasonsAvailability';
 
 interface DecisionReasonsPanelProps {
@@ -32,7 +34,7 @@ interface DecisionReasonsPanelProps {
 type Notice = { severity: 'success' | 'error'; text: string };
 
 export const DecisionReasonsPanel = ({ tenantId }: DecisionReasonsPanelProps) => {
-  const { data, isLoading, isError } = useGetDecisionReasonsAvailability(tenantId);
+  const { data, isLoading, isError, error: loadError, refetch } = useGetDecisionReasonsAvailability(tenantId);
   const update = useUpdateDecisionReasonsAvailability(tenantId);
   const [available, setAvailable] = useState(false);
   const [pendingAvailable, setPendingAvailable] = useState<boolean | null>(null);
@@ -41,8 +43,8 @@ export const DecisionReasonsPanel = ({ tenantId }: DecisionReasonsPanelProps) =>
   const [notice, setNotice] = useState<Notice | null>(null);
 
   useEffect(() => {
-    if (data) setAvailable(data.available);
-  }, [data]);
+    if (data && !saving) setAvailable(data.available);
+  }, [data, saving]);
 
   const confirmToggle = async () => {
     if (pendingAvailable === null) return;
@@ -56,22 +58,38 @@ export const DecisionReasonsPanel = ({ tenantId }: DecisionReasonsPanelProps) =>
       request: async value => (await update.mutateAsync({ available: value })).available,
     });
     setSaving(false);
-    if (result.ok) return;
+    if (result.ok) {
+      setNotice({
+        severity: 'success',
+        text: next ? 'Decision reasons are now available for this tenant.' : 'Decision reasons are now unavailable for this tenant.',
+      });
+      return;
+    }
     setNotice({
       severity: 'error',
-      text: result.schemaNotReady ? schemaNotReadyMessage(result.schemaNotReady) : 'Could not save. The previous value was restored.',
+      text: result.schemaNotReady
+        ? schemaNotReadyMessage(result.schemaNotReady)
+        : withServerDetail('Could not save. The previous value was restored.', result.error),
     });
   };
 
   const confirmReset = async () => {
     setResetOpen(false);
     setSaving(true);
-    const result = await runConfirmedReset(true, () => update.mutateAsync({ reset_reasons: true }));
+    let failure: unknown;
+    const result = await runConfirmedReset(true, async () => {
+      try {
+        return await update.mutateAsync({ reset_reasons: true });
+      } catch (error) {
+        failure = error;
+        throw error;
+      }
+    });
     setSaving(false);
     setNotice(
       result === 'done'
-        ? { severity: 'success', text: "Reason list reset to platform defaults for this tenant." }
-        : { severity: 'error', text: 'Could not reset the reason list.' },
+        ? { severity: 'success', text: 'Reason list reset to platform defaults for this tenant.' }
+        : { severity: 'error', text: withServerDetail('Could not reset the reason list.', failure) },
     );
   };
 
@@ -90,12 +108,17 @@ export const DecisionReasonsPanel = ({ tenantId }: DecisionReasonsPanelProps) =>
           <Typography variant="caption">Decision reasons available</Typography>
         </Stack>
         <Typography variant="caption" color="text.secondary">
-          Lets this tenant's admin use decision reasons when excluding, holding or dropping candidates. Off = the tenant can't use them.
+          {ENABLE_EFFECT_TEXT} Off = the tenant can't use them.
         </Typography>
         {isError && (
-          <Typography variant="caption" color="error">
-            Could not load the current value.
-          </Typography>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography variant="caption" color="error" role="alert">
+              {withServerDetail('Could not load the current value.', loadError)}
+            </Typography>
+            <Button size="small" variant="outlined" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </Stack>
         )}
       </Stack>
 
@@ -115,13 +138,15 @@ export const DecisionReasonsPanel = ({ tenantId }: DecisionReasonsPanelProps) =>
           </Stack>
           <Stack gap={0.5}>
             <Typography variant="caption">Database schema</Typography>
-            <Chip size="small" color={data.schema_healthy ? 'success' : 'error'} label={data.schema_healthy ? 'Ready' : 'Not ready'} />
+            <Chip size="small" color={data.schema_healthy ? 'success' : 'error'} label={data.schema_healthy ? 'Ready' : data.schema_probe_failed ? 'Unknown' : 'Not ready'} />
           </Stack>
         </Stack>
       )}
 
       {data && !data.schema_healthy && (
-        <Alert severity="warning">{schemaNotReadyMessage({ missingColumns: data.schema_missing_columns })}</Alert>
+        <Alert severity="warning">
+          {schemaNotReadyMessage({ missingColumns: data.schema_missing_columns, probeFailed: data.schema_probe_failed })}
+        </Alert>
       )}
 
       <Stack alignItems="flex-start">
@@ -135,7 +160,7 @@ export const DecisionReasonsPanel = ({ tenantId }: DecisionReasonsPanelProps) =>
         <DialogContent>
           <DialogContentText>
             {pendingAvailable
-              ? "This tenant's admin will be able to turn on decision reasons and edit the reason list."
+              ? ENABLE_EFFECT_TEXT
               : "Recruiters of this tenant will no longer be asked for a reason, even if its admin switched decision reasons on."}
           </DialogContentText>
         </DialogContent>

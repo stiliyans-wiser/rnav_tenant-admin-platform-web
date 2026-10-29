@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  ENABLE_EFFECT_TEXT,
+  PROBE_FAILED_TEXT,
   RESET_CONFIRM_TEXT,
+  serverErrorDetail,
+  withServerDetail,
   parseSchemaNotReady,
   runAvailabilityToggle,
   runConfirmedReset,
@@ -51,7 +55,9 @@ test('toggle rolls back and reports no schema problem on a generic failure', asy
       throw new Error('500');
     },
   });
-  assert.deepEqual(result, { ok: false, schemaNotReady: null });
+  assert.equal(result.ok, false);
+  assert.equal(result.schemaNotReady, null);
+  assert.equal((result.error as Error).message, '500');
   assert.equal(state.value, false);
   assert.deepEqual(state.history, [true, false]);
 });
@@ -67,9 +73,9 @@ test('409 decision_schema_unhealthy rolls back and carries the missing columns',
     },
   });
   assert.equal(state.value, false);
-  assert.deepEqual(result, {
-    ok: false,
-    schemaNotReady: { missingColumns: ['candidate_status_events.reason_code', 'candidate_status_events.snapshot'] },
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.schemaNotReady, {
+    missingColumns: ['candidate_status_events.reason_code', 'candidate_status_events.snapshot'],
   });
   assert.equal(
     schemaNotReadyMessage({ missingColumns: ['a.b', 'a.c'] }),
@@ -103,4 +109,24 @@ test('reset reports failure and the confirm copy warns that the list is replaced
   });
   assert.equal(result, 'failed');
   assert.match(RESET_CONFIRM_TEXT, /replaces this tenant's reason list/);
+});
+
+test('probe-failed 409 shows a connectivity message, not a migration one', () => {
+  const error = { response: { status: 409, data: { detail: { code: 'decision_schema_probe_failed', message: 'x' } } } };
+  const parsed = parseSchemaNotReady(error);
+  assert.deepEqual(parsed, { missingColumns: [], probeFailed: true });
+  assert.equal(schemaNotReadyMessage(parsed!), PROBE_FAILED_TEXT);
+});
+
+test('enable copy states reasons go live immediately and are required', () => {
+  assert.match(ENABLE_EFFECT_TEXT, /immediately/);
+  assert.match(ENABLE_EFFECT_TEXT, /Exclude, put On hold, Drop, or Archive/);
+});
+
+test('server error detail is appended from string or object detail', () => {
+  assert.equal(serverErrorDetail({ response: { data: { detail: 'Account not found' } } }), 'Account not found');
+  assert.equal(serverErrorDetail({ response: { data: { detail: { message: 'bad' } } } }), 'bad');
+  assert.equal(serverErrorDetail(new Error('x')), null);
+  assert.equal(withServerDetail('Could not save.', { response: { data: { detail: 'nope' } } }), 'Could not save. nope');
+  assert.equal(withServerDetail('Could not save.', null), 'Could not save.');
 });

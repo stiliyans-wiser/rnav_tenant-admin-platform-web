@@ -18,7 +18,6 @@ export const useUpdateDecisionReasonsAvailability = (tenantId: string) => {
     mutationFn: (body: DecisionReasonsAvailabilityPatch) => updateDecisionReasonsAvailability(tenantId, body),
     onSuccess: data => {
       queryClient.setQueryData(key, data);
-      queryClient.invalidateQueries({ queryKey: key });
     },
   });
 };
