@@ -1,8 +1,32 @@
-import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { EMBEDDING_WEIGHT_DEFAULTS, formFieldNames } from '@/features/tenants/constants/form.constants';
 import { embeddingWeightsError } from '@/features/tenants/utils/embeddingWeights';
+import { LANGUAGE_SETTING_DEFAULTS, LANGUAGE_GATE_CAP_LIMIT } from '@/features/tenants/utils/languageSettings';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
+
+const RULE_MODE_OPTIONS = [
+  { value: 'off', label: 'Off', help: 'Off: no language evaluation.' },
+  { value: 'shadow', label: 'Shadow', help: 'Shadow: measure only, ranking unchanged.' },
+  { value: 'penalty', label: 'Penalty', help: 'Penalty: candidates missing a required language are capped at the penalty cap.' },
+  { value: 'gate', label: 'Gate', help: 'Gate: candidates missing a required language are capped below the visibility floor of 30.' },
+];
+
+const RECALL_MODE_OPTIONS = [
+  { value: 'off', label: 'Off', help: 'Off: no language-aware candidate recall.' },
+  { value: 'shadow', label: 'Shadow', help: 'Shadow: count extra candidates only, nothing is added.' },
+  { value: 'on', label: 'On', help: 'On: adds language holders to the pool. Costs up to N extra LLM calls per job with a non-English required language.' },
+];
+
+const intRules = { min: { value: 0, message: 'Min 0' }, validate: (v: unknown) => Number.isInteger(Number(v)) || 'Whole number required' };
+
+const LANGUAGE_NUMERIC_FIELDS = [
+  { name: formFieldNames.matchConfig.languageRecallPoolSize, label: 'Recall pool size', key: 'language_recall_pool_size', help: 'Max language holders considered for recall per job.' },
+  { name: formFieldNames.matchConfig.languageReservedSlotsPerLanguage, label: 'Reserved slots per language', key: 'language_reserved_slots_per_language', help: 'Shortlist slots held for each required language.' },
+  { name: formFieldNames.matchConfig.languageReservedSlotsTotal, label: 'Reserved slots total', key: 'language_reserved_slots_total', help: 'Upper limit of reserved slots across all languages.' },
+  { name: formFieldNames.matchConfig.languagePenaltyScoreCap, label: 'Penalty score cap', key: 'language_penalty_score_cap', help: 'Score ceiling in penalty mode.' },
+  { name: formFieldNames.matchConfig.languageGateScoreCap, label: 'Gate score cap', key: 'language_gate_score_cap', help: 'Score ceiling in gate mode. Must be below 30, the visibility floor.' },
+] as const;
 
 export const MatchingControlsForm = () => {
   const { control, getValues } = useFormContext();
@@ -286,6 +310,70 @@ export const MatchingControlsForm = () => {
           />
         )}
       />
+
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        Language Requirements
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        How a job's required non-English languages affect ranking and candidate recall for this tenant. Start in Shadow to measure before changing any ranking.
+      </Typography>
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        {[
+          { name: formFieldNames.matchConfig.languageRuleMode, label: 'Language rule mode', options: RULE_MODE_OPTIONS, fallback: LANGUAGE_SETTING_DEFAULTS.language_rule_mode },
+          { name: formFieldNames.matchConfig.languageRecallMode, label: 'Language recall mode', options: RECALL_MODE_OPTIONS, fallback: LANGUAGE_SETTING_DEFAULTS.language_recall_mode },
+        ].map(sel => (
+          <Controller
+            key={sel.name}
+            name={sel.name}
+            control={control}
+            defaultValue={sel.fallback}
+            render={({ field }) => (
+              <TextField
+                select
+                size="small"
+                label={sel.label}
+                id={sel.name}
+                {...field}
+                value={field.value ?? sel.fallback}
+                sx={{ minWidth: 260 }}
+                helperText={sel.options.find(o => o.value === (field.value ?? sel.fallback))?.help}
+              >
+                {sel.options.map(o => (
+                  <MenuItem key={o.value} value={o.value}>
+                    {o.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          />
+        ))}
+      </Stack>
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
+        {LANGUAGE_NUMERIC_FIELDS.map(f => (
+          <Controller
+            key={f.name}
+            name={f.name}
+            control={control}
+            defaultValue={LANGUAGE_SETTING_DEFAULTS[f.key]}
+            rules={
+              f.key === 'language_gate_score_cap'
+                ? { ...intRules, max: { value: LANGUAGE_GATE_CAP_LIMIT - 1, message: `Must be below ${LANGUAGE_GATE_CAP_LIMIT}` } }
+                : intRules
+            }
+            render={({ field, fieldState }) => (
+              <MuiTextField
+                type="number"
+                label={f.label}
+                field={{ ...field, value: field.value ?? LANGUAGE_SETTING_DEFAULTS[f.key] }}
+                fieldState={fieldState}
+                helperText={fieldState.error?.message ?? f.help}
+                error={!!fieldState.error}
+                sx={{ width: 220 }}
+              />
+            )}
+          />
+        ))}
+      </Stack>
 
       <Typography variant="h6" sx={{ mb: 1 }}>
         Pipeline Settings

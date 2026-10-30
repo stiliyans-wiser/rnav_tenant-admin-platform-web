@@ -150,6 +150,44 @@ export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewPro
         </Stack>
       </Stack>
 
+      <Typography variant="overline" color="text.secondary">
+        Language requirements
+      </Typography>
+
+      <Stack direction="row" gap={3}>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Rule mode</Typography>
+          <Typography variant="subtitle2">{cfg?.language_rule_mode ?? 'shadow'}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Recall mode</Typography>
+          <Typography variant="subtitle2">{cfg?.language_recall_mode ?? 'shadow'}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Recall pool size</Typography>
+          <Typography variant="subtitle2">{cfg?.language_recall_pool_size ?? 100}</Typography>
+        </Stack>
+      </Stack>
+
+      <Stack direction="row" gap={3}>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Reserved slots / language</Typography>
+          <Typography variant="subtitle2">{cfg?.language_reserved_slots_per_language ?? 3}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Reserved slots total</Typography>
+          <Typography variant="subtitle2">{cfg?.language_reserved_slots_total ?? 6}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Penalty cap</Typography>
+          <Typography variant="subtitle2">{cfg?.language_penalty_score_cap ?? 40}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Gate cap</Typography>
+          <Typography variant="subtitle2">{cfg?.language_gate_score_cap ?? 29}</Typography>
+        </Stack>
+      </Stack>
+
       <Stack gap={0.5}>
         <Stack direction="row" alignItems="center" gap={1}>
           <Switch

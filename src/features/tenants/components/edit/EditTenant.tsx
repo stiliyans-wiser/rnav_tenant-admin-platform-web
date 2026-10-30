@@ -16,7 +16,7 @@ import { AutoReplacementSection } from '@/features/tenants/components/edit/secti
 import { CandidateDeliverySection } from '@/features/tenants/components/edit/sections/CandidateDeliverySection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
-import { embeddingWeightsError, withEmbeddingWeights } from '@/features/tenants/utils/embeddingWeights';
+import { buildMatchConfigRequestBody, matchConfigError } from '@/features/tenants/utils/languageSettings';
 import {
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
@@ -90,7 +90,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.UI_CONFIG) {
       return {
-        match_config: withEmbeddingWeights(getValues('match_config')),
+        match_config: buildMatchConfigRequestBody(getValues('match_config')),
       };
     }
 
@@ -102,7 +102,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.MATCHING_CONTROLS) {
       return {
-        match_config: withEmbeddingWeights(getValues('match_config')),
+        match_config: buildMatchConfigRequestBody(getValues('match_config')),
       };
     }
 
@@ -114,7 +114,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.CANDIDATE_DELIVERY) {
       return {
-        match_config: withEmbeddingWeights(getValues('match_config')),
+        match_config: buildMatchConfigRequestBody(getValues('match_config')),
         report_config: getValues('report_config'),
       };
     }
@@ -125,7 +125,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
   const onSubmit = async () => {
     setApiError(null);
     if (SECTIONS_SAVING_MATCH_CONFIG.includes(title)) {
-      const weightsError = embeddingWeightsError(getValues('match_config'));
+      const weightsError = matchConfigError(getValues('match_config'));
       if (weightsError) {
         setApiError(weightsError);
         return;

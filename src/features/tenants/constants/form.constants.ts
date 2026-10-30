@@ -58,6 +58,13 @@ export const formFieldNames = {
     embeddingWeightExperience: 'match_config.embedding_weight_experience',
     embeddingWeightPositions: 'match_config.embedding_weight_positions',
     embeddingWeightCompanies: 'match_config.embedding_weight_companies',
+    languageRuleMode: 'match_config.language_rule_mode',
+    languageRecallMode: 'match_config.language_recall_mode',
+    languageRecallPoolSize: 'match_config.language_recall_pool_size',
+    languageReservedSlotsPerLanguage: 'match_config.language_reserved_slots_per_language',
+    languageReservedSlotsTotal: 'match_config.language_reserved_slots_total',
+    languagePenaltyScoreCap: 'match_config.language_penalty_score_cap',
+    languageGateScoreCap: 'match_config.language_gate_score_cap',
   },
   extractionConfig: {
     includeReasoning: 'extraction_config.include_reasoning',

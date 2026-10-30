@@ -14,6 +14,11 @@ export const MatchingControlsSection = ({ onSave, onCancel }: EditTenantSectionP
     formFieldNames.matchConfig.scoreThreshold,
     formFieldNames.matchConfig.screeningThreshold,
     formFieldNames.matchConfig.calibrationTopKMultiplier,
+    formFieldNames.matchConfig.languageRecallPoolSize,
+    formFieldNames.matchConfig.languageReservedSlotsPerLanguage,
+    formFieldNames.matchConfig.languageReservedSlotsTotal,
+    formFieldNames.matchConfig.languagePenaltyScoreCap,
+    formFieldNames.matchConfig.languageGateScoreCap,
   ]);
 
   return (

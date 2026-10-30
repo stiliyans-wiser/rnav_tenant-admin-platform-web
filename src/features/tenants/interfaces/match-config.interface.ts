@@ -60,4 +60,14 @@ export interface MatchConfig {
   matching_cadence_hours?: number;
   // --- Programmatic Scoring ---
   unverified_skill_credit?: number;
+  // --- Language Requirements ---
+  language_rule_mode?: 'off' | 'shadow' | 'penalty' | 'gate';
+  language_recall_mode?: 'off' | 'shadow' | 'on';
+  language_recall_pool_size?: number;
+  language_reserved_slots_per_language?: number;
+  language_reserved_slots_total?: number;
+  language_penalty_score_cap?: number;
+  language_gate_score_cap?: number;
+  // backend-only, never shown; kept so a save round-trips it unchanged
+  language_rule_ignored_languages?: string[];
 }
