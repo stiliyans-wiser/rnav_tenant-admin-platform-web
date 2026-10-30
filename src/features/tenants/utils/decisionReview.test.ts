@@ -27,6 +27,8 @@ import {
   parseExportHeaders,
   statusLabel,
   validateFilters,
+  reasonsText,
+  parseReasonCodes,
 } from './decisionReview.ts';
 
 const DEFAULT_FILTERS = { ...makeDefaultFilters(new Date('2026-10-29T12:00:00Z')) };
@@ -268,4 +270,16 @@ test('date-time is shown in UTC with a suffix, for any offset', () => {
   assert.equal(formatUtcDateTime(''), '\u2014');
   assert.equal(formatUtcDateTime(undefined), '\u2014');
   assert.equal(formatUtcDateTime('bad'), '\u2014');
+});
+
+test('reasonsText shows every reason, falling back to the single code or label', () => {
+  assert.equal(reasonsText({ reason_codes: ['a', 'b', 'c'], reason_code: 'a' }), 'a, b, c');
+  assert.equal(reasonsText({ reason_codes: ['a', 'b'], reason_labels: ['Skills', 'Language'], reason_code: 'a' }), 'Skills, Language');
+  assert.equal(reasonsText({ reason_code: 'a', reason_label: 'Skills' }), 'Skills');
+  assert.equal(reasonsText({ reason_code: '', event_reason: 'legacy' }), 'legacy');
+});
+
+test('reason filter sends all codes comma-joined and dedupes', () => {
+  assert.deepEqual(parseReasonCodes(' a, b ,a'), ['a', 'b']);
+  assert.equal(buildListParams({ ...DEFAULT_FILTERS, reasonCode: 'a, b' }, 0, 50).reason_code, 'a,b');
 });

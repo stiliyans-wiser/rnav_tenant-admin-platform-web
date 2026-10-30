@@ -4,7 +4,7 @@ import { Alert, Box, Button, Chip, CircularProgress, Divider, Drawer, IconButton
 import { Close } from '@carbon/icons-react';
 import { useGetDecisionReviewDetail } from '@/features/tenants/hooks/useDecisionReview';
 import { DecisionReviewNote } from '@/features/tenants/interfaces/decision-review.interface';
-import { attentionLabel, driftView, formatDelta, formatScore, formatUtcDateTime, mapReviewError, noteMatchLabel, orBlank, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
+import { attentionLabel, driftView, formatDelta, formatScore, formatUtcDateTime, mapReviewError, noteMatchLabel, orBlank, reasonsText, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
 
 interface DecisionReviewDrawerProps {
   tenantId: string;
@@ -105,7 +105,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
             </Stack>
 
             <Stack direction="row" gap={3} flexWrap="wrap">
-              <Field label="Reason">{orBlank(data.event.reason_label || data.event.event_reason)}</Field>
+              <Field label="Reason">{orBlank(reasonsText(data.event))}</Field>
               <Field label="Recruiter">{orBlank(data.event.actor_email)}</Field>
               <Field label="Decided">{formatUtcDateTime(data.event.occurred_at)}</Field>
             </Stack>

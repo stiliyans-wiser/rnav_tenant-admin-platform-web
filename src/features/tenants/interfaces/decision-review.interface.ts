@@ -11,7 +11,9 @@ export interface DecisionReviewRow {
   event_reason: string;
   event_note: string;
   reason_code: string;
+  reason_codes?: string[];
   reason_label: string;
+  reason_labels?: string[];
   reason_matching_error: boolean | null;
   run_number: number | null;
   job_id: string;

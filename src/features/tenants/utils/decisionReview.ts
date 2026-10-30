@@ -52,7 +52,8 @@ export const describeFilters = (f: DecisionReviewFilters): string => {
   else if (f.dateFrom) parts.push(`from ${f.dateFrom} onward (UTC)`);
   else if (f.dateTo) parts.push(`until ${f.dateTo} (UTC)`);
   else parts.push('all dates');
-  if (f.reasonCode.trim()) parts.push(`reason ${f.reasonCode.trim()}`);
+  const reasonCodes = parseReasonCodes(f.reasonCode);
+  if (reasonCodes.length) parts.push(`reason ${reasonCodes.join(' or ')}`);
   if (f.recruiter.trim()) parts.push(`recruiter ${f.recruiter.trim()}`);
   if (f.jobId.trim()) parts.push('one job');
   if (parseScore(f.scoreMin) !== null || parseScore(f.scoreMax) !== null) parts.push(`score ${f.scoreMin.trim() || '0'}-${f.scoreMax.trim() || '100'}`);
@@ -68,12 +69,30 @@ export const ATTENTION_EXTRA_STATUSES = ['excluded', 'approved', 'send_to_client
 export const effectiveStatuses = (filters: DecisionReviewFilters): string[] =>
   filters.needsAttention ? Array.from(new Set([...filters.statuses, ...ATTENTION_EXTRA_STATUSES])) : filters.statuses;
 
+export const parseReasonCodes = (value: string): string[] =>
+  Array.from(new Set(value.split(/[,\s]+/).map(c => c.trim()).filter(Boolean)));
+
+export const reasonsText = (row: {
+  reason_code?: string;
+  reason_codes?: string[] | null;
+  reason_label?: string;
+  reason_labels?: string[] | null;
+  event_reason?: string;
+}): string => {
+  const labels = (row.reason_labels ?? []).filter(Boolean);
+  if (labels.length) return labels.join(', ');
+  const codes = (row.reason_codes ?? []).filter(Boolean);
+  if (codes.length) return codes.join(', ');
+  return row.reason_label || row.reason_code || row.event_reason || '';
+};
+
 export const buildFilterParams = (filters: DecisionReviewFilters): DecisionReviewQueryParams => {
   const params: DecisionReviewQueryParams = { sort: filters.sort };
   if (filters.statuses.length) params.statuses = effectiveStatuses(filters).join(',');
   if (filters.dateFrom) params.date_from = filters.dateFrom;
   if (filters.dateTo) params.date_to = filters.dateTo;
-  if (filters.reasonCode.trim()) params.reason_code = filters.reasonCode.trim();
+  const reasonCodes = parseReasonCodes(filters.reasonCode);
+  if (reasonCodes.length) params.reason_code = reasonCodes.join(',');
   if (filters.recruiter.trim()) params.recruiter = filters.recruiter.trim();
   if (filters.jobId.trim()) params.job_id = filters.jobId.trim();
   const min = parseScore(filters.scoreMin);

@@ -38,6 +38,7 @@ import {
   formatScore,
   formatUtcDate,
   orBlank,
+  reasonsText,
   thenView,
   isConflict,
   makeDefaultFilters,
@@ -140,7 +141,7 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
         </TextField>
         <TextField size="small" type="date" label="From (UTC)" value={draft.dateFrom} onChange={e => update({ dateFrom: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
         <TextField size="small" type="date" label="To (UTC)" value={draft.dateTo} onChange={e => update({ dateTo: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
-        <TextField size="small" label="Reason code" value={draft.reasonCode} onChange={e => update({ reasonCode: e.target.value })} sx={{ width: 170 }} />
+        <TextField size="small" label="Reason codes (any of, comma separated)" value={draft.reasonCode} onChange={e => update({ reasonCode: e.target.value })} sx={{ width: 260 }} />
         <TextField size="small" label="Recruiter (email or id)" value={draft.recruiter} onChange={e => update({ recruiter: e.target.value })} sx={{ width: 200 }} />
         <TextField size="small" label="Job id" value={draft.jobId} onChange={e => update({ jobId: e.target.value })} sx={{ width: 280 }} />
         <TextField size="small" label="Score min" value={draft.scoreMin} onChange={e => update({ scoreMin: e.target.value })} sx={{ width: 100 }} />
@@ -271,7 +272,7 @@ export const DecisionReviewPanel = ({ tenantId }: DecisionReviewPanelProps) => {
                           <Chip size="small" color="warning" label="Drift" title={drift.text} sx={{ ml: 0.5 }} />
                         )}
                       </TableCell>
-                      <TableCell>{orBlank(row.reason_label || row.event_reason)}</TableCell>
+                      <TableCell>{orBlank(reasonsText(row))}</TableCell>
                       <TableCell>
                         {row.attention ? (
                           <Chip
