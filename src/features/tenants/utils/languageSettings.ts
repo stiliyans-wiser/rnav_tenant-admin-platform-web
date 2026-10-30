@@ -1,29 +1,12 @@
-import { embeddingWeightsError, withEmbeddingWeights } from './embeddingWeights.ts';
-
-export const LANGUAGE_RULE_MODES = ['off', 'shadow', 'penalty', 'gate'] as const;
-export const LANGUAGE_RECALL_MODES = ['off', 'shadow', 'on'] as const;
-
-export const LANGUAGE_SETTING_DEFAULTS = {
-  language_rule_mode: 'shadow',
-  language_recall_mode: 'shadow',
-  language_recall_pool_size: 100,
-  language_reserved_slots_per_language: 3,
-  language_reserved_slots_total: 6,
-  language_penalty_score_cap: 40,
-  language_gate_score_cap: 29,
-} as const;
-
-export const LANGUAGE_GATE_CAP_LIMIT = 30;
+import {
+  LANGUAGE_GATE_CAP_LIMIT,
+  LANGUAGE_NUMERIC_SPECS,
+  LANGUAGE_RECALL_MODES,
+  LANGUAGE_RULE_MODES,
+  LANGUAGE_SETTING_DEFAULTS,
+} from '../constants/form.constants.ts';
 
 type MatchConfigLike = Record<string, unknown>;
-
-const NUMERIC_KEYS = [
-  'language_recall_pool_size',
-  'language_reserved_slots_per_language',
-  'language_reserved_slots_total',
-  'language_penalty_score_cap',
-  'language_gate_score_cap',
-] as const;
 
 const isMissing = (value: unknown) => value === undefined || value === null || value === '';
 
@@ -40,25 +23,48 @@ export const withLanguageSettings = <T extends object>(matchConfig: T | undefine
   return filled as T;
 };
 
-export const languageSettingsError = (matchConfig: MatchConfigLike | undefined | null): string | null => {
+export const withMatchConfigDefaults = <T extends { match_config?: unknown }>(body: T): T =>
+  body.match_config ? { ...body, match_config: withLanguageSettings(body.match_config as object) } : body;
+
+export const languageFieldError = (key: string, value: unknown): string | null => {
+  const spec = LANGUAGE_NUMERIC_SPECS.find(s => s.key === key);
+  if (!spec) return null;
+  if (value === '') return `${spec.label} is required.`;
+  if (value === undefined || value === null) return null;
+  const n = Number(value);
+  const kind = spec.integer ? 'a whole number' : 'a number';
+  if (!Number.isFinite(n) || (spec.integer && !Number.isInteger(n)) || n < spec.min || n > spec.max) {
+    return `${spec.label} must be ${kind} between ${spec.min} and ${spec.max}.`;
+  }
+  if (key === 'language_gate_score_cap' && n >= LANGUAGE_GATE_CAP_LIMIT) {
+    return `${spec.label} must be below ${LANGUAGE_GATE_CAP_LIMIT}.`;
+  }
+  return null;
+};
+
+export const languagePenaltyCapWarning = (matchConfig: MatchConfigLike | undefined | null): string | null => {
   const filled = withLanguageSettings(matchConfig ?? {}) as MatchConfigLike;
+  const penalty = Number(filled.language_penalty_score_cap);
+  const gate = Number(filled.language_gate_score_cap);
+  if (Number.isFinite(penalty) && Number.isFinite(gate) && (penalty < LANGUAGE_GATE_CAP_LIMIT || penalty <= gate)) {
+    return 'Penalty cap below 30 or not above the gate cap hides penalised candidates, so Penalty acts like Gate.';
+  }
+  return null;
+};
+
+export const languageSettingsError = (matchConfig: MatchConfigLike | undefined | null): string | null => {
+  const cfg = matchConfig ?? {};
+  const filled = withLanguageSettings(cfg) as MatchConfigLike;
   if (!(LANGUAGE_RULE_MODES as readonly string[]).includes(filled.language_rule_mode as string)) {
     return 'Language rule mode must be off, shadow, penalty or gate.';
   }
   if (!(LANGUAGE_RECALL_MODES as readonly string[]).includes(filled.language_recall_mode as string)) {
     return 'Language recall mode must be off, shadow or on.';
   }
-  if (NUMERIC_KEYS.some(key => !Number.isInteger(filled[key]) || (filled[key] as number) < 0)) {
-    return 'Language settings must be whole numbers of 0 or more.';
+  for (const spec of LANGUAGE_NUMERIC_SPECS) {
+    const error = languageFieldError(spec.key, cfg[spec.key]);
+    if (error) return error;
   }
-  if ((filled.language_gate_score_cap as number) >= LANGUAGE_GATE_CAP_LIMIT) {
-    return `Language gate score cap must be below ${LANGUAGE_GATE_CAP_LIMIT}.`;
-  }
+  if (filled.language_rule_mode === 'penalty') return languagePenaltyCapWarning(filled);
   return null;
 };
-
-export const buildMatchConfigRequestBody = <T extends object>(matchConfig: T | undefined | null): T =>
-  withLanguageSettings(withEmbeddingWeights(matchConfig));
-
-export const matchConfigError = (matchConfig: MatchConfigLike | undefined | null): string | null =>
-  embeddingWeightsError(matchConfig) ?? languageSettingsError(matchConfig);

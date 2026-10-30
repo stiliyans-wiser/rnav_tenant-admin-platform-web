@@ -17,6 +17,7 @@ import { CheckmarkFilled, Misuse } from '@carbon/icons-react';
 import { updateAutoMatchAvailability } from '@/features/tenants/api/autoMatchAvailabilityApi';
 import { useGetAutoMatchAvailability } from '@/features/tenants/hooks/useAutoMatchAvailability';
 import { runOptimisticToggle } from '@/features/tenants/utils/optimisticToggle';
+import { LANGUAGE_MODE_LABELS, LANGUAGE_SETTING_DEFAULTS } from '@/features/tenants/constants/form.constants';
 import { MatchConfig } from '@/features/tenants/interfaces/match-config.interface';
 
 export interface MatchingControlsData {
@@ -39,6 +40,8 @@ const BoolIcon = ({ value }: { value: boolean }) =>
       <Misuse />
     </IconButton>
   );
+
+const modeLabel = (mode: string) => LANGUAGE_MODE_LABELS[mode as keyof typeof LANGUAGE_MODE_LABELS] ?? mode;
 
 export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewProps) => {
   const cfg = data.match_config;
@@ -157,34 +160,34 @@ export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewPro
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Rule mode</Typography>
-          <Typography variant="subtitle2">{cfg?.language_rule_mode ?? 'shadow'}</Typography>
+          <Typography variant="subtitle2">{modeLabel(cfg?.language_rule_mode ?? LANGUAGE_SETTING_DEFAULTS.language_rule_mode)}</Typography>
         </Stack>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Recall mode</Typography>
-          <Typography variant="subtitle2">{cfg?.language_recall_mode ?? 'shadow'}</Typography>
+          <Typography variant="subtitle2">{modeLabel(cfg?.language_recall_mode ?? LANGUAGE_SETTING_DEFAULTS.language_recall_mode)}</Typography>
         </Stack>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Recall pool size</Typography>
-          <Typography variant="subtitle2">{cfg?.language_recall_pool_size ?? 100}</Typography>
+          <Typography variant="subtitle2">{cfg?.language_recall_pool_size ?? LANGUAGE_SETTING_DEFAULTS.language_recall_pool_size}</Typography>
         </Stack>
       </Stack>
 
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Reserved slots / language</Typography>
-          <Typography variant="subtitle2">{cfg?.language_reserved_slots_per_language ?? 3}</Typography>
+          <Typography variant="subtitle2">{cfg?.language_reserved_slots_per_language ?? LANGUAGE_SETTING_DEFAULTS.language_reserved_slots_per_language}</Typography>
         </Stack>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Reserved slots total</Typography>
-          <Typography variant="subtitle2">{cfg?.language_reserved_slots_total ?? 6}</Typography>
+          <Typography variant="subtitle2">{cfg?.language_reserved_slots_total ?? LANGUAGE_SETTING_DEFAULTS.language_reserved_slots_total}</Typography>
         </Stack>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Penalty cap</Typography>
-          <Typography variant="subtitle2">{cfg?.language_penalty_score_cap ?? 40}</Typography>
+          <Typography variant="subtitle2">{cfg?.language_penalty_score_cap ?? LANGUAGE_SETTING_DEFAULTS.language_penalty_score_cap}</Typography>
         </Stack>
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Gate cap</Typography>
-          <Typography variant="subtitle2">{cfg?.language_gate_score_cap ?? 29}</Typography>
+          <Typography variant="subtitle2">{cfg?.language_gate_score_cap ?? LANGUAGE_SETTING_DEFAULTS.language_gate_score_cap}</Typography>
         </Stack>
       </Stack>
 

@@ -1,35 +1,37 @@
-import { Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Controller, useFormContext } from 'react-hook-form';
-import { EMBEDDING_WEIGHT_DEFAULTS, formFieldNames } from '@/features/tenants/constants/form.constants';
+import { Alert, Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import {
+  EMBEDDING_WEIGHT_DEFAULTS,
+  LANGUAGE_MODE_LABELS,
+  LANGUAGE_NUMERIC_SPECS,
+  LANGUAGE_RECALL_MODES,
+  LANGUAGE_RULE_MODES,
+  LANGUAGE_SETTING_DEFAULTS,
+  formFieldNames,
+} from '@/features/tenants/constants/form.constants';
 import { embeddingWeightsError } from '@/features/tenants/utils/embeddingWeights';
-import { LANGUAGE_SETTING_DEFAULTS, LANGUAGE_GATE_CAP_LIMIT } from '@/features/tenants/utils/languageSettings';
+import { languageFieldError, languagePenaltyCapWarning } from '@/features/tenants/utils/languageSettings';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
-const RULE_MODE_OPTIONS = [
-  { value: 'off', label: 'Off', help: 'Off: no language evaluation.' },
-  { value: 'shadow', label: 'Shadow', help: 'Shadow: measure only, ranking unchanged.' },
-  { value: 'penalty', label: 'Penalty', help: 'Penalty: candidates missing a required language are capped at the penalty cap.' },
-  { value: 'gate', label: 'Gate', help: 'Gate: candidates missing a required language are capped below the visibility floor of 30.' },
-];
+const RULE_MODE_HELP: Record<string, string> = {
+  off: 'No language evaluation.',
+  shadow: 'Shadow: measure only, ranking unchanged.',
+  penalty: 'Penalty: candidates missing a required language are capped at the penalty cap.',
+  gate: 'Gate: candidates missing a required language are capped below the visibility floor of 30.',
+};
 
-const RECALL_MODE_OPTIONS = [
-  { value: 'off', label: 'Off', help: 'Off: no language-aware candidate recall.' },
-  { value: 'shadow', label: 'Shadow', help: 'Shadow: count extra candidates only, nothing is added.' },
-  { value: 'on', label: 'On', help: 'On: adds language holders to the pool. Costs up to N extra LLM calls per job with a non-English required language.' },
-];
-
-const intRules = { min: { value: 0, message: 'Min 0' }, validate: (v: unknown) => Number.isInteger(Number(v)) || 'Whole number required' };
-
-const LANGUAGE_NUMERIC_FIELDS = [
-  { name: formFieldNames.matchConfig.languageRecallPoolSize, label: 'Recall pool size', key: 'language_recall_pool_size', help: 'Max language holders considered for recall per job.' },
-  { name: formFieldNames.matchConfig.languageReservedSlotsPerLanguage, label: 'Reserved slots per language', key: 'language_reserved_slots_per_language', help: 'Shortlist slots held for each required language.' },
-  { name: formFieldNames.matchConfig.languageReservedSlotsTotal, label: 'Reserved slots total', key: 'language_reserved_slots_total', help: 'Upper limit of reserved slots across all languages.' },
-  { name: formFieldNames.matchConfig.languagePenaltyScoreCap, label: 'Penalty score cap', key: 'language_penalty_score_cap', help: 'Score ceiling in penalty mode.' },
-  { name: formFieldNames.matchConfig.languageGateScoreCap, label: 'Gate score cap', key: 'language_gate_score_cap', help: 'Score ceiling in gate mode. Must be below 30, the visibility floor.' },
-] as const;
+const recallModeHelp = (mode: string, total: unknown) =>
+  ({
+    off: 'No language-aware candidate recall.',
+    shadow: 'Shadow: count extra candidates only, nothing is added.',
+    on: `On: adds language holders to the pool. Costs up to ${total} extra LLM calls per job with a non-English required language (about $0.015 per extra candidate).`,
+  })[mode];
 
 export const MatchingControlsForm = () => {
   const { control, getValues } = useFormContext();
+  const watchedMatchConfig = useWatch({ control, name: 'match_config' });
+  const reservedTotal = watchedMatchConfig?.language_reserved_slots_total ?? LANGUAGE_SETTING_DEFAULTS.language_reserved_slots_total;
+  const penaltyWarning = languagePenaltyCapWarning(watchedMatchConfig);
 
   const embeddingWeightNames = [
     formFieldNames.matchConfig.embeddingWeightFullText,
@@ -128,18 +130,27 @@ export const MatchingControlsForm = () => {
         Programmatic Scoring
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        Multiplier applied to skills listed on a CV that have <strong>no supporting evidence</strong> — no years of
-        experience stated and no "last used" date. Default: <strong>0.65</strong>.
+        Multiplier applied to skills listed on a CV that have <strong>no supporting evidence</strong> — no years of experience stated and no
+        "last used" date. Default: <strong>0.65</strong>.
       </Typography>
       <Box sx={{ mb: 1, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
           <strong>Impact by value:</strong>
         </Typography>
         {[
-          { value: '1.0', label: 'Full credit for all mentioned skills regardless of evidence — higher recall, more noise, weaker ranking signal.' },
+          {
+            value: '1.0',
+            label: 'Full credit for all mentioned skills regardless of evidence — higher recall, more noise, weaker ranking signal.',
+          },
           { value: '0.65 (default)', label: 'Skills without proof count at 65%. Balances trust vs. noise for general-purpose matching.' },
-          { value: '0.3–0.5', label: 'Strict — only skills with explicit years or dates contribute meaningfully. Fewer matches, higher precision.' },
-          { value: '0.0', label: 'Zero credit for unverified skills — only dated/evidenced skills count. May miss valid candidates who omit dates.' },
+          {
+            value: '0.3–0.5',
+            label: 'Strict — only skills with explicit years or dates contribute meaningfully. Fewer matches, higher precision.',
+          },
+          {
+            value: '0.0',
+            label: 'Zero credit for unverified skills — only dated/evidenced skills count. May miss valid candidates who omit dates.',
+          },
         ].map(({ value, label }) => (
           <Typography key={value} variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>
             · <strong>{value}</strong>: {label}
@@ -147,9 +158,9 @@ export const MatchingControlsForm = () => {
         ))}
       </Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        <strong>When to adjust:</strong> Increase toward 1.0 when CVs in your market rarely include years per skill
-        (e.g. junior roles, certain regions). Decrease toward 0.3–0.5 when you want only candidates with
-        proven, dated skill experience. Keep default for general-purpose matching.
+        <strong>When to adjust:</strong> Increase toward 1.0 when CVs in your market rarely include years per skill (e.g. junior roles,
+        certain regions). Decrease toward 0.3–0.5 when you want only candidates with proven, dated skill experience. Keep default for
+        general-purpose matching.
       </Typography>
 
       <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
@@ -175,8 +186,8 @@ export const MatchingControlsForm = () => {
         Embedding Weights
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        Blends five vector types when computing the embedding similarity component of the match score. All five weights
-        must sum to 1.0. Applies only when the Embedding scoring weight above is &gt; 0.
+        Blends five vector types when computing the embedding similarity component of the match score. All five weights must sum to 1.0.
+        Applies only when the Embedding scoring weight above is &gt; 0.
       </Typography>
       <Box sx={{ mb: 2, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
         {[
@@ -292,10 +303,9 @@ export const MatchingControlsForm = () => {
 
       <Box sx={{ mb: 1, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Multi-vector shortlist</strong>: When ON, uses the union of all five embedding vectors to build the
-          initial candidate pool — broader and more diverse results. When OFF, only the full-text vector is used —
-          faster but may miss candidates who score well on skills or experience vectors alone. Default:{' '}
-          <strong>ON</strong>.
+          <strong>Multi-vector shortlist</strong>: When ON, uses the union of all five embedding vectors to build the initial candidate pool
+          — broader and more diverse results. When OFF, only the full-text vector is used — faster but may miss candidates who score well on
+          skills or experience vectors alone. Default: <strong>ON</strong>.
         </Typography>
       </Box>
       <Controller
@@ -303,11 +313,7 @@ export const MatchingControlsForm = () => {
         control={control}
         defaultValue={true}
         render={({ field }) => (
-          <FormControlLabel
-            control={<Switch {...field} checked={field.value ?? true} />}
-            label="Multi-vector shortlist"
-            sx={{ mb: 3 }}
-          />
+          <FormControlLabel control={<Switch {...field} checked={field.value ?? true} />} label="Multi-vector shortlist" sx={{ mb: 3 }} />
         )}
       />
 
@@ -315,12 +321,25 @@ export const MatchingControlsForm = () => {
         Language Requirements
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        How a job's required non-English languages affect ranking and candidate recall for this tenant. Start in Shadow to measure before changing any ranking.
+        How a job's required non-English languages affect ranking and candidate recall for this tenant. Start in Shadow to measure before
+        changing any ranking.
       </Typography>
       <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
         {[
-          { name: formFieldNames.matchConfig.languageRuleMode, label: 'Language rule mode', options: RULE_MODE_OPTIONS, fallback: LANGUAGE_SETTING_DEFAULTS.language_rule_mode },
-          { name: formFieldNames.matchConfig.languageRecallMode, label: 'Language recall mode', options: RECALL_MODE_OPTIONS, fallback: LANGUAGE_SETTING_DEFAULTS.language_recall_mode },
+          {
+            name: formFieldNames.matchConfig.languageRuleMode,
+            label: 'Language rule mode',
+            modes: LANGUAGE_RULE_MODES as readonly string[],
+            fallback: LANGUAGE_SETTING_DEFAULTS.language_rule_mode as string,
+            help: (mode: string) => RULE_MODE_HELP[mode],
+          },
+          {
+            name: formFieldNames.matchConfig.languageRecallMode,
+            label: 'Language recall mode',
+            modes: LANGUAGE_RECALL_MODES as readonly string[],
+            fallback: LANGUAGE_SETTING_DEFAULTS.language_recall_mode as string,
+            help: (mode: string) => recallModeHelp(mode, reservedTotal),
+          },
         ].map(sel => (
           <Controller
             key={sel.name}
@@ -335,12 +354,12 @@ export const MatchingControlsForm = () => {
                 id={sel.name}
                 {...field}
                 value={field.value ?? sel.fallback}
-                sx={{ minWidth: 260 }}
-                helperText={sel.options.find(o => o.value === (field.value ?? sel.fallback))?.help}
+                sx={{ minWidth: 260, maxWidth: 360 }}
+                helperText={sel.help(field.value ?? sel.fallback)}
               >
-                {sel.options.map(o => (
-                  <MenuItem key={o.value} value={o.value}>
-                    {o.label}
+                {sel.modes.map(mode => (
+                  <MenuItem key={mode} value={mode}>
+                    {LANGUAGE_MODE_LABELS[mode as keyof typeof LANGUAGE_MODE_LABELS]}
                   </MenuItem>
                 ))}
               </TextField>
@@ -348,32 +367,35 @@ export const MatchingControlsForm = () => {
           />
         ))}
       </Stack>
-      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 3 }}>
-        {LANGUAGE_NUMERIC_FIELDS.map(f => (
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        {LANGUAGE_NUMERIC_SPECS.map(spec => (
           <Controller
-            key={f.name}
-            name={f.name}
+            key={spec.key}
+            name={formFieldNames.matchConfig[spec.field]}
             control={control}
-            defaultValue={LANGUAGE_SETTING_DEFAULTS[f.key]}
-            rules={
-              f.key === 'language_gate_score_cap'
-                ? { ...intRules, max: { value: LANGUAGE_GATE_CAP_LIMIT - 1, message: `Must be below ${LANGUAGE_GATE_CAP_LIMIT}` } }
-                : intRules
-            }
+            defaultValue={LANGUAGE_SETTING_DEFAULTS[spec.key]}
+            rules={{ validate: (value: unknown) => languageFieldError(spec.key, value) ?? true }}
             render={({ field, fieldState }) => (
               <MuiTextField
                 type="number"
-                label={f.label}
-                field={{ ...field, value: field.value ?? LANGUAGE_SETTING_DEFAULTS[f.key] }}
+                label={spec.label}
+                field={field}
                 fieldState={fieldState}
-                helperText={fieldState.error?.message ?? f.help}
                 error={!!fieldState.error}
-                sx={{ width: 220 }}
+                helperText={fieldState.error?.message ?? `${spec.help} Range ${spec.min}-${spec.max}.`}
+                slotProps={{ htmlInput: { min: spec.min, max: spec.max, step: spec.integer ? 1 : 'any' } }}
+                sx={{ width: 240 }}
               />
             )}
           />
         ))}
       </Stack>
+      {penaltyWarning ? (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {penaltyWarning}
+        </Alert>
+      ) : null}
+      <Box sx={{ mb: 3 }} />
 
       <Typography variant="h6" sx={{ mb: 1 }}>
         Pipeline Settings
@@ -549,7 +571,8 @@ export const MatchingControlsForm = () => {
           )}
         />
         <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5, mb: 1 }}>
-          Run matching automatically when a new job is ingested. Enable for real-time pipelines. Disable to batch-trigger matching manually and control API costs.
+          Run matching automatically when a new job is ingested. Enable for real-time pipelines. Disable to batch-trigger matching manually
+          and control API costs.
         </Typography>
       </Box>
 
@@ -559,14 +582,12 @@ export const MatchingControlsForm = () => {
           control={control}
           defaultValue={false}
           render={({ field }) => (
-            <FormControlLabel
-              control={<Switch {...field} checked={field.value ?? false} />}
-              label="Auto-match on candidate ingest"
-            />
+            <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label="Auto-match on candidate ingest" />
           )}
         />
         <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5, mb: 0 }}>
-          Run matching automatically when a new candidate CV is ingested. Enable to keep candidate pools continuously ranked against active jobs.
+          Run matching automatically when a new candidate CV is ingested. Enable to keep candidate pools continuously ranked against active
+          jobs.
         </Typography>
       </Box>
 
@@ -587,7 +608,8 @@ export const MatchingControlsForm = () => {
           )}
         />
         <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5, mb: 1 }}>
-          Activate calibration runs for this tenant. Use to tune scoring weights and thresholds before enabling production matching. Disable when weights are stable.
+          Activate calibration runs for this tenant. Use to tune scoring weights and thresholds before enabling production matching. Disable
+          when weights are stable.
         </Typography>
       </Box>
 
@@ -607,56 +629,66 @@ export const MatchingControlsForm = () => {
         )}
       />
       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 3 }}>
-        Multiplies top_k during calibration runs. A value of 3 with top_k=10 evaluates 30 candidates. Higher = more thorough audit at higher API cost. Default: 3.
+        Multiplies top_k during calibration runs. A value of 3 with top_k=10 evaluates 30 candidates. Higher = more thorough audit at higher
+        API cost. Default: 3.
       </Typography>
 
       <Typography variant="h6" sx={{ mt: 1, mb: 1 }}>
         Screening Filters
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Hard filters applied before scoring. Candidates that fail an enabled filter are excluded entirely, regardless of score. Enable filters only when the job requirement is reliable and consistently extracted.
+        Hard filters applied before scoring. Candidates that fail an enabled filter are excluded entirely, regardless of score. Enable
+        filters only when the job requirement is reliable and consistently extracted.
       </Typography>
 
       {[
         {
           name: 'match_config.filter_seniority',
           label: 'Filter by seniority',
-          description: 'Exclude candidates whose detected seniority level (junior / mid / senior) does not match the job requirement. Only enable when job seniority is consistently specified.',
+          description:
+            'Exclude candidates whose detected seniority level (junior / mid / senior) does not match the job requirement. Only enable when job seniority is consistently specified.',
         },
         {
           name: 'match_config.filter_min_experience',
           label: 'Filter by min experience',
-          description: 'Exclude candidates who do not meet the minimum total years of experience required by the job. Requires reliable experience extraction from CVs.',
+          description:
+            'Exclude candidates who do not meet the minimum total years of experience required by the job. Requires reliable experience extraction from CVs.',
         },
         {
           name: 'match_config.filter_location',
           label: 'Filter by location',
-          description: 'Exclude candidates outside the job\'s required location or region. Use for on-site or location-constrained roles; disable for remote-friendly positions.',
+          description:
+            "Exclude candidates outside the job's required location or region. Use for on-site or location-constrained roles; disable for remote-friendly positions.",
         },
         {
           name: 'match_config.filter_industry',
           label: 'Filter by industry',
-          description: 'Exclude candidates with no detected experience in the job\'s required industry. Useful for specialist sectors; may over-filter in cross-industry roles.',
+          description:
+            "Exclude candidates with no detected experience in the job's required industry. Useful for specialist sectors; may over-filter in cross-industry roles.",
         },
         {
           name: 'match_config.filter_mandatory_skills',
           label: 'Filter by mandatory skills',
-          description: 'Exclude candidates missing any skill the job marks as mandatory. Hard filter — use with care on sparse CVs where candidates may have the skill but not list it explicitly.',
+          description:
+            'Exclude candidates missing any skill the job marks as mandatory. Hard filter — use with care on sparse CVs where candidates may have the skill but not list it explicitly.',
         },
         {
           name: 'match_config.filter_technology_ancestry',
           label: 'Filter by technology ancestry',
-          description: 'Exclude candidates who lack the technology family required by the job (e.g. filtering for .NET excludes pure Java candidates). Useful for platform-specific roles.',
+          description:
+            'Exclude candidates who lack the technology family required by the job (e.g. filtering for .NET excludes pure Java candidates). Useful for platform-specific roles.',
         },
         {
           name: 'match_config.filter_career_trajectory',
           label: 'Filter by career trajectory',
-          description: 'Exclude candidates whose career progression signals a structural mismatch — declining seniority, unexplained gaps, or repeated unrelated pivots.',
+          description:
+            'Exclude candidates whose career progression signals a structural mismatch — declining seniority, unexplained gaps, or repeated unrelated pivots.',
         },
         {
           name: 'match_config.filter_company_dna',
           label: 'Filter by company DNA',
-          description: 'Exclude candidates whose company background (startup vs. enterprise scale, industry sector) does not align with the hiring company\'s profile and culture signals.',
+          description:
+            "Exclude candidates whose company background (startup vs. enterprise scale, industry sector) does not align with the hiring company's profile and culture signals.",
         },
       ].map(filter => (
         <Box key={filter.name} sx={{ mb: 1.5 }}>
@@ -664,9 +696,7 @@ export const MatchingControlsForm = () => {
             name={filter.name}
             control={control}
             defaultValue={false}
-            render={({ field }) => (
-              <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label={filter.label} />
-            )}
+            render={({ field }) => <FormControlLabel control={<Switch {...field} checked={field.value ?? false} />} label={filter.label} />}
           />
           <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5, mt: -0.5 }}>
             {filter.description}

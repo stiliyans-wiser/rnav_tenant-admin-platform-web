@@ -127,3 +127,74 @@ export const EMBEDDING_WEIGHT_DEFAULTS = {
   positions: 0.2,
   companies: 0,
 } as const;
+
+export const LANGUAGE_RULE_MODES = ['off', 'shadow', 'penalty', 'gate'] as const;
+export const LANGUAGE_RECALL_MODES = ['off', 'shadow', 'on'] as const;
+
+export const LANGUAGE_MODE_LABELS = {
+  off: 'Off',
+  shadow: 'Shadow',
+  penalty: 'Penalty',
+  gate: 'Gate',
+  on: 'On',
+} as const;
+
+export const LANGUAGE_SETTING_DEFAULTS = {
+  language_rule_mode: 'shadow',
+  language_recall_mode: 'shadow',
+  language_recall_pool_size: 100,
+  language_reserved_slots_per_language: 3,
+  language_reserved_slots_total: 6,
+  language_penalty_score_cap: 40,
+  language_gate_score_cap: 29,
+} as const;
+
+export const LANGUAGE_GATE_CAP_LIMIT = 30;
+
+export const LANGUAGE_NUMERIC_SPECS = [
+  {
+    key: 'language_recall_pool_size',
+    field: 'languageRecallPoolSize',
+    label: 'Recall pool size',
+    min: 10,
+    max: 300,
+    integer: true,
+    help: 'Language holders considered for recall per job. Used when recall mode is On.',
+  },
+  {
+    key: 'language_reserved_slots_per_language',
+    field: 'languageReservedSlotsPerLanguage',
+    label: 'Reserved slots per language',
+    min: 0,
+    max: 10,
+    integer: true,
+    help: 'Shortlist slots held for each required language. Used when recall mode is On.',
+  },
+  {
+    key: 'language_reserved_slots_total',
+    field: 'languageReservedSlotsTotal',
+    label: 'Reserved slots total',
+    min: 0,
+    max: 12,
+    integer: true,
+    help: 'Cap on reserved slots across all languages. Used when recall mode is On.',
+  },
+  {
+    key: 'language_penalty_score_cap',
+    field: 'languagePenaltyScoreCap',
+    label: 'Penalty score cap',
+    min: 0,
+    max: 100,
+    integer: false,
+    help: 'Score ceiling when rule mode is Penalty. Keep at 30 or more so penalised candidates stay visible.',
+  },
+  {
+    key: 'language_gate_score_cap',
+    field: 'languageGateScoreCap',
+    label: 'Gate score cap',
+    min: 0,
+    max: 100,
+    integer: false,
+    help: 'Score ceiling when rule mode is Gate. Must be below 30, the visibility floor.',
+  },
+] as const;

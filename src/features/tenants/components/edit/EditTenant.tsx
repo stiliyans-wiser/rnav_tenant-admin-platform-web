@@ -16,7 +16,8 @@ import { AutoReplacementSection } from '@/features/tenants/components/edit/secti
 import { CandidateDeliverySection } from '@/features/tenants/components/edit/sections/CandidateDeliverySection';
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
-import { buildMatchConfigRequestBody, matchConfigError } from '@/features/tenants/utils/languageSettings';
+import { embeddingWeightsError, withEmbeddingWeights } from '@/features/tenants/utils/embeddingWeights';
+import { languageSettingsError, withMatchConfigDefaults } from '@/features/tenants/utils/languageSettings';
 import {
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
@@ -90,7 +91,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.UI_CONFIG) {
       return {
-        match_config: buildMatchConfigRequestBody(getValues('match_config')),
+        match_config: withEmbeddingWeights(getValues('match_config')),
       };
     }
 
@@ -102,7 +103,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.MATCHING_CONTROLS) {
       return {
-        match_config: buildMatchConfigRequestBody(getValues('match_config')),
+        match_config: withEmbeddingWeights(getValues('match_config')),
       };
     }
 
@@ -114,7 +115,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
 
     if (title === TenantSectionTitlesEnum.CANDIDATE_DELIVERY) {
       return {
-        match_config: buildMatchConfigRequestBody(getValues('match_config')),
+        match_config: withEmbeddingWeights(getValues('match_config')),
         report_config: getValues('report_config'),
       };
     }
@@ -125,7 +126,9 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
   const onSubmit = async () => {
     setApiError(null);
     if (SECTIONS_SAVING_MATCH_CONFIG.includes(title)) {
-      const weightsError = matchConfigError(getValues('match_config'));
+      const weightsError =
+        embeddingWeightsError(getValues('match_config')) ??
+        (title === TenantSectionTitlesEnum.MATCHING_CONTROLS ? languageSettingsError(getValues('match_config')) : null);
       if (weightsError) {
         setApiError(weightsError);
         return;
@@ -134,7 +137,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
     try {
       await updateTenant.mutateAsync({
         id: tenantId,
-        tenant: getRequestBody(),
+        tenant: withMatchConfigDefaults(getRequestBody()),
       });
 
       handleClose();
@@ -142,12 +145,17 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
     } catch (error) {
       console.error('Error saving tenant:', error);
       const fallback = 'An unexpected error occurred. Please try again.';
-      const detail = (error as AxiosError<{ detail?: string | Array<{ msg?: string }> }>).response?.data?.detail;
+      const detail = (error as AxiosError<{ detail?: string | Array<{ msg?: string; loc?: Array<string | number> }> }>).response?.data?.detail;
       const message =
         typeof detail === 'string'
           ? detail
           : Array.isArray(detail)
-            ? detail.map(d => d.msg ?? JSON.stringify(d)).join('; ')
+            ? detail
+                .map(d => {
+                  const field = d.loc?.filter(part => part !== 'body').join('.');
+                  return `${field ? `${field}: ` : ''}${d.msg ?? JSON.stringify(d)}`;
+                })
+                .join('; ')
             : fallback;
       setApiError(message);
     }
