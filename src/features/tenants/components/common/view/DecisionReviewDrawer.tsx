@@ -123,7 +123,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
                     ? 'The score snapshot could not be recorded for this decision.'
                     : snap?.redacted
                     ? 'Snapshot details were redacted because the candidate was deleted.'
-                    : 'No score snapshot was stored for this decision (recorded before decision reasons were enabled).'}
+                    : 'No score snapshot is stored for this decision (global decisions are not tied to one job match).'}
                 </Alert>
               )}
               <Stack direction="row" gap={4} flexWrap="wrap">

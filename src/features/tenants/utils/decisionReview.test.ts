@@ -283,3 +283,9 @@ test('reason filter sends all codes comma-joined and dedupes', () => {
   assert.deepEqual(parseReasonCodes(' a, b ,a'), ['a', 'b']);
   assert.equal(buildListParams({ ...DEFAULT_FILTERS, reasonCode: 'a, b' }, 0, 50).reason_code, 'a,b');
 });
+
+test('job id filter accepts the job UUID and the 24-hex webapp job id', () => {
+  assert.equal(validateFilters({ ...DEFAULT_FILTERS, jobId: '6ae48a9e3a78b71683fc2103' }), null);
+  assert.equal(validateFilters({ ...DEFAULT_FILTERS, jobId: '123e4567-e89b-12d3-a456-426614174000' }), null);
+  assert.match(validateFilters({ ...DEFAULT_FILTERS, jobId: '6ae48a9e3a78b71683fc21' })!, /UUID/);
+});
