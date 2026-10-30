@@ -299,3 +299,8 @@ export const formatUtcDateTime = (iso: string | null | undefined): string => {
   const time = iso ? Date.parse(iso) : NaN;
   return Number.isNaN(time) ? BLANK : `${new Date(time).toISOString().slice(0, 16).replace('T', ' ')} UTC`;
 };
+
+export const noSnapshotText = (jobId: string | null | undefined): string =>
+  jobId
+    ? 'No score snapshot is stored for this decision (it was recorded before snapshots existed).'
+    : 'No score snapshot is stored for this decision (global decisions are not tied to one job match).';

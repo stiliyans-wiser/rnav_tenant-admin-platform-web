@@ -4,7 +4,7 @@ import { Alert, Box, Button, Chip, CircularProgress, Divider, Drawer, IconButton
 import { Close } from '@carbon/icons-react';
 import { useGetDecisionReviewDetail } from '@/features/tenants/hooks/useDecisionReview';
 import { DecisionReviewNote } from '@/features/tenants/interfaces/decision-review.interface';
-import { attentionLabel, driftView, formatDelta, formatScore, formatUtcDateTime, mapReviewError, noteMatchLabel, orBlank, reasonsText, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
+import { attentionLabel, driftView, formatDelta, formatScore, formatUtcDateTime, mapReviewError, noSnapshotText, noteMatchLabel, orBlank, reasonsText, statusLabel, thumbsChipColor } from '@/features/tenants/utils/decisionReview';
 
 interface DecisionReviewDrawerProps {
   tenantId: string;
@@ -123,7 +123,7 @@ export const DecisionReviewDrawer = ({ tenantId, eventId, onClose }: DecisionRev
                     ? 'The score snapshot could not be recorded for this decision.'
                     : snap?.redacted
                     ? 'Snapshot details were redacted because the candidate was deleted.'
-                    : 'No score snapshot is stored for this decision (global decisions are not tied to one job match).'}
+                    : noSnapshotText(data.event.job_id)}
                 </Alert>
               )}
               <Stack direction="row" gap={4} flexWrap="wrap">
