@@ -359,12 +359,64 @@ Per-tenant on/off switches for external job connectors and sourcing flows, store
 
 New connector in the API ⇒ in the same change set: add the key to the interface, defaults, labels, descriptions, and `flagKeys`. Typecheck (`tsc --noEmit`) fails if any record misses a key.
 
-## 17. Decision Review (Recruitment Navigator, feature 254)
+## 17. Decision Reasons and Decision Review (Recruitment Navigator, feature 254)
 
-Per-tenant backoffice section on the tenant detail page: `DecisionReviewPanel` (filters, table, XLSX/CSV export) and `DecisionReviewDrawer` (detail), backed by `GET /backoffice/accounts/{id}/decision-review`, `/{event_id}` and `/export`. Helpers in `src/features/tenants/utils/decisionReview.ts`, types in `interfaces/decision-review.interface.ts`.
+Purpose: recruiters in the webapp record why they Exclude, put On hold, Drop or Archive a candidate. The API stores each decision with its reasons, an optional note and a frozen match snapshot (score, rank, run number, explanation) in the tenant's `candidate_status_events`. The backoffice owns two things: whether the feature is available to a tenant (S4), and a read-only case-by-case review of the recorded decisions (S7). Commits: S4 `db017f5`, `6f72543`; S7 `6632de9`, `ab653f1`, `2c8d0e8`, `2dc5e84`; bug477 `7472ea3`. Both sections sit on the tenant detail page (`TenantDetails.tsx`, section titles `DECISION_REASONS`, `DECISION_REVIEW`). Data access uses TanStack Query hooks (`useDecisionReasonsAvailability`, `useDecisionReview`) over axios clients (`api/decisionReasonsApi.ts`, `api/decisionReviewApi.ts`). Query keys are scoped by tenant id (`tenantsConstants.decisionReasonsKeys`, `decisionReviewKeys`).
 
-### Multiple reasons (bug477, 2026-10-30)
+### 17.1 Two-layer model
+
+| Layer | Who | Field | Where |
+|---|---|---|---|
+| Availability | Platform/backoffice admin | `decision_reason_config.available` | this app, "Decision Reasons" section |
+| Configuration and on/off | Tenant admin | `enabled`, `required_for`, reason list | webapp Admin → Configurations → Advanced |
+
+Reasons are asked for only when both are on. This app never writes the tenant's `enabled` or its list, except through the explicit per-tenant reset below. The tenant admin cannot change availability.
+
+### 17.2 Decision Reasons panel (S4)
+
+`components/common/view/DecisionReasonsPanel.tsx`, helpers `utils/decisionReasonsAvailability.ts`, types `interfaces/decision-reasons-availability.interface.ts`. API: `GET` / `PATCH /backoffice/accounts/{id}/decision-reasons`.
+
+- Shows the "Decision reasons available" switch, plus read-only chips: tenant setting (Tenant: on/off), effective state (Active / Not active), the number of reasons in the list, and database schema (Ready / Not ready / Unknown).
+- Toggling opens a confirm dialog. Enable text: "Enabling makes decision reasons active for this tenant immediately. Recruiters must pick a reason when they Exclude, put On hold, Drop, or Archive a candidate. The tenant admin can switch it off or edit the list." The disable text says recruiters will no longer be asked. The switch is optimistic and rolls back on failure.
+- The API refuses to enable when the tenant DB lacks the decision columns: 409 `decision_schema_unhealthy` with `missing_columns` ("Database not ready: missing columns ... - deploy/migration needed"), or 409 `decision_schema_probe_failed` ("Could not check tenant database"). Load errors offer Retry. Other server errors append the API `detail.message`.
+- "Reset to platform defaults" (confirm dialog) sends `reset_reasons: true` for this tenant only. It replaces the reason list and required statuses with the platform template. The API keeps custom reasons that recorded decisions already use, hidden. Success and failure show in a snackbar.
+
+### 17.3 Decision Review section (S7)
+
+`components/common/view/DecisionReviewPanel.tsx` (filters, table, export) and `DecisionReviewDrawer.tsx` (detail). Helpers in `utils/decisionReview.ts`, types in `interfaces/decision-review.interface.ts`. API: `GET /backoffice/accounts/{id}/decision-review`, `/{event_id}` and `/export`.
+
+- Header text: "Read-only review of recruiter decisions for this tenant. Access is logged. The export contains candidate names and notes."
+- **Filters** (draft, sent on "Apply filters"; "Reset" restores the defaults):
+  - Statuses: multi-select of Excluded, On hold, Dropped, Approved, Sent to client. Default: Excluded, On hold, Dropped.
+  - From / To dates (UTC days). Default: From = 30 days ago.
+  - Reason codes (any of, comma separated).
+  - Recruiter (email or id).
+  - Job id.
+  - Score min / max.
+  - Sort: attention (default), newest, oldest.
+  - "Needs attention only": also adds Excluded, Approved and Sent to client to the statuses.
+  - "Include cascade events": default off.
+
+  Client-side validation blocks Apply. The applied filters are summarised in words.
+- **Table**: Candidate (with a "Candidate deleted" chip for purged candidates), Job, Decision (status chip + "Cascade"), "Score then → now" (snapshot score → current score; a marker and tooltip when the score is the current one because no snapshot exists; a "Drift" chip when the recruiter saw a different score or run), Reason, Attention ("High score excluded" / "Low score approved"; API default thresholds 80 / 40), Recruiter, Date (UTC). Paged with 25 / 50 / 100 rows (default 50). A row opens the drawer.
+- **Drawer** ("Decision details"): status from → to, attention, reason(s), recruiter, decided at (UTC), decision note. Then "Snapshot vs now": frozen score, rank of total, run and scoring version at decision time next to the current values, the drift text, explanation at decision time and now, and a "shortened to fit the size limit" note for truncated snapshots. An info alert explains a missing snapshot: no match row at decision time, a snapshot error, redacted because the candidate was deleted, or recorded before decision reasons were enabled. Then candidate notes and job notes (chip: written for this job vs matched by time window) and the thumbs history (up/down chips with score and run).
+- **Export**: "Export XLSX" / "Export CSV" use the APPLIED filters (disabled while there are unapplied edits or no rows), `max_rows` 20 000. The filename comes from `Content-Disposition`. A truncation notice is built from `X-Export-Rows` / `X-Export-Total` / `X-Export-Truncated`. The object URL is revoked after a delay.
+- **Errors** are mapped by API code: `tenant_db_unavailable`, `decision_events_unavailable` (409, shown as a warning), `export_busy` (429), validation codes, and others with Retry.
+
+### 17.4 Multiple reasons (bug477, 2026-10-30)
 
 - A decision can carry several reasons. Rows and the drawer show all of them via `reasonsText`: `reason_labels` joined with ", ", else `reason_codes`, else the legacy single `reason_label` / `reason_code` / `event_reason`.
 - Filter field "Reason codes (any of, comma separated)": `parseReasonCodes` trims and de-duplicates; the list request sends them comma-joined in `reason_code`, and the API returns rows matching ANY code. The applied-filter summary reads "reason a or b".
 - Export files carry `reason_codes` / `reason_labels` columns (built by the API).
+
+### 17.5 Tenant isolation and access
+
+- Every call carries the tenant id from the route (`/tenants/[id]`) in the path. The API loads that account (404 when unknown) and filters every query by its `account_id`. The tenant is never sent in a body. The review section is keyed by tenant id, so switching tenants resets its state.
+- The API serves these endpoints to backoffice users only, reads the tenant DB in a read-only session, and logs every access with the backoffice user id. Tenant admins have no review screen (out of scope).
+
+### 17.6 Known limits
+
+- The reset confirm text says custom reasons are lost. The API actually keeps custom reasons already used by recorded decisions, hidden (`kept_reasons`).
+- No component-test infrastructure in this repo (`npm test` runs node tests on utils only). Dialog wiring was verified by browser QA.
+- Open API bug469: an export slot can leak when a request is cancelled early (that API process then answers `export_busy` until restart), and live candidates not yet synced to PG show empty name/title.
+- Score fallback: events without a snapshot show the current score (marked), so their attention can change after a rerun.
