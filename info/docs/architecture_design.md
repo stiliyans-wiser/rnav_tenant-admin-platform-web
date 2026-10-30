@@ -358,3 +358,13 @@ Per-tenant on/off switches for external job connectors and sourcing flows, store
 ### Extension pattern
 
 New connector in the API ⇒ in the same change set: add the key to the interface, defaults, labels, descriptions, and `flagKeys`. Typecheck (`tsc --noEmit`) fails if any record misses a key.
+
+## 17. Decision Review (Recruitment Navigator, feature 254)
+
+Per-tenant backoffice section on the tenant detail page: `DecisionReviewPanel` (filters, table, XLSX/CSV export) and `DecisionReviewDrawer` (detail), backed by `GET /backoffice/accounts/{id}/decision-review`, `/{event_id}` and `/export`. Helpers in `src/features/tenants/utils/decisionReview.ts`, types in `interfaces/decision-review.interface.ts`.
+
+### Multiple reasons (bug477, 2026-10-30)
+
+- A decision can carry several reasons. Rows and the drawer show all of them via `reasonsText`: `reason_labels` joined with ", ", else `reason_codes`, else the legacy single `reason_label` / `reason_code` / `event_reason`.
+- Filter field "Reason codes (any of, comma separated)": `parseReasonCodes` trims and de-duplicates; the list request sends them comma-joined in `reason_code`, and the API returns rows matching ANY code. The applied-filter summary reads "reason a or b".
+- Export files carry `reason_codes` / `reason_labels` columns (built by the API).
