@@ -29,6 +29,8 @@ test('language setting defaults match the API MatchWeightConfig defaults', () =>
       language_reserved_slots_total: 6,
       language_penalty_score_cap: 40,
       language_gate_score_cap: 29,
+      language_recall_min_similarity: 0.3,
+      language_recall_max_gap_cosine: 0.15,
     },
   );
 });
@@ -39,8 +41,9 @@ test('language numeric specs use the API ranges and every field has a form name'
     language_recall_pool_size: [10, 300, true],
     language_reserved_slots_per_language: [0, 10, true],
     language_reserved_slots_total: [0, 12, true],
-    language_penalty_score_cap: [0, 100, false],
     language_gate_score_cap: [0, 100, false],
+    language_recall_min_similarity: [0, 1, false],
+    language_recall_max_gap_cosine: [0, 1, false],
   });
   for (const spec of LANGUAGE_NUMERIC_SPECS) {
     assert.equal(formFieldNames.matchConfig[spec.field], `match_config.${spec.key}`);

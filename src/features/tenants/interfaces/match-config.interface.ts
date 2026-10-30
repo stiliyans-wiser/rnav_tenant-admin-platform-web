@@ -66,8 +66,11 @@ export interface MatchConfig {
   language_recall_pool_size?: number;
   language_reserved_slots_per_language?: number;
   language_reserved_slots_total?: number;
+  /** Deprecated by the API, unused; preserved so saves keep the full config. */
   language_penalty_score_cap?: number;
   language_gate_score_cap?: number;
+  language_recall_min_similarity?: number;
+  language_recall_max_gap_cosine?: number;
   // backend-only, never shown; kept so a save round-trips it unchanged
   language_rule_ignored_languages?: string[];
 }

@@ -182,12 +182,16 @@ export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewPro
           <Typography variant="subtitle2">{cfg?.language_reserved_slots_total ?? LANGUAGE_SETTING_DEFAULTS.language_reserved_slots_total}</Typography>
         </Stack>
         <Stack gap={1} sx={{ flex: 1 }}>
-          <Typography variant="caption">Penalty cap</Typography>
-          <Typography variant="subtitle2">{cfg?.language_penalty_score_cap ?? LANGUAGE_SETTING_DEFAULTS.language_penalty_score_cap}</Typography>
-        </Stack>
-        <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Gate cap</Typography>
           <Typography variant="subtitle2">{cfg?.language_gate_score_cap ?? LANGUAGE_SETTING_DEFAULTS.language_gate_score_cap}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Recall min similarity</Typography>
+          <Typography variant="subtitle2">{cfg?.language_recall_min_similarity ?? LANGUAGE_SETTING_DEFAULTS.language_recall_min_similarity}</Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Recall max gap (cosine)</Typography>
+          <Typography variant="subtitle2">{cfg?.language_recall_max_gap_cosine ?? LANGUAGE_SETTING_DEFAULTS.language_recall_max_gap_cosine}</Typography>
         </Stack>
       </Stack>
 

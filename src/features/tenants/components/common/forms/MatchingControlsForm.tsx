@@ -1,4 +1,4 @@
-import { Alert, Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import {
   EMBEDDING_WEIGHT_DEFAULTS,
@@ -10,13 +10,13 @@ import {
   formFieldNames,
 } from '@/features/tenants/constants/form.constants';
 import { embeddingWeightsError } from '@/features/tenants/utils/embeddingWeights';
-import { languageFieldError, languagePenaltyCapWarning } from '@/features/tenants/utils/languageSettings';
+import { languageFieldError } from '@/features/tenants/utils/languageSettings';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
 const RULE_MODE_HELP: Record<string, string> = {
   off: 'No language evaluation.',
   shadow: 'Shadow: measure only, ranking unchanged.',
-  penalty: 'Penalty: candidates missing a required language are capped at the penalty cap.',
+  penalty: 'Penalty: same as Gate. Candidates missing a required language are capped below the visibility floor of 30.',
   gate: 'Gate: candidates missing a required language are capped below the visibility floor of 30.',
 };
 
@@ -31,7 +31,6 @@ export const MatchingControlsForm = () => {
   const { control, getValues } = useFormContext();
   const watchedMatchConfig = useWatch({ control, name: 'match_config' });
   const reservedTotal = watchedMatchConfig?.language_reserved_slots_total ?? LANGUAGE_SETTING_DEFAULTS.language_reserved_slots_total;
-  const penaltyWarning = languagePenaltyCapWarning(watchedMatchConfig);
 
   const embeddingWeightNames = [
     formFieldNames.matchConfig.embeddingWeightFullText,
@@ -383,18 +382,13 @@ export const MatchingControlsForm = () => {
                 fieldState={fieldState}
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message ?? `${spec.help} Range ${spec.min}-${spec.max}.`}
-                slotProps={{ htmlInput: { min: spec.min, max: spec.max, step: spec.integer ? 1 : 'any' } }}
+                slotProps={{ htmlInput: { min: spec.min, max: spec.max, step: spec.step } }}
                 sx={{ width: 240 }}
               />
             )}
           />
         ))}
       </Stack>
-      {penaltyWarning ? (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          {penaltyWarning}
-        </Alert>
-      ) : null}
       <Box sx={{ mb: 3 }} />
 
       <Typography variant="h6" sx={{ mb: 1 }}>

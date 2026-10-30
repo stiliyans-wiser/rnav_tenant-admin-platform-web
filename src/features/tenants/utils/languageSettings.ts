@@ -42,16 +42,6 @@ export const languageFieldError = (key: string, value: unknown): string | null =
   return null;
 };
 
-export const languagePenaltyCapWarning = (matchConfig: MatchConfigLike | undefined | null): string | null => {
-  const filled = withLanguageSettings(matchConfig ?? {}) as MatchConfigLike;
-  const penalty = Number(filled.language_penalty_score_cap);
-  const gate = Number(filled.language_gate_score_cap);
-  if (Number.isFinite(penalty) && Number.isFinite(gate) && (penalty < LANGUAGE_GATE_CAP_LIMIT || penalty <= gate)) {
-    return 'Penalty cap below 30 or not above the gate cap hides penalised candidates, so Penalty acts like Gate.';
-  }
-  return null;
-};
-
 export const languageSettingsError = (matchConfig: MatchConfigLike | undefined | null): string | null => {
   const cfg = matchConfig ?? {};
   const filled = withLanguageSettings(cfg) as MatchConfigLike;
@@ -65,6 +55,5 @@ export const languageSettingsError = (matchConfig: MatchConfigLike | undefined |
     const error = languageFieldError(spec.key, cfg[spec.key]);
     if (error) return error;
   }
-  if (filled.language_rule_mode === 'penalty') return languagePenaltyCapWarning(filled);
   return null;
 };

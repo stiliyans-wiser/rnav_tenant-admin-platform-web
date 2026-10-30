@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   languageFieldError,
-  languagePenaltyCapWarning,
   languageSettingsError,
   withLanguageSettings,
   withMatchConfigDefaults,
 } from './languageSettings.ts';
+import { LANGUAGE_NUMERIC_SPECS, LANGUAGE_SETTING_DEFAULTS } from '../constants/form.constants.ts';
 import { withEmbeddingWeights } from './embeddingWeights.ts';
 
 const stored = {
@@ -18,6 +18,8 @@ const stored = {
   language_reserved_slots_total: 9,
   language_penalty_score_cap: 35.5,
   language_gate_score_cap: 25,
+  language_recall_min_similarity: 0.42,
+  language_recall_max_gap_cosine: 0.2,
   language_rule_ignored_languages: ['english', 'dutch'],
 };
 
@@ -25,6 +27,8 @@ test('missing API fields fall back to defaults', () => {
   const out = withLanguageSettings<Record<string, unknown>>({ top_k: 5 });
   assert.equal(out.language_rule_mode, 'shadow');
   assert.equal(out.language_gate_score_cap, 29);
+  assert.equal(out.language_recall_min_similarity, 0.3);
+  assert.equal(out.language_recall_max_gap_cosine, 0.15);
   assert.ok(!('language_rule_ignored_languages' in out));
 });
 
@@ -53,6 +57,8 @@ for (const [section, body] of Object.entries(sectionBodies)) {
     assert.equal(out.language_recall_mode, 'shadow');
     assert.equal(out.language_recall_pool_size, 100);
     assert.equal(out.language_penalty_score_cap, 40);
+    assert.equal(out.language_recall_min_similarity, 0.3);
+    assert.equal(out.language_recall_max_gap_cosine, 0.15);
     assert.equal(out.top_k, 7);
   });
 }
@@ -64,7 +70,7 @@ test('bodies without match_config are untouched', () => {
 
 test('valid stored config passes, including fractional caps', () => {
   assert.equal(languageSettingsError(stored), null);
-  assert.equal(languageSettingsError({ ...stored, language_penalty_score_cap: 37.5, language_gate_score_cap: 29.5 }), null);
+  assert.equal(languageSettingsError({ ...stored, language_gate_score_cap: 29.5 }), null);
   assert.equal(languageSettingsError(undefined), null);
 });
 
@@ -80,11 +86,51 @@ test('pool and slots are integers within the API ranges', () => {
   assert.equal(languageFieldError('language_reserved_slots_total', 12), null);
 });
 
-test('caps accept 0-100 and reject outside, non-numeric', () => {
-  assert.notEqual(languageFieldError('language_penalty_score_cap', 101), null);
-  assert.notEqual(languageFieldError('language_penalty_score_cap', -0.1), null);
-  assert.notEqual(languageFieldError('language_penalty_score_cap', 'abc'), null);
-  assert.equal(languageFieldError('language_penalty_score_cap', 100), null);
+test('cosine fields accept 0-1 and reject outside, non-numeric', () => {
+  for (const key of ['language_recall_min_similarity', 'language_recall_max_gap_cosine']) {
+    assert.notEqual(languageFieldError(key, 1.01), null);
+    assert.notEqual(languageFieldError(key, -0.01), null);
+    assert.notEqual(languageFieldError(key, 'abc'), null);
+    assert.equal(languageFieldError(key, 0), null);
+    assert.equal(languageFieldError(key, 1), null);
+    assert.equal(languageFieldError(key, 0.15), null);
+    assert.match(languageFieldError(key, 2) ?? '', /between 0 and 1/);
+  }
+});
+
+test('gate cap accepts 0-100 and rejects outside, non-numeric', () => {
+  assert.notEqual(languageFieldError('language_gate_score_cap', 101), null);
+  assert.notEqual(languageFieldError('language_gate_score_cap', -0.1), null);
+  assert.notEqual(languageFieldError('language_gate_score_cap', 'abc'), null);
+});
+
+test('deprecated penalty cap is not editable but is sent unchanged', () => {
+  assert.equal(LANGUAGE_NUMERIC_SPECS.some(s => (s.key as string) === 'language_penalty_score_cap'), false);
+  assert.equal(languageFieldError('language_penalty_score_cap', 1000), null);
+  const out = withMatchConfigDefaults({ match_config: { ...stored, language_penalty_score_cap: 35.5 } }).match_config as Record<string, unknown>;
+  assert.equal(out.language_penalty_score_cap, 35.5);
+});
+
+test('every editable field has a default and a form name, and a blank default-filled config carries all of them', () => {
+  const filled = withLanguageSettings<Record<string, unknown>>({});
+  for (const spec of LANGUAGE_NUMERIC_SPECS) {
+    assert.equal(filled[spec.key], LANGUAGE_SETTING_DEFAULTS[spec.key]);
+  }
+  assert.equal(filled.language_rule_mode, 'shadow');
+  assert.equal(filled.language_recall_mode, 'shadow');
+});
+
+test('full save payload carries the whole match_config including new fields', () => {
+  const body = withMatchConfigDefaults({ match_config: withEmbeddingWeights({ ...stored, language_recall_min_similarity: '0.45' }) });
+  const out = body.match_config as Record<string, unknown>;
+  assert.deepEqual(
+    { ...out, language_recall_min_similarity: undefined },
+    { ...withEmbeddingWeights(stored), language_recall_min_similarity: undefined },
+  );
+  assert.strictEqual(out.language_recall_min_similarity, 0.45);
+  assert.strictEqual(out.language_recall_max_gap_cosine, 0.2);
+  assert.equal(out.top_k, 20);
+  assert.deepEqual(out.language_rule_ignored_languages, ['english', 'dutch']);
 });
 
 test('gate cap must be below 30', () => {
@@ -104,13 +150,4 @@ test('range errors name the field and range', () => {
 test('rejects unknown modes', () => {
   assert.notEqual(languageSettingsError({ ...stored, language_rule_mode: 'strict' }), null);
   assert.notEqual(languageSettingsError({ ...stored, language_recall_mode: 'penalty' }), null);
-});
-
-test('penalty cap at or below gate cap or under 30 warns, and blocks in penalty mode only', () => {
-  const risky = { ...stored, language_penalty_score_cap: 25, language_gate_score_cap: 20 };
-  assert.notEqual(languagePenaltyCapWarning(risky), null);
-  assert.notEqual(languagePenaltyCapWarning({ ...stored, language_penalty_score_cap: 29, language_gate_score_cap: 29 }), null);
-  assert.equal(languagePenaltyCapWarning({ ...stored, language_penalty_score_cap: 40, language_gate_score_cap: 29 }), null);
-  assert.notEqual(languageSettingsError({ ...risky, language_rule_mode: 'penalty' }), null);
-  assert.equal(languageSettingsError({ ...risky, language_rule_mode: 'gate' }), null);
 });
