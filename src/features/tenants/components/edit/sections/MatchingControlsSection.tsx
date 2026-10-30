@@ -3,7 +3,7 @@ import { useStepValidation } from '@/features/tenants/hooks/useStepValidation';
 import { EditTenantSectionProps } from '@/features/tenants/interfaces/edit-tenant-section-props.interface';
 import { EditTenantLayout } from '@/features/tenants/components/common/layouts/EditTenantLayout';
 import { MatchingControlsForm } from '@/features/tenants/components/common/forms/MatchingControlsForm';
-import { formFieldNames } from '@/features/tenants/constants/form.constants';
+import { LANGUAGE_NUMERIC_SPECS, formFieldNames } from '@/features/tenants/constants/form.constants';
 
 export const MatchingControlsSection = ({ onSave, onCancel }: EditTenantSectionProps) => {
   const { hasError } = useStepValidation([
@@ -14,6 +14,7 @@ export const MatchingControlsSection = ({ onSave, onCancel }: EditTenantSectionP
     formFieldNames.matchConfig.scoreThreshold,
     formFieldNames.matchConfig.screeningThreshold,
     formFieldNames.matchConfig.calibrationTopKMultiplier,
+    ...LANGUAGE_NUMERIC_SPECS.map(spec => formFieldNames.matchConfig[spec.field]),
   ]);
 
   return (

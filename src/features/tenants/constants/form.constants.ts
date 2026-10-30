@@ -58,6 +58,14 @@ export const formFieldNames = {
     embeddingWeightExperience: 'match_config.embedding_weight_experience',
     embeddingWeightPositions: 'match_config.embedding_weight_positions',
     embeddingWeightCompanies: 'match_config.embedding_weight_companies',
+    languageRuleMode: 'match_config.language_rule_mode',
+    languageRecallMode: 'match_config.language_recall_mode',
+    languageRecallPoolSize: 'match_config.language_recall_pool_size',
+    languageReservedSlotsPerLanguage: 'match_config.language_reserved_slots_per_language',
+    languageReservedSlotsTotal: 'match_config.language_reserved_slots_total',
+    languageGateScoreCap: 'match_config.language_gate_score_cap',
+    languageRecallMinSimilarity: 'match_config.language_recall_min_similarity',
+    languageRecallMaxGapCosine: 'match_config.language_recall_max_gap_cosine',
   },
   extractionConfig: {
     includeReasoning: 'extraction_config.include_reasoning',
@@ -120,3 +128,92 @@ export const EMBEDDING_WEIGHT_DEFAULTS = {
   positions: 0.2,
   companies: 0,
 } as const;
+
+export const LANGUAGE_RULE_MODES = ['off', 'shadow', 'penalty', 'gate'] as const;
+export const LANGUAGE_RECALL_MODES = ['off', 'shadow', 'on'] as const;
+
+export const LANGUAGE_MODE_LABELS = {
+  off: 'Off',
+  shadow: 'Shadow',
+  penalty: 'Penalty',
+  gate: 'Gate',
+  on: 'On',
+} as const;
+
+export const LANGUAGE_SETTING_DEFAULTS = {
+  language_rule_mode: 'shadow',
+  language_recall_mode: 'shadow',
+  language_recall_pool_size: 100,
+  language_reserved_slots_per_language: 3,
+  language_reserved_slots_total: 6,
+  language_penalty_score_cap: 40, // deprecated by the API (penalty behaves like gate); kept so the full config round-trips
+  language_gate_score_cap: 29,
+  language_recall_min_similarity: 0.3,
+  language_recall_max_gap_cosine: 0.15,
+} as const;
+
+export const LANGUAGE_GATE_CAP_LIMIT = 30;
+
+export const LANGUAGE_NUMERIC_SPECS = [
+  {
+    key: 'language_recall_pool_size',
+    field: 'languageRecallPoolSize',
+    label: 'Recall pool size',
+    min: 10,
+    max: 300,
+    integer: true,
+    step: 1,
+    help: 'Language holders considered for recall per job. Used when recall mode is On; also feeds the Shadow-mode counts.',
+  },
+  {
+    key: 'language_reserved_slots_per_language',
+    field: 'languageReservedSlotsPerLanguage',
+    label: 'Reserved slots per language',
+    min: 0,
+    max: 10,
+    integer: true,
+    step: 1,
+    help: 'Shortlist slots held for each required language. Used when recall mode is On.',
+  },
+  {
+    key: 'language_reserved_slots_total',
+    field: 'languageReservedSlotsTotal',
+    label: 'Reserved slots total',
+    min: 0,
+    max: 12,
+    integer: true,
+    step: 1,
+    help: 'Cap on reserved slots across all languages. Used when recall mode is On.',
+  },
+  {
+    key: 'language_gate_score_cap',
+    field: 'languageGateScoreCap',
+    label: 'Gate score cap',
+    min: 0,
+    max: 100,
+    htmlMax: 29.99,
+    integer: false,
+    step: 'any',
+    help: 'Score ceiling for candidates missing a required language (Penalty and Gate). Must be below 30, the visibility floor.',
+  },
+  {
+    key: 'language_recall_min_similarity',
+    field: 'languageRecallMinSimilarity',
+    label: 'Recall min similarity',
+    min: 0,
+    max: 1,
+    integer: false,
+    step: 0.01,
+    help: 'Cosine similarity (0 to 1) a language speaker must reach, together with a positive role-fit signal, to be added by recall or take a reserved slot. Also feeds the Shadow-mode counts.',
+  },
+  {
+    key: 'language_recall_max_gap_cosine',
+    field: 'languageRecallMaxGapCosine',
+    label: 'Recall max gap (cosine)',
+    min: 0,
+    max: 1,
+    integer: false,
+    step: 0.01,
+    help: 'How far below the vector shortlist a speaker may be, in cosine units. The higher of the two floors applies. Also feeds the Shadow-mode counts.',
+  },
+] as const;

@@ -17,6 +17,7 @@ import { CandidateDeliverySection } from '@/features/tenants/components/edit/sec
 import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import { embeddingWeightsError, withEmbeddingWeights } from '@/features/tenants/utils/embeddingWeights';
+import { languageSettingsError, withMatchConfigDefaults } from '@/features/tenants/utils/languageSettings';
 import {
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
@@ -125,7 +126,9 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
   const onSubmit = async () => {
     setApiError(null);
     if (SECTIONS_SAVING_MATCH_CONFIG.includes(title)) {
-      const weightsError = embeddingWeightsError(getValues('match_config'));
+      const weightsError =
+        embeddingWeightsError(getValues('match_config')) ??
+        (title === TenantSectionTitlesEnum.MATCHING_CONTROLS ? languageSettingsError(getValues('match_config')) : null);
       if (weightsError) {
         setApiError(weightsError);
         return;
@@ -134,7 +137,7 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
     try {
       await updateTenant.mutateAsync({
         id: tenantId,
-        tenant: getRequestBody(),
+        tenant: withMatchConfigDefaults(getRequestBody()),
       });
 
       handleClose();
@@ -142,12 +145,17 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
     } catch (error) {
       console.error('Error saving tenant:', error);
       const fallback = 'An unexpected error occurred. Please try again.';
-      const detail = (error as AxiosError<{ detail?: string | Array<{ msg?: string }> }>).response?.data?.detail;
+      const detail = (error as AxiosError<{ detail?: string | Array<{ msg?: string; loc?: Array<string | number> }> }>).response?.data?.detail;
       const message =
         typeof detail === 'string'
           ? detail
           : Array.isArray(detail)
-            ? detail.map(d => d.msg ?? JSON.stringify(d)).join('; ')
+            ? detail
+                .map(d => {
+                  const field = d.loc?.filter(part => part !== 'body').join('.');
+                  return `${field ? `${field}: ` : ''}${d.msg ?? JSON.stringify(d)}`;
+                })
+                .join('; ')
             : fallback;
       setApiError(message);
     }
