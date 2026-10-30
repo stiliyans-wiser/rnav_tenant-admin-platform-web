@@ -109,6 +109,8 @@ test('reset reports failure and the confirm copy warns that the list is replaced
   });
   assert.equal(result, 'failed');
   assert.match(RESET_CONFIRM_TEXT, /replaces this tenant's reason list/);
+  assert.match(RESET_CONFIRM_TEXT, /used are kept, hidden/);
+  assert.match(RESET_CONFIRM_TEXT, /unused custom reasons are removed/);
 });
 
 test('probe-failed 409 shows a connectivity message, not a migration one', () => {

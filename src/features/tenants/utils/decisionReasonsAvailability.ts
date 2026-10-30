@@ -9,7 +9,7 @@ export const PROBE_FAILED_TEXT = 'Could not check tenant database';
 
 export const RESET_CONFIRM_TITLE = 'Reset to platform defaults?';
 export const RESET_CONFIRM_TEXT =
-  "This replaces this tenant's reason list and required statuses with the platform defaults. Custom reasons and edits made by the tenant admin are lost. History already recorded keeps its labels.";
+  "This replaces this tenant's reason list and required statuses with the platform defaults. Custom reasons that past decisions used are kept, hidden, so history keeps its names; unused custom reasons are removed. Other edits made by the tenant admin are lost.";
 
 export interface SchemaNotReady {
   missingColumns: string[];

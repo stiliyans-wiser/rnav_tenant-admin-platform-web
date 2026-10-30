@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   DEFAULT_RANGE_DAYS,
+  noSnapshotText,
   defaultDateFrom,
   describeFilters,
   filtersEqual,
@@ -282,4 +283,17 @@ test('reasonsText shows every reason, falling back to the single code or label',
 test('reason filter sends all codes comma-joined and dedupes', () => {
   assert.deepEqual(parseReasonCodes(' a, b ,a'), ['a', 'b']);
   assert.equal(buildListParams({ ...DEFAULT_FILTERS, reasonCode: 'a, b' }, 0, 50).reason_code, 'a,b');
+});
+
+test('job id filter accepts the job UUID and the 24-hex webapp job id', () => {
+  assert.equal(validateFilters({ ...DEFAULT_FILTERS, jobId: '6ae48a9e3a78b71683fc2103' }), null);
+  assert.equal(validateFilters({ ...DEFAULT_FILTERS, jobId: '123e4567-e89b-12d3-a456-426614174000' }), null);
+  assert.match(validateFilters({ ...DEFAULT_FILTERS, jobId: '6ae48a9e3a78b71683fc21' })!, /UUID/);
+});
+
+test('no-snapshot text depends on whether the event is tied to a job', () => {
+  assert.match(noSnapshotText('6ae48a9e3a78b71683fc2103'), /before snapshots existed/);
+  assert.doesNotMatch(noSnapshotText('6ae48a9e3a78b71683fc2103'), /global/);
+  assert.match(noSnapshotText(null), /global decisions/);
+  assert.match(noSnapshotText(undefined), /global decisions/);
 });

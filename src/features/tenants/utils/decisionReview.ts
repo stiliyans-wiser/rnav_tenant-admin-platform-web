@@ -63,6 +63,9 @@ export const describeFilters = (f: DecisionReviewFilters): string => {
 };
 
 const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+const MONGO_ID_RE = /^[0-9a-fA-F]{24}$/;
+
+export const isValidJobIdFilter = (value: string): boolean => UUID_RE.test(value) || MONGO_ID_RE.test(value);
 
 export const ATTENTION_EXTRA_STATUSES = ['excluded', 'approved', 'send_to_client'];
 
@@ -131,7 +134,7 @@ export const validateFilters = (filters: DecisionReviewFilters): string | null =
   const min = parseScore(filters.scoreMin);
   const max = parseScore(filters.scoreMax);
   if (min !== null && max !== null && min > max) return 'Min score is above max score.';
-  if (filters.jobId.trim() && !UUID_RE.test(filters.jobId.trim())) return 'Job id must be a UUID.';
+  if (filters.jobId.trim() && !isValidJobIdFilter(filters.jobId.trim())) return 'Job id must be a job UUID or the 24-character job id from the webapp URL.';
   return null;
 };
 
@@ -296,3 +299,8 @@ export const formatUtcDateTime = (iso: string | null | undefined): string => {
   const time = iso ? Date.parse(iso) : NaN;
   return Number.isNaN(time) ? BLANK : `${new Date(time).toISOString().slice(0, 16).replace('T', ' ')} UTC`;
 };
+
+export const noSnapshotText = (jobId: string | null | undefined): string =>
+  jobId
+    ? 'No score snapshot is stored for this decision (it was recorded before snapshots existed).'
+    : 'No score snapshot is stored for this decision (global decisions are not tied to one job match).';
