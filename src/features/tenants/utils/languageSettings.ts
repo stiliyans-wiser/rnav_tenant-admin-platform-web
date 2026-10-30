@@ -20,6 +20,11 @@ export const withLanguageSettings = <T extends object>(matchConfig: T | undefine
       filled[key] = Number(current);
     }
   }
+  const penalty = Number(filled.language_penalty_score_cap);
+  const gate = Number(filled.language_gate_score_cap);
+  if (Number.isFinite(penalty) && Number.isFinite(gate) && penalty < gate) {
+    filled.language_penalty_score_cap = gate;
+  }
   return filled as T;
 };
 

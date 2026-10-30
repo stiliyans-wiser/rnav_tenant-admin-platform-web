@@ -151,3 +151,16 @@ test('rejects unknown modes', () => {
   assert.notEqual(languageSettingsError({ ...stored, language_rule_mode: 'strict' }), null);
   assert.notEqual(languageSettingsError({ ...stored, language_recall_mode: 'penalty' }), null);
 });
+
+test('hidden penalty cap is raised to the gate cap so penalty >= gate always holds', () => {
+  const sent = (cfg: Record<string, unknown>) => withMatchConfigDefaults({ match_config: cfg }).match_config as Record<string, unknown>;
+  assert.strictEqual(sent({ ...stored, language_penalty_score_cap: 25, language_gate_score_cap: 29 }).language_penalty_score_cap, 29);
+  assert.strictEqual(sent({ ...stored, language_penalty_score_cap: 40, language_gate_score_cap: 29 }).language_penalty_score_cap, 40);
+  assert.strictEqual(sent({ ...stored, language_penalty_score_cap: 25, language_gate_score_cap: '29' }).language_penalty_score_cap, 29);
+});
+
+test('gate cap input allows decimals and caps the HTML max below 30', () => {
+  const gate = LANGUAGE_NUMERIC_SPECS.find(s => s.key === 'language_gate_score_cap');
+  assert.equal(gate?.step, 'any');
+  assert.equal((gate as { htmlMax?: number }).htmlMax, 29.99);
+});

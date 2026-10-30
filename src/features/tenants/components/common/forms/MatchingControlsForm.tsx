@@ -381,8 +381,8 @@ export const MatchingControlsForm = () => {
                 field={field}
                 fieldState={fieldState}
                 error={!!fieldState.error}
-                helperText={fieldState.error?.message ?? `${spec.help} Range ${spec.min}-${spec.max}.`}
-                slotProps={{ htmlInput: { min: spec.min, max: spec.max, step: spec.step } }}
+                helperText={fieldState.error?.message ?? `${spec.help} Range ${spec.min}-${'htmlMax' in spec ? spec.htmlMax : spec.max}.`}
+                slotProps={{ htmlInput: { min: spec.min, max: 'htmlMax' in spec ? spec.htmlMax : spec.max, step: spec.step } }}
                 sx={{ width: 240 }}
               />
             )}

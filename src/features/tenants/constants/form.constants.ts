@@ -163,7 +163,7 @@ export const LANGUAGE_NUMERIC_SPECS = [
     max: 300,
     integer: true,
     step: 1,
-    help: 'Language holders considered for recall per job. Used when recall mode is On.',
+    help: 'Language holders considered for recall per job. Used when recall mode is On; also feeds the Shadow-mode counts.',
   },
   {
     key: 'language_reserved_slots_per_language',
@@ -191,8 +191,9 @@ export const LANGUAGE_NUMERIC_SPECS = [
     label: 'Gate score cap',
     min: 0,
     max: 100,
+    htmlMax: 29.99,
     integer: false,
-    step: 1,
+    step: 'any',
     help: 'Score ceiling for candidates missing a required language (Penalty and Gate). Must be below 30, the visibility floor.',
   },
   {
@@ -203,7 +204,7 @@ export const LANGUAGE_NUMERIC_SPECS = [
     max: 1,
     integer: false,
     step: 0.01,
-    help: 'Cosine similarity (0 to 1) a language speaker must reach to be added by recall or take a reserved slot. Used when recall mode is On.',
+    help: 'Cosine similarity (0 to 1) a language speaker must reach, together with a positive role-fit signal, to be added by recall or take a reserved slot. Also feeds the Shadow-mode counts.',
   },
   {
     key: 'language_recall_max_gap_cosine',
@@ -213,6 +214,6 @@ export const LANGUAGE_NUMERIC_SPECS = [
     max: 1,
     integer: false,
     step: 0.01,
-    help: 'How far below the vector shortlist a speaker may be, in cosine units. The higher of the two floors applies. Used when recall mode is On.',
+    help: 'How far below the vector shortlist a speaker may be, in cosine units. The higher of the two floors applies. Also feeds the Shadow-mode counts.',
   },
 ] as const;
