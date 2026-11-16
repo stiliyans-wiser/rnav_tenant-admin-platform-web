@@ -18,6 +18,7 @@ import { useUpdateTenant } from '@/features/tenants/hooks/useUpdateTenant';
 import { Tenant } from '@/features/tenants/interfaces/tenant.interface';
 import { embeddingWeightsError, withEmbeddingWeights } from '@/features/tenants/utils/embeddingWeights';
 import { languageSettingsError, withMatchConfigDefaults } from '@/features/tenants/utils/languageSettings';
+import { selectionFusionError } from '@/features/tenants/utils/selectionFusion';
 import {
   buildSSOConfigRequestBody,
   buildThemingRequestBody,
@@ -128,7 +129,9 @@ export const EditTenant = ({ title, defaultValues, tenantId, handleClose, onSave
     if (SECTIONS_SAVING_MATCH_CONFIG.includes(title)) {
       const weightsError =
         embeddingWeightsError(getValues('match_config')) ??
-        (title === TenantSectionTitlesEnum.MATCHING_CONTROLS ? languageSettingsError(getValues('match_config')) : null);
+        (title === TenantSectionTitlesEnum.MATCHING_CONTROLS
+          ? (languageSettingsError(getValues('match_config')) ?? selectionFusionError(getValues('match_config')))
+          : null);
       if (weightsError) {
         setApiError(weightsError);
         return;

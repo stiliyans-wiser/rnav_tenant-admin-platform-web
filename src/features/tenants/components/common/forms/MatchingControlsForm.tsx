@@ -7,10 +7,14 @@ import {
   LANGUAGE_RECALL_MODES,
   LANGUAGE_RULE_MODES,
   LANGUAGE_SETTING_DEFAULTS,
+  SELECTION_FUSION_BUDGET_MAX,
+  SELECTION_FUSION_BUDGET_MIN,
+  SELECTION_FUSION_DEFAULTS,
   formFieldNames,
 } from '@/features/tenants/constants/form.constants';
 import { embeddingWeightsError } from '@/features/tenants/utils/embeddingWeights';
 import { languageFieldError } from '@/features/tenants/utils/languageSettings';
+import { selectionFusionBudgetError } from '@/features/tenants/utils/selectionFusion';
 import { MuiTextField } from '@/features/common/components/form-elements/MuiTextField';
 
 const RULE_MODE_HELP: Record<string, string> = {
@@ -426,6 +430,37 @@ export const MatchingControlsForm = () => {
               field={{ ...field, value: field.value ?? 5 }}
               fieldState={fieldState}
               sx={{ maxWidth: 160 }}
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.selectionFusionExtraEnabled}
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Switch {...field} checked={field.value ?? SELECTION_FUSION_DEFAULTS.selection_fusion_extra_enabled} />}
+              label="Fusion extras (widen judge set by rank fusion)"
+            />
+          )}
+        />
+        <Controller
+          name={formFieldNames.matchConfig.selectionFusionExtraBudget}
+          control={control}
+          rules={{ validate: value => selectionFusionBudgetError(value) ?? true }}
+          render={({ field, fieldState }) => (
+            <MuiTextField
+              type="number"
+              label="Fusion judge-set budget"
+              helperText={
+                fieldState.error?.message ??
+                'Judge set target when fusion extras are on; the save-time guard rejects values above the capacity ceiling'
+              }
+              field={{ ...field, value: field.value ?? SELECTION_FUSION_DEFAULTS.selection_fusion_extra_budget }}
+              fieldState={fieldState}
+              slotProps={{
+                htmlInput: { min: SELECTION_FUSION_BUDGET_MIN, max: SELECTION_FUSION_BUDGET_MAX, step: 1 },
+              }}
+              sx={{ maxWidth: 320 }}
             />
           )}
         />

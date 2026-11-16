@@ -17,7 +17,7 @@ import { CheckmarkFilled, Misuse } from '@carbon/icons-react';
 import { updateAutoMatchAvailability } from '@/features/tenants/api/autoMatchAvailabilityApi';
 import { useGetAutoMatchAvailability } from '@/features/tenants/hooks/useAutoMatchAvailability';
 import { runOptimisticToggle } from '@/features/tenants/utils/optimisticToggle';
-import { LANGUAGE_MODE_LABELS, LANGUAGE_SETTING_DEFAULTS } from '@/features/tenants/constants/form.constants';
+import { LANGUAGE_MODE_LABELS, LANGUAGE_SETTING_DEFAULTS, SELECTION_FUSION_DEFAULTS } from '@/features/tenants/constants/form.constants';
 import { MatchConfig } from '@/features/tenants/interfaces/match-config.interface';
 
 export interface MatchingControlsData {
@@ -107,6 +107,19 @@ export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewPro
         <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Screening threshold</Typography>
           <Typography variant="subtitle2">{cfg?.screening_threshold ?? 40}</Typography>
+        </Stack>
+      </Stack>
+
+      <Stack direction="row" gap={3}>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Fusion extras (widen judge set by rank fusion)</Typography>
+          <Typography variant="subtitle2">
+            <BoolIcon value={Boolean(cfg?.selection_fusion_extra_enabled ?? SELECTION_FUSION_DEFAULTS.selection_fusion_extra_enabled)} />
+          </Typography>
+        </Stack>
+        <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Fusion judge-set budget</Typography>
+          <Typography variant="subtitle2">{cfg?.selection_fusion_extra_budget ?? SELECTION_FUSION_DEFAULTS.selection_fusion_extra_budget}</Typography>
         </Stack>
       </Stack>
 
