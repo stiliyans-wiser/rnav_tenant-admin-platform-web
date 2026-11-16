@@ -51,6 +51,8 @@ export const formFieldNames = {
     autoMatchOnCandidateIngest: 'match_config.auto_match_on_candidate_ingest',
     unverifiedSkillCredit: 'match_config.unverified_skill_credit',
     flashrankTopK: 'match_config.flashrank_top_k',
+    selectionFusionExtraEnabled: 'match_config.selection_fusion_extra_enabled',
+    selectionFusionExtraBudget: 'match_config.selection_fusion_extra_budget',
     llmProgrammaticGuaranteeK: 'match_config.llm_programmatic_guarantee_k',
     useMultiVectorShortlist: 'match_config.use_multi_vector_shortlist',
     embeddingWeightFullText: 'match_config.embedding_weight_full_text',
@@ -128,6 +130,14 @@ export const EMBEDDING_WEIGHT_DEFAULTS = {
   positions: 0.2,
   companies: 0,
 } as const;
+
+export const SELECTION_FUSION_DEFAULTS = {
+  selection_fusion_extra_enabled: false,
+  selection_fusion_extra_budget: 50,
+} as const;
+
+export const SELECTION_FUSION_BUDGET_MIN = 10;
+export const SELECTION_FUSION_BUDGET_MAX = 69;
 
 export const LANGUAGE_RULE_MODES = ['off', 'shadow', 'penalty', 'gate'] as const;
 export const LANGUAGE_RECALL_MODES = ['off', 'shadow', 'on'] as const;

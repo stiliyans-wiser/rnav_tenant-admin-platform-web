@@ -5,6 +5,7 @@ import {
   LANGUAGE_RULE_MODES,
   LANGUAGE_SETTING_DEFAULTS,
 } from '../constants/form.constants.ts';
+import { withSelectionFusionSettings } from './selectionFusion.ts';
 
 type MatchConfigLike = Record<string, unknown>;
 
@@ -29,7 +30,7 @@ export const withLanguageSettings = <T extends object>(matchConfig: T | undefine
 };
 
 export const withMatchConfigDefaults = <T extends { match_config?: unknown }>(body: T): T =>
-  body.match_config ? { ...body, match_config: withLanguageSettings(body.match_config as object) } : body;
+  body.match_config ? { ...body, match_config: withSelectionFusionSettings(withLanguageSettings(body.match_config as object)) } : body;
 
 export const languageFieldError = (key: string, value: unknown): string | null => {
   const spec = LANGUAGE_NUMERIC_SPECS.find(s => s.key === key);
