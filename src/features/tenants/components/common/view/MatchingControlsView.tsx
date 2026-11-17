@@ -125,6 +125,15 @@ export const MatchingControlsView = ({ data, tenantId }: MatchingControlsViewPro
 
       <Stack direction="row" gap={3}>
         <Stack gap={1} sx={{ flex: 1 }}>
+          <Typography variant="caption">Option 1 slot rebalance (keep-set)</Typography>
+          <Typography variant="subtitle2">
+            <BoolIcon value={Boolean(cfg?.selection_option1_keepset_enabled ?? SELECTION_FUSION_DEFAULTS.selection_option1_keepset_enabled)} />
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <Stack direction="row" gap={3}>
+        <Stack gap={1} sx={{ flex: 1 }}>
           <Typography variant="caption">Screening model</Typography>
           <Typography variant="subtitle2">{cfg?.screening_model ?? 'gpt-4.1-mini'}</Typography>
         </Stack>

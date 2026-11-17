@@ -28,6 +28,7 @@ export interface MatchConfig {
   flashrank_top_k?: number;
   selection_fusion_extra_enabled?: boolean;
   selection_fusion_extra_budget?: number;
+  selection_option1_keepset_enabled?: boolean;
   llm_programmatic_guarantee_k?: number;
   flashrank_pool_multiplier?: number;
   time_decay_enabled?: boolean;
