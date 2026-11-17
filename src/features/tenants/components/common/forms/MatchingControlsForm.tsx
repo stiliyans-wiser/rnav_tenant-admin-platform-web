@@ -480,7 +480,7 @@ export const MatchingControlsForm = () => {
                 label="Option 1 slot rebalance (keep-set)"
               />
               <Typography id="option1-keepset-help" variant="caption" color="text.secondary" display="block">
-                FlashRank 16, programmatic guarantee 15, language reserve 6, fusion to 50, union with the production selection; judge set up to the rerank capacity ceiling. Default off.
+                Option 1 slot rebalance with keep-set: FlashRank 16, programmatic guarantee 15, language reserve 6, fusion fill to 50, then union with the production selection, capped at the rerank capacity ceiling (69 today). These values are fixed and independent of the Fusion extras, budget and guarantee fields. Raises LLM judgment cost (about 13–19 extra judged candidates per run). Default off.
               </Typography>
             </Box>
           )}
