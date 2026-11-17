@@ -6,7 +6,7 @@ import { withEmbeddingWeights } from './embeddingWeights.ts';
 import { SELECTION_FUSION_DEFAULTS, formFieldNames } from '../constants/form.constants.ts';
 
 test('fusion defaults match the API contract', () => {
-  assert.deepEqual({ ...SELECTION_FUSION_DEFAULTS }, { selection_fusion_extra_enabled: false, selection_fusion_extra_budget: 50 });
+  assert.deepEqual({ ...SELECTION_FUSION_DEFAULTS }, { selection_fusion_extra_enabled: false, selection_fusion_extra_budget: 50, selection_option1_keepset_enabled: false });
 });
 
 test('fusion fields have form names under match_config', () => {
@@ -50,4 +50,21 @@ test('omitted keys are not sent, so the API keeps the stored values', () => {
   assert.ok(!('selection_fusion_extra_budget' in out));
   const kept = withSelectionFusionSettings({ top_k: 7, selection_fusion_extra_budget: undefined }) as Record<string, unknown>;
   assert.strictEqual(kept.selection_fusion_extra_budget, undefined);
+});
+
+test('option 1 keep-set switch has a form name and a false default', () => {
+  assert.equal(formFieldNames.matchConfig.selectionOption1KeepsetEnabled, 'match_config.selection_option1_keepset_enabled');
+  assert.strictEqual(SELECTION_FUSION_DEFAULTS.selection_option1_keepset_enabled, false);
+});
+
+test('option 1 keep-set value is sent in the PATCH body, on and explicit off', () => {
+  for (const v of [true, false]) {
+    const out = withMatchConfigDefaults({ match_config: withEmbeddingWeights({ top_k: 7, selection_option1_keepset_enabled: v }) }).match_config as Record<string, unknown>;
+    assert.strictEqual(out.selection_option1_keepset_enabled, v);
+  }
+});
+
+test('option 1 keep-set is not sent when the form never touched it', () => {
+  const out = withMatchConfigDefaults({ match_config: withEmbeddingWeights({ top_k: 7 }) }).match_config as Record<string, unknown>;
+  assert.ok(!('selection_option1_keepset_enabled' in out));
 });

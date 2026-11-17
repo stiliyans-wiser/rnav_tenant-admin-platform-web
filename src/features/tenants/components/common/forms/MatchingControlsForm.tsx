@@ -465,6 +465,27 @@ export const MatchingControlsForm = () => {
           )}
         />
         <Controller
+          name={formFieldNames.matchConfig.selectionOption1KeepsetEnabled}
+          control={control}
+          render={({ field }) => (
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    checked={field.value ?? SELECTION_FUSION_DEFAULTS.selection_option1_keepset_enabled}
+                    slotProps={{ input: { 'aria-describedby': 'option1-keepset-help' } }}
+                  />
+                }
+                label="Option 1 slot rebalance (keep-set)"
+              />
+              <Typography id="option1-keepset-help" variant="caption" color="text.secondary" display="block">
+                FlashRank 16, programmatic guarantee 15, language reserve 6, fusion to 50, union with the production selection; judge set up to the rerank capacity ceiling. Default off.
+              </Typography>
+            </Box>
+          )}
+        />
+        <Controller
           name={formFieldNames.matchConfig.llmProgrammaticGuaranteeK}
           control={control}
           defaultValue={10}
