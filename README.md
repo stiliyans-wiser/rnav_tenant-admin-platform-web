@@ -17,7 +17,15 @@ Next.js 14 (App Router, standalone output), React 18, TypeScript, Material UI 7,
 
 ## Run locally
 
-Prerequisites: the API running on `http://localhost:8000`, and an existing backoffice user. Creating the very first backoffice user is not documented or scripted in the repositories: `POST /backoffice/users` needs an already logged-in backoffice user, and the API repo's `scripts/create_admin_user.sh` creates a tenant with a tenant admin, not a platform/backoffice admin. Treat bootstrapping the first backoffice user as an open handoff item.
+Prerequisites: the API running on `http://localhost:8000`, and a backoffice user. Create the first platform/backoffice admin without a login through the API's master-key endpoint (`MASTER_KEY` is an API environment variable):
+
+   ```bash
+   curl -X POST "http://localhost:8000/admin/backoffice/users?key=$MASTER_KEY" \
+     -H 'Content-Type: application/json' \
+     -d '{"name": "...", "email": "...", "password": "..."}'
+   ```
+
+   Later backoffice users are created in this app under Settings → Users. The API repo's `scripts/create_admin_user.sh` is different: it creates a tenant with a tenant admin.
 
 ```bash
 npm install
