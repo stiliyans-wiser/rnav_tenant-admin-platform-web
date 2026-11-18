@@ -1,76 +1,87 @@
-# Tenant Admin Platform (Backoffice UI)
+# Platform/Backoffice Admin UI (`tenant-admin-platform-web`)
 
-Serves platform/backoffice admins (`BackofficeUser`).
+Web UI for **platform/backoffice admins** of the Recruitment Navigator platform. Despite the repository name it does not serve tenant admins: tenant admins work inside the recruiter app (`core42-pov-webapp`).
 
-## Local Development
+## Role in the system
 
-1. Ensure dependencies are installed:
+| Identity | Where they work | Scope |
+|---|---|---|
+| **Platform/backoffice admin** (`BackofficeUser`, separate user collection and login, `Role.BACKOFFICE`) | **This app** | Platform-wide: create and manage tenants, decide which features and connectors each tenant may use, set matching defaults and controls, quotas, global document types |
+| Tenant admin (regular user with an admin role) | Recruiter app, Admin section | One tenant: users, branding, schedules, thresholds for the features the backoffice made available |
+
+Backoffice controls availability and defaults; tenant admins configure and switch on or off what is available to them. All tenant settings are stored per tenant by the backend. The UI never sends the tenant from a free-form field; it works through backoffice endpoints of `core42-pov-api`.
+
+## Stack
+
+Next.js 14 (App Router, standalone output), React 18, TypeScript, Material UI 7, next-auth (credentials, JWT session), TanStack React Query, axios with central interceptors, react-hook-form, recharts, Sass. Node 20.
+
+## Run locally
+
+Prerequisites: the API running on `http://localhost:8000`, and a backoffice user. Create the first platform/backoffice admin without a login through the API's master-key endpoint (`MASTER_KEY` is an API environment variable):
+
    ```bash
-   npm install
+   curl -X POST "http://localhost:8000/admin/backoffice/users?key=$MASTER_KEY" \
+     -H 'Content-Type: application/json' \
+     -d '{"name": "...", "email": "...", "password": "..."}'
    ```
-2. Start the development server:
-   ```bash
-   ./scripts/dev.sh
-   ```
-   This will start the UI on port 3001, connecting to the API at `http://localhost:8000` by default.
 
-3. Access the backoffice at: `http://localhost:3001`
+   Later backoffice users are created in this app under Settings → Users. The API repo's `scripts/create_admin_user.sh` is different: it creates a tenant with a tenant admin.
 
----
-*Original README content follows:*
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```bash
+npm install
+./scripts/dev.sh        # http://localhost:3001, API at $NEXT_PUBLIC_API_URL or http://localhost:8000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`PORT` and `NEXT_PUBLIC_API_URL` can be overridden when calling the script. For next-auth set `AUTH_SECRET` and `NEXTAUTH_URL` (for example `http://localhost:3001`) in `.env.local`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+## Environment variable names
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+Never commit real values. The files under `deploy/` are environment files for specific setups, not templates; do not copy them. `AUTH_PUBLIC_URL` appears in the deploy repo's production env template but is not read by this app.
+
+| Name | Purpose |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL (build-time; passed as a Docker build argument) |
+| `API_BASE_URL`, `INTERNAL_API_URL` | Server-side API base URLs, for container-to-container calls |
+| `NEXTAUTH_SECRET`, `AUTH_SECRET` | next-auth secret; either name works and `NEXTAUTH_SECRET` wins when both are set |
+| `NEXTAUTH_URL` | Auth callback and public origin (the app is served under `/backoffice/` in production) |
+| `NEXT_TELEMETRY_DISABLED` | Disable Next.js telemetry |
+
+## Main routes (`src/app`)
+
+| Route | Screen |
+|---|---|
+| `/login` | Backoffice login |
+| `/dashboard` | AI usage and cost analytics |
+| `/tenants`, `/tenants/create` | Tenant list and creation (the create wizard includes the tenant's initial users) |
+| `/tenants/[id]` | Tenant details and controls: general settings, matching configuration (weights, thresholds, ontology, language settings, selection fusion and the alternative candidate selection toggle), connector availability, decision-reason availability and review, quotas |
+| `/settings/users` | Backoffice users |
+| `/settings/document-types` | Global document types |
+| `/settings/provider-quotas` | Provider quotas |
+| `/settings/active-sessions` | Active sessions |
+
+## Code layout
+
+- `src/app/` routes and route handlers (`api/`, `next-api/` for next-auth and proxies).
+- `src/features/` `tenants` (api, components, constants, hooks, utils), `users`, `active-sessions`, `document-types`, `dashboard`, `auth`, `layout`, `theming`, `common`.
+- `scripts/dev.sh` local start; `deploy/` environment files for specific setups (not templates).
+
+## Tests and checks
+
+```bash
+npm run lint
+npm test                 # node --test over the tenant form and matching-control helpers in src/features/tenants/utils and constants
+npm run format:check     # prettier
+npm run build
 ```
 
-## Platform Admin Features (2026-08 snapshot)
+There is no browser end-to-end suite in this repo. After changing a tenant control, verify by hand that saving tenant A leaves tenant B unchanged.
 
-- **Tenant feature flags** — tenant detail: enable/disable provider flows per tenant (audited). One `<source>_provider_flows` toggle per job connector (Jobs.bg, HLCTech, A1, KPMG, Telus Digital, Concentrix, Avedo, Dormakaba, Gracher, SolarEdge, Sutherland, Postbank, Commerzbank, RingCentral, Coca-Cola) plus LinkedIn sourcing and provider-config flags. Keys live in `src/features/tenants/interfaces/provider-feature-flags.interface.ts` and must mirror `ProviderFeatureFlags` in the API; the form order is `flagKeys` in `ProviderFeatureFlagsForm.tsx`.
-- **Provider quota ceilings** — global defaults at `/settings/provider-quotas`; per-tenant override + kill-switch + usage table on tenant detail. Effective cap = min(tenant self-serve cap, platform ceiling).
-- **Connector instances** — per-tenant connector configuration and triggers.
-- **Candidate delivery configuration** — per-tenant controls for shortlist sizing, candidate limits, delivery review thresholds, freshness bonus scoring, matching cadence scheduling, and automated report delivery with notification recipients. Surfaced as a dedicated section in the tenant edit page (`/tenants/[id]`). See `info/docs/p1_candidate_delivery_config.md` for field reference.
+## Deployment
+
+The `Dockerfile` builds a Node image from the Next.js standalone output and runs `node server.js`. The `ai-recruitment-deploy` repo builds it on the production host from branch `recruitment_board`, tags it from the git tag and runs it as the `backoffice-ui` container (port 3001 on the host) behind nginx at `/backoffice/`. Runtime secrets come from the host's env file. See `ai-recruitment-deploy/README.md`.
+
+## Further reading
+
+- `info/docs/architecture_design.md` (architecture and data flow)
+- `info/docs/p1_candidate_delivery_config.md`
+- Platform overview: the handoff documentation delivered with the source archive (architecture, setup, module map)
