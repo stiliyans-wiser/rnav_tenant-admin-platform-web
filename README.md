@@ -17,7 +17,7 @@ Next.js 14 (App Router, standalone output), React 18, TypeScript, Material UI 7,
 
 ## Run locally
 
-Prerequisite: the API running on `http://localhost:8000`, and a backoffice user (created with the API repo's `scripts/create_admin_user.sh`).
+Prerequisites: the API running on `http://localhost:8000`, and an existing backoffice user. Creating the very first backoffice user is not documented or scripted in the repositories: `POST /backoffice/users` needs an already logged-in backoffice user, and the API repo's `scripts/create_admin_user.sh` creates a tenant with a tenant admin, not a platform/backoffice admin. Treat bootstrapping the first backoffice user as an open handoff item.
 
 ```bash
 npm install
@@ -28,14 +28,14 @@ npm install
 
 ## Environment variable names
 
-Templates: `deploy/.env*`. Never commit real values.
+Never commit real values. The files under `deploy/` are environment files for specific setups, not templates; do not copy them. `AUTH_PUBLIC_URL` appears in the deploy repo's production env template but is not read by this app.
 
 | Name | Purpose |
 |---|---|
 | `NEXT_PUBLIC_API_URL` | Backend API base URL (build-time; passed as a Docker build argument) |
 | `API_BASE_URL`, `INTERNAL_API_URL` | Server-side API base URLs, for container-to-container calls |
-| `AUTH_SECRET` | next-auth secret (the production env file also carries `NEXTAUTH_SECRET`) |
-| `NEXTAUTH_URL`, `AUTH_PUBLIC_URL` | Auth callback and public origin (the app is served under `/backoffice/` in production) |
+| `NEXTAUTH_SECRET`, `AUTH_SECRET` | next-auth secret; either name works and `NEXTAUTH_SECRET` wins when both are set |
+| `NEXTAUTH_URL` | Auth callback and public origin (the app is served under `/backoffice/` in production) |
 | `NEXT_TELEMETRY_DISABLED` | Disable Next.js telemetry |
 
 ## Main routes (`src/app`)
@@ -44,8 +44,8 @@ Templates: `deploy/.env*`. Never commit real values.
 |---|---|
 | `/login` | Backoffice login |
 | `/dashboard` | AI usage and cost analytics |
-| `/tenants`, `/tenants/create` | Tenant list and creation |
-| `/tenants/[id]` | Tenant details and controls: general settings, matching configuration (weights, thresholds, ontology, language settings, selection fusion and the alternative candidate selection toggle), connector availability, decision-reason availability and review, quotas, users |
+| `/tenants`, `/tenants/create` | Tenant list and creation (the create wizard includes the tenant's initial users) |
+| `/tenants/[id]` | Tenant details and controls: general settings, matching configuration (weights, thresholds, ontology, language settings, selection fusion and the alternative candidate selection toggle), connector availability, decision-reason availability and review, quotas |
 | `/settings/users` | Backoffice users |
 | `/settings/document-types` | Global document types |
 | `/settings/provider-quotas` | Provider quotas |
@@ -55,7 +55,7 @@ Templates: `deploy/.env*`. Never commit real values.
 
 - `src/app/` routes and route handlers (`api/`, `next-api/` for next-auth and proxies).
 - `src/features/` `tenants` (api, components, constants, hooks, utils), `users`, `active-sessions`, `document-types`, `dashboard`, `auth`, `layout`, `theming`, `common`.
-- `scripts/dev.sh` local start; `deploy/` env templates.
+- `scripts/dev.sh` local start; `deploy/` environment files for specific setups (not templates).
 
 ## Tests and checks
 
@@ -76,4 +76,4 @@ The `Dockerfile` builds a Node image from the Next.js standalone output and runs
 
 - `info/docs/architecture_design.md` (architecture and data flow)
 - `info/docs/p1_candidate_delivery_config.md`
-- Platform overview: handoff pack `README.md`, `ARCHITECTURE.md`, `SETUP.md`, `MODULE_MAP.md`
+- Platform overview: the handoff documentation delivered with the source archive (architecture, setup, module map)
